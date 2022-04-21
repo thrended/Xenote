@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { SafeAreaView, View, StyleSheet } from "react-native";
 
 import TaskContext, { Subtask } from "./app/models/Schemas";
-import IntroText from "./app/components/IntroText";
+import SubtaskListDefaultText from "./app/components/SubtaskListDefaultText";
 import AddSubtaskButton from "./app/components/AddSubtaskButton";
 import NewReminderTitlebar from "./app/components/NewReminderTitlebar";
 import Reminder from "./app/components/Reminder";
@@ -13,8 +13,7 @@ const { useRealm, useQuery, RealmProvider } = TaskContext;
 function App() {
   const realm = useRealm();
   const result = useQuery(Subtask);
-
-  const tasks = useMemo(() => result.sorted("isComplete"), [result]);
+  const subtasks = useMemo(() => result.sorted("isComplete"), [result]);
 
   const handleAddSubtask = useCallback(
     (): void => {
@@ -83,10 +82,10 @@ function App() {
     <SafeAreaView style={styles.screen}>
       <NewReminderTitlebar onSubmit={() => {}}></NewReminderTitlebar>
       <View style={styles.content}>
-        {tasks.length === 0 ? (
-          <IntroText />
+        {subtasks.length === 0 ? (
+          <SubtaskListDefaultText />
         ) : (
-          <Reminder tasks={tasks} onToggleTaskStatus={handleToggleTaskStatus} onDeleteTask={handleDeleteTask} />
+          <Reminder tasks={subtasks} onToggleTaskStatus={handleToggleTaskStatus} onDeleteTask={handleDeleteTask} />
         )}
         <AddSubtaskButton onSubmit={handleAddSubtask} />
       </View>

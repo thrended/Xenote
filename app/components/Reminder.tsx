@@ -13,7 +13,7 @@ interface SubtaskListProps {
 
 function Reminder({tasks: subtasks, onToggleTaskStatus: onToggleSubtaskStatus, onDeleteTask: onDeleteSubtask}: SubtaskListProps) {
   return (
-    <View style={styles.listContainer}>
+    <View style={styles.subtaskListContainer}>
       <FlatList
         data={subtasks}
         keyExtractor={subtask => subtask._id.toString()}
@@ -34,7 +34,7 @@ function Reminder({tasks: subtasks, onToggleTaskStatus: onToggleSubtaskStatus, o
 }
 
 const styles = StyleSheet.create({
-  listContainer: {
+  subtaskListContainer: {
     marginTop: 50,
     flex: 1,
     // justifyContent: 'center',
