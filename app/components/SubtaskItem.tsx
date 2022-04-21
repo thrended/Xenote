@@ -21,6 +21,8 @@ function SubtaskItem({
   onDelete,
 }: SubtaskItemProps) {
   const [_title, setTitle] = useState(title);
+  const [_feature, setFeature] = useState(feature);
+  const [_value, setValue] = useState(value);
 
   return (
     <View style={styles.task}>
@@ -35,6 +37,24 @@ function SubtaskItem({
             value={_title}
             placeholder="Enter new task description"
             onChangeText={setTitle}
+            autoCorrect={false}
+            autoCapitalize="none"
+            style={styles.textInput}
+          />
+        </View>
+        <View style={styles.featureInputContainer}>
+          <TextInput
+            value={_feature}
+            placeholder="Feature"
+            onChangeText={setFeature}
+            autoCorrect={false}
+            autoCapitalize="none"
+            style={styles.textInput}
+          />
+          <TextInput
+            value={_value}
+            placeholder="Value"
+            onChangeText={setValue}
             autoCorrect={false}
             autoCapitalize="none"
             style={styles.textInput}
@@ -73,21 +93,27 @@ const styles = StyleSheet.create({
     }),
   },
   content: {
-    width: "100%",
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     color: colors.black,
     fontSize: 16,
     marginBottom: 8
   },
+  featureInputContainer: {
+    flex: 1,
+    flexDirection: "row"
+  },
   textInput: {
+    flex: 1,
     textAlign: "center",
-    paddingHorizontal: 15,
-    paddingVertical: Platform.OS === 'ios' ? 15 : 0,
+    paddingHorizontal: 8,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 0,
     backgroundColor: colors.white,
     fontSize: 24,
   },
   titleInputContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 8,
