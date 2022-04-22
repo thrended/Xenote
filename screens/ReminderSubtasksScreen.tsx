@@ -20,9 +20,12 @@ import {Results} from 'realm';
 
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
-function ReminderSubtasksScreen() {
+function ReminderSubtasksScreen({route, navigation}: any) {
+  const {reminder} = route.params;
+  console.log(reminder.subtasks);
   const realm = useRealm();
-  const result = useQuery(Subtask);
+  // const result = useQuery(Subtask);
+  const result = reminder.subtasks;
 
   const subtasks = useMemo(() => result, [result]);
 
@@ -33,15 +36,9 @@ function ReminderSubtasksScreen() {
 
   const handleAddSubtask = useCallback(
     (_title: string, _feature: string, _value: string): void => {
-      // Everything in the function passed to "realm.write" is a transaction and will
-      // hence succeed or fail together. A transcation is the smallest unit of transfer
-      // in Realm so we want to be mindful of how much we put into one single transaction
-      // and split them up if appropriate (more commonly seen server side). Since clients
-      // may occasionally be online during short time spans we want to increase the probability
-      // of sync participants to successfully sync everything in the transaction, otherwise
-      // no changes propagate and the transaction needs to start over when connectivity allows.
       realm.write(() => {
-        realm.create('Subtask', Subtask.generate(_title, _feature, _value));
+        // realm.create('Subtask', Subtask.generate(_title, _feature, _value));
+        reminder.subtasks.push(Subtask.generate(_title, _feature, _value));
       });
     },
     [realm],
@@ -55,26 +52,11 @@ function ReminderSubtasksScreen() {
       _value?: string,
     ): void => {
       realm.write(() => {
-        // Normally when updating a record in a NoSQL or SQL database, we have to type
-        // a statement that will later be interpreted and used as instructions for how
-        // to update the record. But in RealmDB, the objects are "live" because they are
-        // actually referencing the object's location in memory on the device (memory mapping).
-        // So rather than typing a statement, we modify the object directly by changing
-        // the property values. If the changes adhere to the schema, Realm will accept
-        // this new version of the object and wherever this object is being referenced
-        // locally will also see the changes "live".
         _title ? (subtask.title = _title) : {};
         _feature ? (subtask.feature = _feature) : {};
         _value ? (subtask.value = _value) : {};
         // setSubtasks(result);
       });
-
-      // Alternatively if passing the ID as the argument to handleToggleTaskStatus:
-      // realm?.write(() => {
-      //   const task = realm?.objectForPrimaryKey('Task', id); // If the ID is passed as an ObjectId
-      //   const task = realm?.objectForPrimaryKey('Task', Realm.BSON.ObjectId(id));  // If the ID is passed as a string
-      //   task.isComplete = !task.isComplete;
-      // });
     },
     [realm],
   );

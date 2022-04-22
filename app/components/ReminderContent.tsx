@@ -14,7 +14,7 @@ import {Realm} from '@realm/react';
 import {Subtask} from '../models/Schemas';
 import SubtaskItem from './SubtaskItem';
 
-interface SubtaskListProps {
+interface ReminderContentProps {
   subtasks: Realm.Results<Subtask> | [];
   handleModifySubtask: (
     subtask: Subtask,
@@ -29,7 +29,7 @@ function ReminderContent({
   subtasks: subtasks,
   handleModifySubtask,
   onDeleteSubtask,
-}: SubtaskListProps) {
+}: ReminderContentProps) {
   return (
     <View style={styles.subtaskListContainer}>
       <FlatList

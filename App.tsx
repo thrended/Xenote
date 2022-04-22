@@ -1,13 +1,12 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ReminderScreen from './screens/ReminderScreen';
+import RemindersListScreen from './screens/RemindersListScreen';
 import ReminderSubtasksScreen from './screens/ReminderSubtasksScreen';
 import RealmContext from './app/models/Schemas';
 
+const {RealmProvider} = RealmContext;
 const Stack = createNativeStackNavigator();
-
-const {useRealm, useQuery, RealmProvider} = RealmContext;
 
 const App = () => {
   if (!RealmProvider) {
@@ -18,11 +17,11 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
-            name="welcome"
-            component={ReminderScreen}
-            options={{title: 'Welcome'}}
+            name="RemindersListScreen"
+            component={RemindersListScreen}
+            options={{title: 'Reminders'}}
           />
-          <Stack.Screen name="main" component={ReminderSubtasksScreen} />
+          <Stack.Screen name="ReminderSubtasksScreen" component={ReminderSubtasksScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </RealmProvider>

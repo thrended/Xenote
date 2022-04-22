@@ -1,4 +1,5 @@
 import {Realm, createRealmContext} from '@realm/react';
+import SubtaskListDefaultText from '../components/SubtaskListDefaultText';
 export class Subtask extends Realm.Object {
   _id!: Realm.BSON.ObjectId;
   title!: string;
@@ -21,7 +22,7 @@ export class Subtask extends Realm.Object {
   // To use a class as a Realm object type, define the object schema on the static property "schema".
   static schema = {
     name: 'Subtask',
-    primaryKey: '_id',
+    embedded: true,
     properties: {
       _id: 'objectId',
       title: 'string',
@@ -33,7 +34,38 @@ export class Subtask extends Realm.Object {
   };
 }
 
+export class Reminder extends Realm.Object {
+  _id!: Realm.BSON.ObjectId;
+  title!: string;
+  subtasks!: Subtask[];
+  isComplete!: boolean;
+  scheduledDatetime!: Date;
+
+  static generate(title: string, subtasks?: Subtask[]) {
+    return {
+      _id: new Realm.BSON.ObjectId(),
+      title: title,
+      subtasks: subtasks? subtasks: new Array<Subtask>(),
+      isComplete: false,
+      scheduledDatetime: new Date(),
+    };
+  }
+
+  // To use a class as a Realm object type, define the object schema on the static property "schema".
+  static schema = {
+    name: 'Reminder',
+    primaryKey: '_id',
+    properties: {
+      _id: 'objectId',
+      title: 'string',
+      subtasks: { type: "list", objectType: "Subtask" },
+      isComplete: {type: 'bool', default: false},
+      scheduledDatetime: 'date',
+    },
+  };
+}
+
 export default createRealmContext({
-  schema: [Subtask],
+  schema: [Reminder, Subtask],
   deleteRealmIfMigrationNeeded: true,
 });
