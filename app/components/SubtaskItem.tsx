@@ -1,77 +1,130 @@
-import React, {memo, useState} from 'react';
-import {View, Text, TextInput, Pressable, Platform, StyleSheet, _Text} from 'react-native';
+import React, {memo, useDebugValue, useState} from 'react';
+import {Modal, View, Text, TextInput, TouchableOpacity, Platform, Pressable, StyleSheet, _Text} from 'react-native';
 import { Subtask } from '../models/Schemas';
 
 import colors from '../styles/colors';
 
 interface SubtaskItemProps {
-  title: string;
-  feature: string;
-  value: string
-  // onModify: () => void;
+  subtask: Subtask;
+  handleModifySubtask: (subtask: Subtask, _title?: string, _feature?: string, _value?: string) => void;
   onDelete: () => void;
 }
 
 function SubtaskItem({
-  title: title,
-  feature: feature,
-  value: value,
-  // onModify,
+  subtask: subtask,
+  handleModifySubtask,
   onDelete,
 }: SubtaskItemProps) {
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [inputTitle, setInputTitle] = useState(subtask.title);
+  const [inputFeature, setInputFeature] = useState(subtask.feature);
+  const [inputValue, setInputValue] = useState(subtask.value);
+  // const initializeSubtaskInput = () => {
+  //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
+  // }
+
   return (
-    <View style={styles.task}>
-      {/* <Pressable
-        onPress={onToggleStatus}
-        style={[styles.status, isComplete && styles.completed]}>
-        <Text style={styles.icon}>{isComplete ? '✓' : '○'}</Text>
-      </Pressable> */}
-      <View style={styles.content}>
-        <View style={styles.titleInputContainer}>
-          {/* <TextInput
-            defaultValue={title}
-            placeholder="Enter new task description"
-            autoCorrect={false}
-            autoCapitalize="none"
-            style={styles.textInput}
-          /> */}
-          <Text style={styles.textTitle}>
-            {title}
-          </Text>
+    <TouchableOpacity
+    onLongPress={() => setModalVisible(true)}
+    activeOpacity={0.6}             
+    >
+      <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={styles.modalRow}>
+                <Text style={styles.modalText}>Title: </Text>
+                <TextInput
+                  value={inputTitle}
+                  onChangeText={setInputTitle}
+                  placeholder="Enter new task title"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  style={styles.textInput}
+                />
+              </View>
+              <View style={styles.modalRow}>
+                <Text style={styles.modalText}>Feature: </Text>
+                <TextInput
+                  value={inputFeature}
+                  onChangeText={setInputFeature}
+                  placeholder="Add a feature"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  style={styles.textInput}
+                />
+              </View>
+              <View style={styles.modalRow}>
+                <Text style={styles.modalText}>Value: </Text>
+                <TextInput
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  placeholder="Add a feature value"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  style={styles.textInput}
+                />
+              </View>
+
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  handleModifySubtask(subtask, inputTitle, inputFeature, inputValue);
+                  // initializeSubtaskInput();
+                }}
+              >
+                <Text style={styles.textStyle}>Done ✓</Text>
+              </Pressable>
+            </View>
+          </View>
+      </Modal>
+      <View style={styles.task}>
+        <View style={styles.content}>
+          <View style={styles.titleInputContainer}>
+            <Text style={styles.textTitle}>
+              {subtask.title}
+            </Text>
+          </View>
+          <View style={styles.featureInputContainer}>
+            <Text style={styles.textFeature}>
+              {subtask.feature}
+            </Text>
+            <Text style={styles.textValue}>
+              {subtask.value}
+            </Text>
+          </View>
         </View>
-        <View style={styles.featureInputContainer}>
-          {/* <TextInput
-            defaultValue={feature}
-            placeholder="Feature"
-            autoCorrect={false}
-            autoCapitalize="none"
-            style={styles.textInput}
-          /> */}
-          <Text style={styles.textFeature}>
-            {feature}
-          </Text>
-          {/* <TextInput
-            defaultValue={value}
-            placeholder="Value"
-            autoCorrect={false}
-            autoCapitalize="none"
-            style={styles.textInput}
-          /> */}
-          <Text style={styles.textValue}>
-            {value}
-          </Text>
-        </View>
+        <Pressable onPress={onDelete} style={styles.deleteButton}>
+          <Text style={styles.deleteText}>Delete</Text>
+        </Pressable>
       </View>
-      
-      <Pressable onPress={onDelete} style={styles.deleteButton}>
-        <Text style={styles.deleteText}>Delete</Text>
-      </Pressable>
-    </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonClose: {
+    backgroundColor: '#ee6e73',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
   task: {
     marginVertical: 8,
     backgroundColor: colors.white,
@@ -101,6 +154,19 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: 16,
     marginBottom: 8
+  },
+  textInput: {
+    flex: 1,
+    // textAlign: "center",
+    paddingHorizontal: 8,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 0,
+    backgroundColor: colors.white,
+    fontSize: 24,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
   },
   featureInputContainer: {
     flex: 1,
@@ -162,6 +228,27 @@ const styles = StyleSheet.create({
   //   fontSize: 17,
   //   fontWeight: 'bold',
   // },
+  modalRow: {
+    flex: 1,
+    flexDirection: "row"
+  },
+  modalText: {
+    marginBottom: 15,
+    // textAlign: "center"
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+  }
 });
 
 // We want to make sure only tasks that change are rerendered

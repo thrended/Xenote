@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { Modal, Pressable, SafeAreaView, Text, View, StyleSheet, TextInput } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Modal, Platform, Pressable, SafeAreaView, Text, View, StyleSheet, TextInput } from "react-native";
 
 import TaskContext, { Subtask } from "./app/models/Schemas";
 import SubtaskListDefaultText from "./app/components/SubtaskListDefaultText";
@@ -7,13 +7,16 @@ import AddSubtaskButton from "./app/components/AddSubtaskButton";
 import NewReminderTitlebar from "./app/components/NewReminderTitlebar";
 import ReminderContent from "./app/components/ReminderContent";
 import colors from "./app/styles/colors";
+import { Results } from "realm";
 
 const { useRealm, useQuery, RealmProvider } = TaskContext;
 
 function App() {
   const realm = useRealm();
   const result = useQuery(Subtask);
-  const subtasks = useMemo(() => result.sorted("isComplete"), [result]);
+
+  const subtasks = useMemo(() => result, [result]);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [inputTitle, setInputTitle] = useState("");
   const [inputFeature, setInputFeature] = useState("");
@@ -29,8 +32,7 @@ function App() {
       // of sync participants to successfully sync everything in the transaction, otherwise
       // no changes propagate and the transaction needs to start over when connectivity allows.
       realm.write(() => {
-        const subtask = realm.create("Subtask", Subtask.generate(_title, _feature, _value));
-        // handleModifySubtask(subtask._objectId());
+        realm.create("Subtask", Subtask.generate(_title, _feature, _value));
       });
     },
     [realm],
@@ -50,6 +52,7 @@ function App() {
         _title? subtask.title = _title : {};
         _feature? subtask.feature = _feature : {};
         _value? subtask.value = _value : {};
+        // setSubtasks(result);
       });
 
       // Alternatively if passing the ID as the argument to handleToggleTaskStatus:
@@ -74,70 +77,75 @@ function App() {
     [realm],
   );
 
+  const initializeSubtaskInput = () => {
+    setInputTitle(""); setInputFeature(''); setInputValue("");
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={styles.modalRow}>
-                <Text style={styles.modalText}>Title: </Text>
-                <TextInput
-                  value={inputTitle}
-                  onChangeText={setInputTitle}
-                  placeholder="Enter new task title"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  style={styles.textInput}
-                />
-              </View>
-              <View style={styles.modalRow}>
-                <Text style={styles.modalText}>Feature: </Text>
-                <TextInput
-                  value={inputFeature}
-                  onChangeText={setInputFeature}
-                  placeholder="Add a feature"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  style={styles.textInput}
-                />
-              </View>
-              <View style={styles.modalRow}>
-                <Text style={styles.modalText}>Value: </Text>
-                <TextInput
-                  value={inputValue}
-                  onChangeText={setInputValue}
-                  placeholder="Add a feature value"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  style={styles.textInput}
-                />
-              </View>
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => {
-                  setModalVisible(!modalVisible);
-                  handleAddSubtask(inputTitle, inputFeature, inputValue);
-                }}
-              >
-                <Text style={styles.textStyle}>Done ✓</Text>
-              </Pressable>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalText}>Title: </Text>
+              <TextInput
+                value={inputTitle}
+                onChangeText={setInputTitle}
+                placeholder="Enter new task title"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.textInput}
+              />
             </View>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalText}>Feature: </Text>
+              <TextInput
+                value={inputFeature}
+                onChangeText={setInputFeature}
+                placeholder="Add a feature"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.textInput}
+              />
+            </View>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalText}>Value: </Text>
+              <TextInput
+                value={inputValue}
+                onChangeText={setInputValue}
+                placeholder="Add a feature value"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.textInput}
+              />
+            </View>
+
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                handleAddSubtask(inputTitle, inputFeature, inputValue);
+                initializeSubtaskInput();
+              }}
+            >
+              <Text style={styles.textStyle}>Done ✓</Text>
+            </Pressable>
           </View>
+        </View>
       </Modal>
       <NewReminderTitlebar onSubmit={() => {}}></NewReminderTitlebar>
       <View style={styles.content}>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />
         ) : (
-          <ReminderContent subtasks={subtasks} onDeleteSubtask={handleDeleteSubtask} />
+          <ReminderContent subtasks={subtasks} handleModifySubtask={handleModifySubtask} onDeleteSubtask={handleDeleteSubtask} />
         )}
         <AddSubtaskButton onSubmit={() => setModalVisible(true)} />
       </View>

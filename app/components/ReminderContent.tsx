@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, FlatList, Pressable, StyleSheet} from 'react-native';
+import React, { useState } from 'react';
+import {View, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity} from 'react-native';
 import { Realm } from '@realm/react';
 
 import { Subtask } from '../models/Schemas';
@@ -7,10 +7,12 @@ import SubtaskItem from './SubtaskItem';
 
 interface SubtaskListProps {
   subtasks: Realm.Results<Subtask> | [];
+  handleModifySubtask: (subtask: Subtask, _title?: string, _feature?: string, _value?: string) => void
   onDeleteSubtask: (subtask: Subtask) => void;
 }
 
-function ReminderContent({subtasks: subtasks, onDeleteSubtask: onDeleteSubtask}: SubtaskListProps) {
+function ReminderContent({subtasks: subtasks, handleModifySubtask, onDeleteSubtask}: SubtaskListProps) {
+
   return (
     <View style={styles.subtaskListContainer}>
       <FlatList
@@ -18,13 +20,13 @@ function ReminderContent({subtasks: subtasks, onDeleteSubtask: onDeleteSubtask}:
         keyExtractor={subtask => subtask._id.toString()}
         renderItem={({item}) => (
           <SubtaskItem
-            title={item.title}
-            feature={item.feature}
-            value={item.value}
+            subtask={item}
+            handleModifySubtask={handleModifySubtask}
             onDelete={() => onDeleteSubtask(item)}
             // Don't spread the Realm item as such: {...item}
           />
         )}
+        extraData={subtasks}
       />
     </View>
   );
@@ -36,6 +38,10 @@ const styles = StyleSheet.create({
     flex: 1,
     // justifyContent: 'center',
   },
+  buttonStyle: {
+    justifyContent: 'center',
+  },
+
 });
 
 export default ReminderContent;
