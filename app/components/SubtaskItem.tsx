@@ -10,8 +10,8 @@ import {
   StyleSheet,
   _Text,
 } from 'react-native';
-import {Subtask} from '../models/Schemas';
 
+import {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
 
 interface SubtaskItemProps {
@@ -73,8 +73,18 @@ function SubtaskItem({
                 style={styles.textInput}
               />
             </View>
-            
-            <Pressable>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalText}>Value: </Text>
+              <TextInput
+                value={inputValue}
+                onChangeText={setInputValue}
+                placeholder="Add a feature value"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.textInput}
+              />
+            </View>
+            <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 setModalVisible(!modalVisible);
