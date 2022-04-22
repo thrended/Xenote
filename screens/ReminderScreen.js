@@ -14,7 +14,7 @@ import colors from '../app/styles/colors';
 
 
 
-const Welcome = ({navigation}) => {
+const ReminderScreen = ({navigation}) => {
   return (
     <View style={styles.centeredView}>
       <Text style={styles.textStyle}> Welcome</Text>
@@ -40,4 +40,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Welcome;
+export default ReminderScreen;

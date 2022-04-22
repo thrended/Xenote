@@ -10,7 +10,7 @@ import {
   TextInput,
 } from 'react-native';
 
-import TaskContext, {Subtask} from '../app/models/Schemas';
+import SubtaskContext, {Subtask} from '../app/models/Schemas';
 import SubtaskListDefaultText from '../app/components/SubtaskListDefaultText';
 import AddSubtaskButton from '../app/components/AddSubtaskButton';
 import NewReminderHeaderBar from '../app/components/NewReminderHeaderBar';
@@ -18,9 +18,9 @@ import ReminderContent from '../app/components/ReminderContent';
 import colors from '../app/styles/colors';
 import {Results} from 'realm';
 
-const {useRealm, useQuery, RealmProvider} = TaskContext;
+const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
-function App() {
+function ReminderSubtasksScreen() {
   const realm = useRealm();
   const result = useQuery(Subtask);
 
@@ -234,15 +234,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function AppWrapper() {
-  if (!RealmProvider) {
-    return null;
-  }
-  return (
-    <RealmProvider>
-      <App />
-    </RealmProvider>
-  );
-}
-
-export default AppWrapper;
+export default ReminderSubtasksScreen;

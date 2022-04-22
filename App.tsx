@@ -1,24 +1,31 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Welcome from './screens/welcome';
-import AppWrapper from './screens/main';
-
+import ReminderScreen from './screens/ReminderScreen';
+import ReminderSubtasksScreen from './screens/ReminderSubtasksScreen';
+import RealmContext from './app/models/Schemas';
 
 const Stack = createNativeStackNavigator();
 
-const MyStack = () => {
+const {useRealm, useQuery, RealmProvider} = RealmContext;
+
+const App = () => {
+  if (!RealmProvider) {
+    return null;
+  }
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="welcome"
-          component={Welcome}
-          options={{title: 'Welcome'}}
-        />
-        <Stack.Screen name="main" component={AppWrapper} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <RealmProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="welcome"
+            component={ReminderScreen}
+            options={{title: 'Welcome'}}
+          />
+          <Stack.Screen name="main" component={ReminderSubtasksScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </RealmProvider>
   );
 };
-export default MyStack;
+export default App;
