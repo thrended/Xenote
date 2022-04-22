@@ -8,9 +8,10 @@ import SubtaskItem from './SubtaskItem';
 interface SubtaskListProps {
   subtasks: Realm.Results<Subtask> | [];
   onDeleteSubtask: (subtask: Subtask) => void;
+  onSwipeLeft: (subtask: Subtask) => void;
 }
 
-function ReminderContent({subtasks: subtasks, onDeleteSubtask: onDeleteSubtask}: SubtaskListProps) {
+function ReminderContent({subtasks: subtasks, onDeleteSubtask: onDeleteSubtask, onSwipeLeft: onSwipeLeft}: SubtaskListProps) {
   return (
     <View style={styles.subtaskListContainer}>
       <FlatList
@@ -22,6 +23,7 @@ function ReminderContent({subtasks: subtasks, onDeleteSubtask: onDeleteSubtask}:
             feature={item.feature}
             value={item.value}
             onDelete={() => onDeleteSubtask(item)}
+            onSwipeLeft={() => onSwipeLeft(item)}
             // Don't spread the Realm item as such: {...item}
           />
         )}

@@ -1,6 +1,7 @@
 import React, {memo, useState} from 'react';
 import {View, Text, TextInput, Pressable, Platform, StyleSheet, _Text} from 'react-native';
 import { Subtask } from '../models/Schemas';
+import { useSwipe } from '../hooks/useSwipe';
 
 import colors from '../styles/colors';
 
@@ -10,6 +11,7 @@ interface SubtaskItemProps {
   value: string
   // onModify: () => void;
   onDelete: () => void;
+  onSwipeLeft: () => void;
 }
 
 function SubtaskItem({
@@ -18,12 +20,22 @@ function SubtaskItem({
   value: value,
   // onModify,
   onDelete,
+  onSwipeLeft,
 }: SubtaskItemProps) {
+
+  const { onTouchStart, onTouchEnd} = useSwipe(onSwipeLeft, onSwipeR, 6);
+
+  function onSwipeR(){
+      /* flag function goes here */
+      console.log('right Swipe performed');
+  }
+
 
   return (
     <View style={styles.task}>
       {/* <Pressable
         onPress={onToggleStatus}
+        onLongPress={onModify}
         style={[styles.status, isComplete && styles.completed]}>
         <Text style={styles.icon}>{isComplete ? '✓' : '○'}</Text>
       </Pressable> */}
@@ -36,9 +48,17 @@ function SubtaskItem({
             autoCapitalize="none"
             style={styles.textInput}
           /> */}
-          <Text style={styles.textTitle}>
-            {title}
-          </Text>
+          <Pressable 
+          onTouchStart={onTouchStart} 
+          onTouchEnd={onTouchEnd}
+          hitSlop={{ top: 50, bottom: 100, right: 100, left: 100}}
+          android_ripple={{color:'#00f'}}
+          >
+            <Text style={styles.textTitle}>
+              {title}
+            </Text>
+          </Pressable>
+          
         </View>
         <View style={styles.featureInputContainer}>
           {/* <TextInput
@@ -64,7 +84,7 @@ function SubtaskItem({
         </View>
       </View>
       
-      <Pressable onPress={onDelete} style={styles.deleteButton}>
+      <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onPress={onDelete} style={styles.deleteButton}>
         <Text style={styles.deleteText}>Delete</Text>
       </Pressable>
     </View>

@@ -1,12 +1,18 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Modal, Pressable, SafeAreaView, Text, View, StyleSheet, TextInput } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Modal, Pressable, SafeAreaView, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback } from "react-native";
 
+import Feather from 'react-native-vector-icons/Feather';
+import Foundation from 'react-native-vector-icons/Foundation';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Octicons from 'react-native-vector-icons/Octicons';
 import TaskContext, { Subtask } from "./app/models/Schemas";
 import SubtaskListDefaultText from "./app/components/SubtaskListDefaultText";
 import AddSubtaskButton from "./app/components/AddSubtaskButton";
 import NewReminderTitlebar from "./app/components/NewReminderTitlebar";
 import ReminderContent from "./app/components/ReminderContent";
 import colors from "./app/styles/colors";
+import { globalStyles } from "./app/styles/global";
 
 const { useRealm, useQuery, RealmProvider } = TaskContext;
 
@@ -15,9 +21,11 @@ function App() {
   const result = useQuery(Subtask);
   const subtasks = useMemo(() => result.sorted("isComplete"), [result]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [inputTitle, setInputTitle] = useState("");
   const [inputFeature, setInputFeature] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [window, setWindow] = useState(true);
 
   const handleAddSubtask = useCallback(
     (_title: string, _feature: string, _value: string): void => {
@@ -132,15 +140,77 @@ function App() {
             </View>
           </View>
       </Modal>
-      <NewReminderTitlebar onSubmit={() => {}}></NewReminderTitlebar>
+      <View style={[{flexDirection: 'row', justifyContent: 'space-around', padding: 10}]} >
+      <Pressable
+        style={[styles.button, styles.buttonClose]}
+        onPress={() => {
+          setWindow(false);
+        }}
+      >
+          <Text style={styles.textStyle}>Notes</Text>
+      </Pressable>
+      <Pressable
+        style={[styles.button, styles.buttonClose]}
+        onPress={() => {
+          setWindow(true);
+        }}
+      >
+          <Text style={styles.textStyle}>Reminders</Text>
+      </Pressable>
+      </View>
+      
+      { window && (
+
       <View style={styles.content}>
+        <NewReminderTitlebar onSubmit={() => {}}></NewReminderTitlebar>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />
         ) : (
-          <ReminderContent subtasks={subtasks} onDeleteSubtask={handleDeleteSubtask} />
+          <ReminderContent subtasks={subtasks} onDeleteSubtask={handleDeleteSubtask} onSwipeLeft={handleDeleteSubtask} />
         )}
         <AddSubtaskButton onSubmit={() => setModalVisible(true)} />
       </View>
+      )}
+      { !window && (
+        <View style={styles.content}>
+          <Text>Notes Tab</Text>
+          <Modal visible={modalOpen} animationType='slide'>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={globalStyles.modalContent}>
+              <View style={globalStyles.modalIcon}>
+                <MaterialIcons
+                  name='close'
+                  size={24}
+                  style={{ ...globalStyles.modalToggle, ...globalStyles.modalClose }}
+                  onPress={() => setModalOpen(!modalOpen)}
+                />
+                <Foundation
+                  name='check'
+                  size={24}
+                  style={{ ...globalStyles.modalToggle, ...globalStyles.modalClose }}
+                  onPress={() => setModalOpen(!modalOpen)}
+                />
+              </View>
+              <View style={[globalStyles.containerTitle, {paddingTop: 25}]}>
+                <Text style={globalStyles.titleMain}>New Simple Note</Text>
+              </View>
+              {/* <SimpleNote addNote={addNote} /> */}
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+        <View style={[styles.centeredView, {marginTop: 0}]}>
+          <Text>Create Simple Note</Text>
+        </View>
+        <MaterialIcons
+          name='add'
+          size={24}
+          style={globalStyles.modalToggle}
+          onPress={() => setModalOpen(!modalOpen)}
+        />
+        
+        </View>
+        
+      )}
     </SafeAreaView>
   );
 }
