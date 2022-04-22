@@ -255,7 +255,8 @@ const shouldNotRerender = (
   prevProps: SubtaskItemProps,
   nextProps: SubtaskItemProps,
 ) =>
-  prevProps.title === nextProps.title &&
-  prevProps.isComplete === nextProps.isComplete;
+  prevProps.subtask.title === nextProps.subtask.title &&
+  prevProps.subtask.feature === nextProps.subtask.feature &&
+  prevProps.subtask.value === nextProps.subtask.value;
 
 export default memo(SubtaskItem, shouldNotRerender);

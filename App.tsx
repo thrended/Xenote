@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Welcome from './screens/welcome';
 import AppWrapper from './screens/main';
 
+
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
