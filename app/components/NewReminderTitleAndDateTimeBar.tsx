@@ -10,37 +10,38 @@ import {
 
 import colors from '../styles/colors';
 
-interface NewReminderTitlebarProps {
-  onSubmit: (reminderID: string) => void;
+interface NewReminderTitleAndDateTimeBarProps {
+  
 }
 
-function NewReminderTitlebar({onSubmit}: NewReminderTitlebarProps) {
-  const [reminderID, setDescription] = useState('');
-
-  const handleSubmit = () => {
-    onSubmit(reminderID);
-    setDescription('');
-  };
+function NewReminderTitleAndDateTimeBar({}: NewReminderTitleAndDateTimeBarProps) {
+  const [titleInput, setTitleInput] = useState('');
 
   return (
     <View style={styles.titlebar}>
-        <View style={styles.titleTextContainer}>
-            <Text style={styles.titleText}>New Reminder</Text>
-        </View>
+      <View style={styles.titleTextContainer}>
+        <TextInput
+          value={titleInput}
+          onChangeText={setTitleInput}
+          placeholder="Reminder Title"
+          autoCorrect={false}
+          autoCapitalize="none"
+          style={styles.textInput}
+        />
+      </View>
 
-        <Pressable style={styles.finishedButton}>
-            <Text style={styles.icon}>{'✓'}</Text>
-        </Pressable>
+      <Pressable style={styles.setScheduledDateTimeButton}>
+          <Text style={styles.icon}>{'📅'}</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   titlebar: {
-    position: "absolute",
-    top: 0,
     width: "100%",
     height: 50,
+    top: 50,
     alignItems: "center",
     justifyContent: "center",
     ...Platform.select({
@@ -68,15 +69,23 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
-  finishedButton: {
+  setScheduledDateTimeButton: {
     position: "absolute",
     right: 20
   },
   icon: {
     color: colors.black,
-    fontSize: 17,
+    fontSize: 24,
     fontWeight: 'bold',
+  },
+  textInput: {
+    flex: 1,
+    // textAlign: "center",
+    paddingHorizontal: 8,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 0,
+    backgroundColor: colors.white,
+    fontSize: 24,
   },
 });
 
-export default NewReminderTitlebar;
+export default NewReminderTitleAndDateTimeBar;

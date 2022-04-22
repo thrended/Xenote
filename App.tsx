@@ -4,7 +4,8 @@ import { Modal, Platform, Pressable, SafeAreaView, Text, View, StyleSheet, TextI
 import TaskContext, { Subtask } from "./app/models/Schemas";
 import SubtaskListDefaultText from "./app/components/SubtaskListDefaultText";
 import AddSubtaskButton from "./app/components/AddSubtaskButton";
-import NewReminderTitlebar from "./app/components/NewReminderTitlebar";
+import NewReminderHeaderBar from "./app/components/NewReminderHeaderBar";
+import NewReminderTitleAndDateTimeBar from "./app/components/NewReminderTitleAndDateTimeBar";
 import ReminderContent from "./app/components/ReminderContent";
 import colors from "./app/styles/colors";
 import { Results } from "realm";
@@ -140,7 +141,8 @@ function App() {
           </View>
         </View>
       </Modal>
-      <NewReminderTitlebar onSubmit={() => {}}></NewReminderTitlebar>
+      <NewReminderHeaderBar onSubmit={() => {}}></NewReminderHeaderBar>
+      <NewReminderTitleAndDateTimeBar></NewReminderTitleAndDateTimeBar>
       <View style={styles.content}>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />
