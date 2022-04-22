@@ -7,12 +7,12 @@ export class Subtask extends Realm.Object {
   isComplete!: boolean;
   scheduledDatetime!: Date;
 
-  static generate(title: string) {
+  static generate(title: string, feature: string, value: string) {
     return {
       _id: new Realm.BSON.ObjectId(),
       title: title,
-      feature: "",
-      value: "",
+      feature: feature,
+      value: value,
       isComplete: false,
       scheduledDatetime: new Date(),
     };

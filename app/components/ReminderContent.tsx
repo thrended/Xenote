@@ -6,12 +6,11 @@ import { Subtask } from '../models/Schemas';
 import SubtaskItem from './SubtaskItem';
 
 interface SubtaskListProps {
-  tasks: Realm.Results<Subtask> | [];
-  onToggleTaskStatus: (task: Subtask) => void;
-  onDeleteTask: (task: Subtask) => void;
+  subtasks: Realm.Results<Subtask> | [];
+  onDeleteSubtask: (subtask: Subtask) => void;
 }
 
-function Reminder({tasks: subtasks, onToggleTaskStatus: onToggleSubtaskStatus, onDeleteTask: onDeleteSubtask}: SubtaskListProps) {
+function ReminderContent({subtasks: subtasks, onDeleteSubtask: onDeleteSubtask}: SubtaskListProps) {
   return (
     <View style={styles.subtaskListContainer}>
       <FlatList
@@ -22,8 +21,6 @@ function Reminder({tasks: subtasks, onToggleTaskStatus: onToggleSubtaskStatus, o
             title={item.title}
             feature={item.feature}
             value={item.value}
-            isComplete={item.isComplete}
-            onToggleStatus={() => onToggleSubtaskStatus(item)}
             onDelete={() => onDeleteSubtask(item)}
             // Don't spread the Realm item as such: {...item}
           />
@@ -41,4 +38,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Reminder;
+export default ReminderContent;

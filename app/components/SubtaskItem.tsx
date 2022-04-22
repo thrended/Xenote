@@ -1,5 +1,6 @@
 import React, {memo, useState} from 'react';
-import {View, Text, TextInput, Pressable, Platform, StyleSheet} from 'react-native';
+import {View, Text, TextInput, Pressable, Platform, StyleSheet, _Text} from 'react-native';
+import { Subtask } from '../models/Schemas';
 
 import colors from '../styles/colors';
 
@@ -7,8 +8,7 @@ interface SubtaskItemProps {
   title: string;
   feature: string;
   value: string
-  isComplete: boolean;
-  onToggleStatus: () => void;
+  // onModify: () => void;
   onDelete: () => void;
 }
 
@@ -16,13 +16,9 @@ function SubtaskItem({
   title: title,
   feature: feature,
   value: value,
-  isComplete,
-  onToggleStatus,
+  // onModify,
   onDelete,
 }: SubtaskItemProps) {
-  const [_title, setTitle] = useState(title);
-  const [_feature, setFeature] = useState(feature);
-  const [_value, setValue] = useState(value);
 
   return (
     <View style={styles.task}>
@@ -33,32 +29,38 @@ function SubtaskItem({
       </Pressable> */}
       <View style={styles.content}>
         <View style={styles.titleInputContainer}>
-          <TextInput
-            value={_title}
+          {/* <TextInput
+            defaultValue={title}
             placeholder="Enter new task description"
-            onChangeText={setTitle}
             autoCorrect={false}
             autoCapitalize="none"
             style={styles.textInput}
-          />
+          /> */}
+          <Text style={styles.textTitle}>
+            {title}
+          </Text>
         </View>
         <View style={styles.featureInputContainer}>
-          <TextInput
-            value={_feature}
+          {/* <TextInput
+            defaultValue={feature}
             placeholder="Feature"
-            onChangeText={setFeature}
             autoCorrect={false}
             autoCapitalize="none"
             style={styles.textInput}
-          />
-          <TextInput
-            value={_value}
+          /> */}
+          <Text style={styles.textFeature}>
+            {feature}
+          </Text>
+          {/* <TextInput
+            defaultValue={value}
             placeholder="Value"
-            onChangeText={setValue}
             autoCorrect={false}
             autoCapitalize="none"
             style={styles.textInput}
-          />
+          /> */}
+          <Text style={styles.textValue}>
+            {value}
+          </Text>
         </View>
       </View>
       
@@ -104,7 +106,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row"
   },
-  textInput: {
+  textFeature: {
+    flex: 1,
+    textAlign: "center",
+    paddingHorizontal: 8,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 0,
+    backgroundColor: colors.white,
+    fontSize: 24,
+  },
+  textTitle: {
+    flex: 1,
+    textAlign: "center",
+    paddingHorizontal: 8,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 0,
+    backgroundColor: colors.white,
+    fontSize: 24,
+  },
+  textValue: {
     flex: 1,
     textAlign: "center",
     paddingHorizontal: 8,
