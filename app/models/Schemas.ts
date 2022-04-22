@@ -1,4 +1,4 @@
-import { Realm, createRealmContext } from "@realm/react";
+import {Realm, createRealmContext} from '@realm/react';
 export class Subtask extends Realm.Object {
   _id!: Realm.BSON.ObjectId;
   title!: string;
@@ -20,15 +20,15 @@ export class Subtask extends Realm.Object {
 
   // To use a class as a Realm object type, define the object schema on the static property "schema".
   static schema = {
-    name: "Subtask",
-    primaryKey: "_id",
+    name: 'Subtask',
+    primaryKey: '_id',
     properties: {
-      _id: "objectId",
-      title: "string",
-      feature: "string",
-      value: "string",
-      isComplete: { type: "bool", default: false },
-      scheduledDatetime: "date",
+      _id: 'objectId',
+      title: 'string',
+      feature: 'string',
+      value: 'string',
+      isComplete: {type: 'bool', default: false},
+      scheduledDatetime: 'date',
     },
   };
 }

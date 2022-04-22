@@ -42,9 +42,9 @@ function AddSubtaskModal({onSubmit}: AddSubtaskModalProps) {
 const styles = StyleSheet.create({
   floatingButtonContainer: {
     alignItems: 'center',
-    justifyContent: "center",
+    justifyContent: 'center',
     height: 50,
-    position: "absolute",
+    position: 'absolute',
     bottom: 20,
     right: 20,
     ...Platform.select({
@@ -72,13 +72,12 @@ const styles = StyleSheet.create({
   // },
   floatingButton: {
     // height: '100%',
-    width: 60,  
-    height: 60,   
+    width: 60,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30,            
-    backgroundColor: '#ee6e73',                                    
-
+    borderRadius: 30,
+    backgroundColor: '#ee6e73',
   },
   icon: {
     color: colors.white,
