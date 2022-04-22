@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
-import {View, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity} from 'react-native';
-import { Realm } from '@realm/react';
+import React, {useState} from 'react';
+import {
+  View,
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
+import {Realm} from '@realm/react';
 
-import { Subtask } from '../models/Schemas';
+import {Subtask} from '../models/Schemas';
 import SubtaskItem from './SubtaskItem';
 
 interface SubtaskListProps {
   subtasks: Realm.Results<Subtask> | [];
-  handleModifySubtask: (subtask: Subtask, _title?: string, _feature?: string, _value?: string) => void
+  handleModifySubtask: (
+    subtask: Subtask,
+    _title?: string,
+    _feature?: string,
+    _value?: string,
+  ) => void;
   onDeleteSubtask: (subtask: Subtask) => void;
 }
 
-function ReminderContent({subtasks: subtasks, handleModifySubtask, onDeleteSubtask}: SubtaskListProps) {
-
+function ReminderContent({
+  subtasks: subtasks,
+  handleModifySubtask,
+  onDeleteSubtask,
+}: SubtaskListProps) {
   return (
     <View style={styles.subtaskListContainer}>
       <FlatList
@@ -41,7 +58,6 @@ const styles = StyleSheet.create({
   buttonStyle: {
     justifyContent: 'center',
   },
-
 });
 
 export default ReminderContent;
