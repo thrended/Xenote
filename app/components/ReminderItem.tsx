@@ -31,10 +31,6 @@ function ReminderItem({
   onDelete,
   handleNavigation,
 }: ReminderItemProps) {
-  const [inputTitle, setInputTitle] = useState(reminder.title);
-  // const initializeSubtaskInput = () => {
-  //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
-  // }
 
   return (
     <TouchableOpacity
@@ -199,9 +195,9 @@ const styles = StyleSheet.create({
 const shouldNotRerender = (
   prevProps: ReminderItemProps,
   nextProps: ReminderItemProps,
-) =>
-  prevProps.reminder.title === nextProps.reminder.title;
+) => {};
+  // prevProps.reminder.title === nextProps.reminder.title;
   // prevProps.reminder.title === nextProps.reminder.title &&
   // prevProps.reminder.subtasks === nextProps.reminder.subtasks;
 
-export default memo(ReminderItem, shouldNotRerender);
+export default memo(ReminderItem);

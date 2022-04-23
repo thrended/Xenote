@@ -10,7 +10,7 @@ import {
   StyleSheet,
   _Text,
 } from 'react-native';
-
+import { useSwipe } from '../hooks/useSwipe';
 import {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
 
@@ -23,12 +23,14 @@ interface SubtaskItemProps {
     _value?: string,
   ) => void;
   onDelete: () => void;
+  onSwipeLeft: () => void
 }
 
 function SubtaskItem({
   subtask: subtask,
   handleModifySubtask,
   onDelete,
+  onSwipeLeft,
 }: SubtaskItemProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputTitle, setInputTitle] = useState(subtask.title);
@@ -37,11 +39,24 @@ function SubtaskItem({
   // const initializeSubtaskInput = () => {
   //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
   // }
+  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
+
+  function onSwipeRt() {
+    /* flag or complete function goes here */
+
+    // setInputComplete(!inputComplete);
+    // onSwipeRight()
+    // console.log('right Swipe performed');
+}
 
   return (
-    <TouchableOpacity
+    <Pressable
       onLongPress={() => setModalVisible(true)}
-      activeOpacity={0.6}>
+      onTouchStart={onTouchStart} 
+      onTouchEnd={onTouchEnd}
+      hitSlop={{ top: 50, bottom: 100, right: 100, left: 100}}
+      android_ripple={{color:'#00f'}}
+    >
       <Modal
         animationType="slide"
         transparent={true}
@@ -115,7 +130,7 @@ function SubtaskItem({
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

@@ -10,7 +10,7 @@ import {
   TextInput,
 } from 'react-native';
 
-import SubtaskContext, {Subtask} from '../app/models/Schemas';
+import SubtaskContext, {Reminder, Subtask} from '../app/models/Schemas';
 import SubtaskListDefaultText from '../app/components/SubtaskListDefaultText';
 import AddSubtaskButton from '../app/components/AddSubtaskButton';
 import NewReminderHeaderBar from '../app/components/NewReminderHeaderBar';
@@ -69,6 +69,18 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         setResult(reminder.subtasks);
         // Alternatively if passing the ID as the argument to handleDeleteTask:
         // realm?.delete(realm?.objectForPrimaryKey('Task', id));
+      });
+    },
+    [realm],
+  );
+
+  const handleModifyReminderTitle = useCallback(
+    (
+      reminder: Reminder,
+      _title?: string,
+    ): void => {
+      realm.write(() => {
+        _title ? (reminder.title = _title) : {};
       });
     },
     [realm],
@@ -137,8 +149,8 @@ function ReminderSubtasksScreen({route, navigation}: any) {
           </View>
         </View>
       </Modal>
-      <NewReminderHeaderBar onSubmit={() => {}} />
-      <NewReminderTitleAndDateTimeBar />
+      {/* <NewReminderHeaderBar onSubmit={() => {}} /> */}
+      <NewReminderTitleAndDateTimeBar reminder={reminder} updateTitleCallback={handleModifyReminderTitle}/>
       <View style={styles.content}>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />
@@ -147,6 +159,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
             subtasks={subtasks}
             handleModifySubtask={handleModifySubtask}
             onDeleteSubtask={handleDeleteSubtask}
+            onSwipeLeft={handleDeleteSubtask}
           />
         )}
         <AddSubtaskButton onSubmit={() => setModalVisible(true)} />

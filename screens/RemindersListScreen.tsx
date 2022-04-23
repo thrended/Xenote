@@ -15,11 +15,25 @@ import ReminderListDefaultText from '../app/components/ReminderListDefaultText';
 import RemindersListContent from '../app/components/RemindersListContent';
 import AddReminderButton from '../app/components/AddReminderButton';
 import RealmContext, {Reminder, Subtask} from '../app/models/Schemas';
+
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
 const RemindersListScreen = ({navigation}: any) => {
   const realm = useRealm();
-  const result = useQuery(Reminder);
+  const [result, setResult] = useState(useQuery(Reminder));
+
+  useEffect(() => {
+    try {
+      result.addListener(() => {
+        // update state of tasks to the updated value
+        setResult(result);
+      });
+    } catch (error) {
+      console.error(
+        `Unable to update the result state, an exception was thrown within the change listener: ${error}`
+      );
+    }
+  });
 
   const reminders = useMemo(() => result, [result]);
 
@@ -83,8 +97,6 @@ const RemindersListScreen = ({navigation}: any) => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
@@ -107,6 +119,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
 
 export default RemindersListScreen;

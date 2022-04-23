@@ -23,12 +23,14 @@ interface ReminderContentProps {
     _value?: string,
   ) => void;
   onDeleteSubtask: (subtask: Subtask) => void;
+  onSwipeLeft: (subtask: Subtask) => void;
 }
 
 function ReminderContent({
   subtasks: subtasks,
   handleModifySubtask,
   onDeleteSubtask,
+  onSwipeLeft,
 }: ReminderContentProps) {
   return (
     <View style={styles.subtaskListContainer}>
@@ -40,6 +42,7 @@ function ReminderContent({
             subtask={item}
             handleModifySubtask={handleModifySubtask}
             onDelete={() => onDeleteSubtask(item)}
+            onSwipeLeft={() => onSwipeLeft(item)}
             // Don't spread the Realm item as such: {...item}
           />
         )}
