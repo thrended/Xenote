@@ -10,11 +10,11 @@ import {
 
 import colors from '../styles/colors';
 
-interface AddSubtaskModalProps {
+interface AddReminderButtonProps {
   onSubmit: (description: string) => void;
 }
 
-function AddSubtaskModal({onSubmit}: AddSubtaskModalProps) {
+function AddReminderButton({onSubmit}: AddReminderButtonProps) {
   const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
@@ -24,14 +24,6 @@ function AddSubtaskModal({onSubmit}: AddSubtaskModalProps) {
 
   return (
     <View style={styles.floatingButtonContainer}>
-      {/* <TextInput
-        value={description}
-        placeholder="Enter new task description"
-        onChangeText={setDescription}
-        autoCorrect={false}
-        autoCapitalize="none"
-        style={styles.textInput}
-      /> */}
       <Pressable onPress={handleSubmit} style={styles.floatingButton}>
         <Text style={styles.icon}>＋</Text>
       </Pressable>
@@ -42,9 +34,9 @@ function AddSubtaskModal({onSubmit}: AddSubtaskModalProps) {
 const styles = StyleSheet.create({
   floatingButtonContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: "center",
     height: 50,
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
     ...Platform.select({
@@ -72,12 +64,13 @@ const styles = StyleSheet.create({
   // },
   floatingButton: {
     // height: '100%',
-    width: 60,
-    height: 60,
+    width: 60,  
+    height: 60,   
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30,
-    backgroundColor: '#ee6e73',
+    borderRadius: 30,            
+    backgroundColor: '#ee6e73',                                    
+
   },
   icon: {
     color: colors.white,
@@ -87,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddSubtaskModal;
+export default AddReminderButton;

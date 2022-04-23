@@ -1,13 +1,12 @@
 import React from 'react';
 import {View, Text, Pressable, StyleSheet} from 'react-native';
-
 import colors from '../styles/colors';
 
-function SubtaskListDefaultText() {
+function ReminderListDefaultText() {
   return (
     <View style={styles.content}>
       <Text style={styles.paragraph}>
-        Use the "+" button to add subtasks to this reminder.
+        Use the "+" button to add a reminder!
       </Text>
     </View>
   );
@@ -32,4 +31,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SubtaskListDefaultText;
+export default ReminderListDefaultText;

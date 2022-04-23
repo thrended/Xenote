@@ -25,7 +25,7 @@ function NewReminderHeaderBar({onSubmit}: NewReminderHeaderBarProps) {
   return (
     <View style={styles.titlebar}>
         <View style={styles.titleTextContainer}>
-            <Text style={styles.titleText}>New Reminder</Text>
+            <Text style={styles.titleText}>Edit Reminder</Text>
         </View>
 
         <Pressable style={styles.finishedButton}>

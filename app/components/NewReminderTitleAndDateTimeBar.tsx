@@ -8,21 +8,32 @@ import {
   StyleSheet,
 } from 'react-native';
 
+import {Reminder} from '../models/Schemas';
 import colors from '../styles/colors';
 
 interface NewReminderTitleAndDateTimeBarProps {
-  
+  reminder: Reminder
+  updateTitleCallback: (
+    reminder: Reminder,
+    _title?: string,
+  ) => void;
 }
 
-function NewReminderTitleAndDateTimeBar({}: NewReminderTitleAndDateTimeBarProps) {
-  const [titleInput, setTitleInput] = useState('');
+function NewReminderTitleAndDateTimeBar({reminder: reminder, updateTitleCallback}: NewReminderTitleAndDateTimeBarProps) {
+
+  const [titleInput, setTitleInput] = useState(reminder.title);
+
+  const updateTitle = (newTitle: string) => {
+    setTitleInput(newTitle);
+    updateTitleCallback(reminder, newTitle)
+  };
 
   return (
     <View style={styles.titlebar}>
       <View style={styles.titleTextContainer}>
         <TextInput
           value={titleInput}
-          onChangeText={setTitleInput}
+          onChangeText={updateTitle}
           placeholder="Reminder Title"
           autoCorrect={false}
           autoCapitalize="none"
@@ -41,7 +52,6 @@ const styles = StyleSheet.create({
   titlebar: {
     width: "100%",
     height: 50,
-    top: 50,
     alignItems: "center",
     justifyContent: "center",
     ...Platform.select({

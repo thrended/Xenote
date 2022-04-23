@@ -4,7 +4,7 @@ const windowWidth = Dimensions.get('window').width;
 export function useSwipe(onSwipeLeft?: any, onSwipeRight?: any, rangeOffset = 8) {
 
     let firstTouch = 0
-    
+
     // set user touch start position
     function onTouchStart(e: any) {
         firstTouch = e.nativeEvent.pageX
@@ -30,4 +30,4 @@ export function useSwipe(onSwipeLeft?: any, onSwipeRight?: any, rangeOffset = 8)
     }
 
     return {onTouchStart, onTouchEnd};
-}
+} 

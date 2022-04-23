@@ -14,31 +14,24 @@ import {Realm} from '@realm/react';
 import {Subtask} from '../models/Schemas';
 import SubtaskItem from './SubtaskItem';
 
-interface SubtaskListProps {
+interface ReminderContentProps {
   subtasks: Realm.Results<Subtask> | [];
   handleModifySubtask: (
     subtask: Subtask,
     _title?: string,
     _feature?: string,
     _value?: string,
-    _isComplete?: boolean,
-    _scheduledDatetime?: Date,
   ) => void;
   onDeleteSubtask: (subtask: Subtask) => void;
   onSwipeLeft: (subtask: Subtask) => void;
-  onSwipeRight: (
-    subtask: Subtask,
-    _isComplete?: boolean,
-  ) => void;
 }
 
 function ReminderContent({
   subtasks: subtasks,
   handleModifySubtask,
-  onDeleteSubtask, 
+  onDeleteSubtask,
   onSwipeLeft,
-  onSwipeRight,
-}: SubtaskListProps) {
+}: ReminderContentProps) {
   return (
     <View style={styles.subtaskListContainer}>
       <FlatList
@@ -50,7 +43,6 @@ function ReminderContent({
             handleModifySubtask={handleModifySubtask}
             onDelete={() => onDeleteSubtask(item)}
             onSwipeLeft={() => onSwipeLeft(item)}
-            onSwipeRight={() => onSwipeRight(item)}
             // Don't spread the Realm item as such: {...item}
           />
         )}

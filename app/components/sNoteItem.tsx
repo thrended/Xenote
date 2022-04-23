@@ -12,9 +12,9 @@ import {
     View,
 } from 'react-native';;
 import { globalStyles } from '../styles/global'
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+//import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSwipe } from '../hooks/useSwipe';
-import SwipeGesture from '../hooks/SwipeGesture';
+//import SwipeGesture from '../hooks/SwipeGesture';
 
 export default function NoteItem({ item, handleSimpSwipe }: any) {
 
