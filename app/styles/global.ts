@@ -59,6 +59,9 @@ export const globalStyles = StyleSheet.create({
       padding: 20,
       marginVertical: 8,
     },
+    list: {
+        //flex: 1,
+    },
     modalClose: {
         marginTop: 20,
         marginBottom: 0,

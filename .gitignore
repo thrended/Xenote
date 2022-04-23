@@ -58,3 +58,8 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# Gradle
+/android/build.gradle
+/android/gradle.properties
+/android/gradle/wrapper
