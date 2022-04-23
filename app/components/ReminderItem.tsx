@@ -200,7 +200,8 @@ const shouldNotRerender = (
   prevProps: ReminderItemProps,
   nextProps: ReminderItemProps,
 ) =>
-  prevProps.reminder.title === nextProps.reminder.title &&
-  prevProps.reminder.subtasks === nextProps.reminder.subtasks;
+  prevProps.reminder.title === nextProps.reminder.title;
+  // prevProps.reminder.title === nextProps.reminder.title &&
+  // prevProps.reminder.subtasks === nextProps.reminder.subtasks;
 
 export default memo(ReminderItem, shouldNotRerender);

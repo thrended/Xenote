@@ -23,10 +23,10 @@ const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
 function ReminderSubtasksScreen({route, navigation}: any) {
   const {reminder} = route.params;
-  console.log(reminder.subtasks);
+  // console.log(reminder.subtasks);
   const realm = useRealm();
   // const result = useQuery(Subtask);
-  const result = reminder.subtasks;
+  const [result, setResult] = useState(reminder.subtasks);
 
   const subtasks = useMemo(() => result, [result]);
 
@@ -66,7 +66,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     (task: Subtask): void => {
       realm.write(() => {
         realm.delete(task);
-
+        setResult(reminder.subtasks);
         // Alternatively if passing the ID as the argument to handleDeleteTask:
         // realm?.delete(realm?.objectForPrimaryKey('Task', id));
       });
