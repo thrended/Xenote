@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import RemindersListScreen from './screens/RemindersListScreen';
 import ReminderSubtasksScreen from './screens/ReminderSubtasksScreen';
 import RealmContext from './app/models/Schemas';
-import { LogBox } from 'react-native';
+import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -26,7 +26,10 @@ const App = () => {
             component={RemindersListScreen}
             options={{title: 'Reminders'}}
           />
-          <Stack.Screen name="ReminderSubtasksScreen" component={ReminderSubtasksScreen} />
+          <Stack.Screen
+            name="ReminderSubtasksScreen"
+            component={ReminderSubtasksScreen}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </RealmProvider>

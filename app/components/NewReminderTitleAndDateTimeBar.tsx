@@ -41,9 +41,6 @@ function NewReminderTitleAndDateTimeBar({reminder: reminder, updateTitleCallback
         />
       </View>
 
-      <Pressable style={styles.setScheduledDateTimeButton}>
-          <Text style={styles.icon}>{'📅'}</Text>
-      </Pressable>
     </View>
   );
 }
