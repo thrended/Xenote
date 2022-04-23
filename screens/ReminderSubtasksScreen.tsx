@@ -17,6 +17,7 @@ import NewReminderHeaderBar from '../app/components/NewReminderHeaderBar';
 import ReminderContent from '../app/components/ReminderContent';
 import colors from '../app/styles/colors';
 import {Results} from 'realm';
+import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
 
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
@@ -137,6 +138,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         </View>
       </Modal>
       <NewReminderHeaderBar onSubmit={() => {}} />
+      <NewReminderTitleAndDateTimeBar />
       <View style={styles.content}>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />

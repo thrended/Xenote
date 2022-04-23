@@ -1,5 +1,6 @@
 import {Realm, createRealmContext} from '@realm/react';
 import SubtaskListDefaultText from '../components/SubtaskListDefaultText';
+
 export class Subtask extends Realm.Object {
   _id!: Realm.BSON.ObjectId;
   title!: string;
@@ -15,7 +16,7 @@ export class Subtask extends Realm.Object {
       feature: feature,
       value: value,
       isComplete: false,
-      scheduledDatetime: new Date(),
+      scheduledDatetime: Date(),
     };
   }
 
