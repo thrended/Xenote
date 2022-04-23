@@ -17,7 +17,7 @@ import colors from '../app/styles/colors';
 import ReminderListDefaultText from '../app/components/ReminderListDefaultText';
 import RemindersListContent from '../app/components/RemindersListContent';
 import AddReminderButton from '../app/components/AddReminderButton';
-import RealmContext, {Reminder, Subtask} from '../app/models/Schemas';
+import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import SimpleNote from '../app/components/SimpleNote';
@@ -31,24 +31,26 @@ import {globalStyles } from '../app/styles/global';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
-  const RemindersListScreen = ({navigation}: any) => {
+const RemindersListScreen = ({navigation}: any) => {
 
+  const realm = useRealm();
   const [modalOpen, setModalOpen] = useState(false);
   const [inputComplete, setInputComplete] = useState(false);
   const [inputDate, setInputDate] = useState(new Date());
   const [window, setWindow] = useState(true);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  const [notes, setNotes] = useState([
-    { title: 'Note 1', author: 'jack frost', body: 'semper ad meliora', date: new Date().toLocaleString(), prio: 0, key: '1' },
-    { title: 'TOP SECRET', author: 'CIA', body: 'top secret files', date: new Date().toLocaleString(), prio: 7, key: '2' },
-
-  ]);
+  const [notesResult, setNotesResult] = useState(useQuery(Note));
+  const notes = useMemo(() => notesResult, [notesResult]);
+  // const  = useState([
+  //   { title: 'Note 1', author: 'jack frost', body: 'semper ad meliora', date: new Date().toLocaleString(), prio: 0, key: '1' },
+  //   { title: 'TOP SECRET', author: 'CIA', body: 'top secret files', date: new Date().toLocaleString(), prio: 7, key: '2' },
+  // ]);
 
   const handleSimpSwipe = (key: string) => {
-    setNotes((prevNotes) => {
-      return prevNotes.filter(note => note.key != key);
-    })
+    // setNotesResult((prevNotes) => {
+    //   return prevNotes.filter(note => note.key != key);
+    // })
   }
   const showDatePickerModal = () => {
     setDatePickerVisibility(true);
@@ -64,16 +66,18 @@ const {useRealm, useQuery, RealmProvider} = RealmContext;
     hideDatePickerModal();
   }
 
-  const addNote = (note: any) => {
-    note.key = Math.random().toString();
-    setNotes((currentNotes) => {
-      return [note, ...currentNotes];
-    });
-    setModalOpen(false);
-  }
+  const addNote = useCallback(
+    (note: any): void => {
+      realm.write(() => {
+        realm.create('Note', Note.generate(note.title, note.author, note.body, note.date, note.prio));
+      });
+      setModalOpen(false);
+    },
+    [realm],
+  );
   
-  const realm = useRealm();
   const [result, setResult] = useState(useQuery(Reminder));
+  const reminders = useMemo(() => result, [result]);
 
   useEffect(() => {
     try {
@@ -81,14 +85,16 @@ const {useRealm, useQuery, RealmProvider} = RealmContext;
         // update state of tasks to the updated value
         setResult(result);
       });
+      notesResult.addListener(() => {
+        // update state of tasks to the updated value
+        setNotesResult(notesResult);
+      });
     } catch (error) {
       console.error(
         `Unable to update the result state, an exception was thrown within the change listener: ${error}`
       );
     }
   });
-
-  const reminders = useMemo(() => result, [result]);
 
   const handleAddReminder = useCallback(
     (_title: string): void => {

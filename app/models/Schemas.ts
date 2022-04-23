@@ -80,14 +80,14 @@ export class Note extends Realm.Object {
   dateModified!: Date;
   size!: number;
 
-  static generate(title: string) {
+  static generate(title: string, author: string, body: string, date: Date, prio: number) {
     return {
       _id: new Realm.BSON.ObjectId(),
       title: title,
-      body: "",
-      priority: 0,
+      body: body,
+      priority: prio,
       isFlagged: false,
-      author: "",
+      author: author,
       category: "",
       dateCreated: new Date(),
       dateModified: new Date(),

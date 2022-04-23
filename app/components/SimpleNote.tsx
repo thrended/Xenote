@@ -24,7 +24,19 @@ import {
   } from 'react-native';
   import { globalStyles } from "../styles/global";
 
-  export default function SimpleNote( { addNote }: any ) {
+interface SimpleNoteProps {
+  addNote: (
+    values: {
+      title: string;
+      author: string;
+      body: string;
+      date: string;
+      prio: number;
+    }) => void,
+    // add more props here, and also add them to the function definition.
+} 
+
+function SimpleNote({addNote}: SimpleNoteProps ) {
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -196,3 +208,4 @@ import {
     }
   });
   
+  export default SimpleNote;
