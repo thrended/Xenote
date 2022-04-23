@@ -1,5 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
+  Alert,
+  FlatList,
+  Keyboard,
   Modal,
   Platform,
   Pressable,
@@ -8,6 +11,7 @@ import {
   View,
   StyleSheet,
   TextInput,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import SubtaskContext, {Reminder, Subtask} from '../app/models/Schemas';
@@ -18,6 +22,8 @@ import ReminderContent from '../app/components/ReminderContent';
 import colors from '../app/styles/colors';
 import {Results} from 'realm';
 import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
+
+
 
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
@@ -34,6 +40,8 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   const [inputTitle, setInputTitle] = useState('');
   const [inputFeature, setInputFeature] = useState('');
   const [inputValue, setInputValue] = useState('');
+
+ 
 
   const handleAddSubtask = useCallback(
     (_title: string, _feature: string, _value: string): void => {
@@ -149,6 +157,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
           </View>
         </View>
       </Modal>
+      
       {/* <NewReminderHeaderBar onSubmit={() => {}} /> */}
       <NewReminderTitleAndDateTimeBar reminder={reminder} updateTitleCallback={handleModifyReminderTitle}/>
       <View style={styles.content}>
@@ -164,6 +173,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         )}
         <AddSubtaskButton onSubmit={() => setModalVisible(true)} />
       </View>
+    
     </SafeAreaView>
   );
 }

@@ -11,6 +11,7 @@ import {
   _Text,
 } from 'react-native';
 
+import { useSwipe } from '../hooks/useSwipe';
 import {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
 
@@ -22,6 +23,7 @@ interface ReminderItemProps {
     _subtasks?: Subtask[]
   ) => void;
   onDelete: () => void;
+  onSwipeLeft: () => void
   handleNavigation: (reminder: Reminder) => void;
 }
 
@@ -29,13 +31,28 @@ function ReminderItem({
   reminder: reminder,
   handleModifyReminder,
   onDelete,
+  onSwipeLeft,
   handleNavigation,
 }: ReminderItemProps) {
 
+  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
+
+  function onSwipeRt() {
+    /* flag or complete function goes here */
+
+    // setInputComplete(!inputComplete);
+    // onSwipeRight()
+    // console.log('right Swipe performed');
+}
+
   return (
-    <TouchableOpacity
+    <Pressable
       onLongPress={() => handleNavigation(reminder)}
-      activeOpacity={0.6}>
+      onTouchStart={onTouchStart} 
+      onTouchEnd={onTouchEnd}
+      hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
+      android_ripple={{color:'#00f'}}
+    >
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
@@ -51,7 +68,7 @@ function ReminderItem({
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

@@ -10,6 +10,7 @@ import {
   StyleSheet,
   _Text,
 } from 'react-native';
+
 import { useSwipe } from '../hooks/useSwipe';
 import {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
@@ -54,7 +55,7 @@ function SubtaskItem({
       onLongPress={() => setModalVisible(true)}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
-      hitSlop={{ top: 50, bottom: 100, right: 100, left: 100}}
+      hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
       android_ripple={{color:'#00f'}}
     >
       <Modal
