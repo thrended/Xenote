@@ -10,11 +10,11 @@ import {
 
 import colors from '../styles/colors';
 
-interface AddSubtaskModalProps {
+interface SubtaskModalProps {
   onSubmit: (description: string) => void;
 }
 
-function AddSubtaskModal({onSubmit}: AddSubtaskModalProps) {
+function SubtaskModal({onSubmit}: SubtaskModalProps) {
   const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
@@ -87,4 +87,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddSubtaskModal;
+export default SubtaskModal;
