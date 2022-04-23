@@ -58,6 +58,11 @@ function ReminderItem({
           <View style={styles.titleInputContainer}>
             <Text style={styles.textTitle}>{reminder.title}</Text>
           </View>
+          <View style={styles.subtaskListContainer}>
+            {reminder.subtasks.map((subtask) => 
+              <Text style={styles.textStyle}>{subtask.title}</Text>
+            )}
+          </View>
         </View>
         <Pressable onPress={onDelete} style={styles.deleteButton}>
           <Text style={styles.deleteText}>Delete</Text>
@@ -112,6 +117,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
+  subtaskListContainer: {
+    flex: 1,
+    flexDirection: "column",
+    borderColor: "black",
+    borderRadius: 2,
+  },
   textInput: {
     flex: 1,
     // textAlign: "center",
@@ -121,9 +132,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: 'black',
     textAlign: 'center',
+    fontSize: 16
   },
   featureInputContainer: {
     flex: 1,

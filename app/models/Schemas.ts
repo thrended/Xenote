@@ -66,7 +66,53 @@ export class Reminder extends Realm.Object {
   };
 }
 
+// not implemented yet
+export class Note extends Realm.Object {
+  _id!: Realm.BSON.ObjectId;
+  title!: string;
+  body!: string;
+  priority!: number;
+  isFlagged!: boolean;
+  // metadata
+  author!: string;
+  category!: string;
+  dateCreated!: Date;
+  dateModified!: Date;
+  size!: number;
+
+  static generate(title: string) {
+    return {
+      _id: new Realm.BSON.ObjectId(),
+      title: title,
+      body: "",
+      priority: 0,
+      isFlagged: false,
+      author: "",
+      category: "",
+      dateCreated: new Date(),
+      dateModified: new Date(),
+      size: 0,
+    };
+  }
+
+  static schema = {
+    name: "Note",
+    primaryKey: "_id",
+    properties: {
+      _id: "objectId",
+      title: "string",
+      body: "string",
+      priority: { type: "int", default: 5 },
+      isFlagged: { type: "bool", default: false },
+      dateCreated: { type: "date", default: new Date() },
+      dateModified: "date",
+      size: "int",
+    },
+  };
+
+}
+
 export default createRealmContext({
-  schema: [Reminder, Subtask],
+  schema: [Reminder, Subtask, Note],
   deleteRealmIfMigrationNeeded: true,
 });
