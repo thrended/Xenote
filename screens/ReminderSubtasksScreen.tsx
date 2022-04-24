@@ -1,8 +1,7 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-native/no-inline-styles */
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
-  Alert,
-  FlatList,
-  Keyboard,
   Modal,
   Platform,
   Pressable,
@@ -11,8 +10,9 @@ import {
   View,
   StyleSheet,
   TextInput,
-  TouchableWithoutFeedback,
 } from 'react-native';
+
+import {Button, TouchableOpacity, Image} from 'react-native';
 
 import SubtaskContext, {Reminder, Subtask} from '../app/models/Schemas';
 import SubtaskListDefaultText from '../app/components/SubtaskListDefaultText';
@@ -22,8 +22,7 @@ import ReminderContent from '../app/components/ReminderContent';
 import colors from '../app/styles/colors';
 import {Results} from 'realm';
 import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
-
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
@@ -40,14 +39,15 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   const [inputTitle, setInputTitle] = useState('');
   const [inputFeature, setInputFeature] = useState('');
   const [inputValue, setInputValue] = useState('');
-
- 
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
 
   const handleAddSubtask = useCallback(
-    (_title: string, _feature: string, _value: string): void => {
+    (_title: string, _feature: string, _value: string, _scheduledDatetime: Date): void => {
       realm.write(() => {
         // realm.create('Subtask', Subtask.generate(_title, _feature, _value));
-        reminder.subtasks.push(Subtask.generate(_title, _feature, _value));
+        reminder.subtasks.push(Subtask.generate(_title, _feature, _value,_scheduledDatetime));
       });
     },
     [realm],
@@ -59,11 +59,13 @@ function ReminderSubtasksScreen({route, navigation}: any) {
       _title?: string,
       _feature?: string,
       _value?: string,
+      _scheduledDatetime?: Date,
     ): void => {
       realm.write(() => {
         _title ? (subtask.title = _title) : {};
         _feature ? (subtask.feature = _feature) : {};
         _value ? (subtask.value = _value) : {};
+        _scheduledDatetime? (subtask.scheduledDatetime = _scheduledDatetime) : {};
         // setSubtasks(result);
       });
     },
@@ -83,10 +85,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   );
 
   const handleModifyReminderTitle = useCallback(
-    (
-      reminder: Reminder,
-      _title?: string,
-    ): void => {
+    (reminder: Reminder, _title?: string): void => {
       realm.write(() => {
         _title ? (reminder.title = _title) : {};
       });
@@ -98,6 +97,28 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     setInputTitle('');
     setInputFeature('');
     setInputValue('');
+    setDate(new Date());
+  };
+
+ 
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate);
+  };
+
+  const showMode = currentMode => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
   };
 
   return (
@@ -145,11 +166,44 @@ function ReminderSubtasksScreen({route, navigation}: any) {
               />
             </View>
 
+            <View style={{flex: 1, alignItems: 'center'}}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}>
+                <Text>Select Time and Date: </Text>
+                <TouchableOpacity onPress={showDatepicker}>
+                  <Image
+                    style={styles.container}
+                    source={require('C:\Users\Zayan\Desktop\group5-reminders1\images\calendar.png')}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={showTimepicker}>
+                  <Image
+                    style={styles.container}
+                    source={require('C:\Users\Zayan\Desktop\group5-reminders1\images\clock.png')}
+                  />
+                </TouchableOpacity>
+              </View>
+              {show && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={date}
+                  mode={mode}
+                  is24Hour={false}
+                  onChange={onChange}
+                />
+              )}
+            </View>
+            <Text>selected: {date.toLocaleString()}</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 setModalVisible(!modalVisible);
-                handleAddSubtask(inputTitle, inputFeature, inputValue);
+                handleAddSubtask(inputTitle, inputFeature, inputValue,date );
                 initializeSubtaskInput();
               }}>
               <Text style={styles.textStyle}>Done ✓</Text>
@@ -157,9 +211,11 @@ function ReminderSubtasksScreen({route, navigation}: any) {
           </View>
         </View>
       </Modal>
-      
       {/* <NewReminderHeaderBar onSubmit={() => {}} /> */}
-      <NewReminderTitleAndDateTimeBar reminder={reminder} updateTitleCallback={handleModifyReminderTitle}/>
+      <NewReminderTitleAndDateTimeBar
+        reminder={reminder}
+        updateTitleCallback={handleModifyReminderTitle}
+      />
       <View style={styles.content}>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />
@@ -173,12 +229,16 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         )}
         <AddSubtaskButton onSubmit={() => setModalVisible(true)} />
       </View>
-    
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    resizeMode: 'center',
+    height: 30,
+    width: 50,
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
