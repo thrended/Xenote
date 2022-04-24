@@ -107,7 +107,7 @@ const RemindersListScreen = ({route, navigation}: any) => {
 
   const navigateToReminderEditPage = useCallback(
     (reminder: Reminder): void => {
-      navigation.navigate("ReminderSubtasksScreen", {reminder: reminder} );
+      navigation.navigate("ReminderSubtasksScreen", {reminderId: reminder._id.toHexString()} );
     },
     [realm],
   );
@@ -212,7 +212,7 @@ const RemindersListScreen = ({route, navigation}: any) => {
               <NoteItem item={item} handleSimpSwipe={handleSimpSwipe}/>
             )}
             // ItemSeparatorComponent={() => <View style={styles.separator} />}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={({_id}) => _id.toHexString()}
             extraData={notes}
           /> 
         </View>

@@ -24,6 +24,7 @@ export class Subtask extends Realm.Object {
       scheduledDatetime: _scheduledDatetime,
     };
   }
+  
 
   // To use a class as a Realm object type, define the object schema on the static property "schema".
   static schema = {

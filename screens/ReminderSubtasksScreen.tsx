@@ -27,10 +27,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
 function ReminderSubtasksScreen({route, navigation}: any) {
-  const {reminder} = route.params;
-  // console.log(reminder.subtasks);
+  const {reminderId} = route.params;
+  
   const realm = useRealm();
-  // const result = useQuery(Subtask);
+  const reminder : (Reminder & Realm.Object) | undefined = realm?.objectForPrimaryKey("Reminder", new Realm.BSON.ObjectId(reminderId))!;
   const [result, setResult] = useState(reminder.subtasks);
 
   const subtasks = useMemo(() => result, [result]);
@@ -47,7 +47,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     (_title: string, _feature: string, _value: string, _scheduledDatetime: Date): void => {
       realm.write(() => {
         // realm.create('Subtask', Subtask.generate(_title, _feature, _value));
-        reminder.subtasks.push(Subtask.generate(_title, _feature, _value,_scheduledDatetime));
+        reminder.subtasks.push(Subtask.generate(_title, _feature, _value, _scheduledDatetime));
       });
     },
     [realm],
@@ -99,8 +99,6 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     setInputValue('');
     setDate(new Date());
   };
-
- 
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
