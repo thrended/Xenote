@@ -31,7 +31,7 @@ import {globalStyles } from '../app/styles/global';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
-const RemindersListScreen = ({navigation}: any) => {
+const RemindersListScreen = ({route, navigation}: any) => {
 
   const realm = useRealm();
   const [modalOpen, setModalOpen] = useState(false);
@@ -144,33 +144,21 @@ const RemindersListScreen = ({navigation}: any) => {
         style={[styles.button, styles.buttonClose, {backgroundColor: (window ? '#ee6e73' : '#22E734')}]}
         onPress={() => {
           setWindow(false);
+          navigation.setOptions({ title: 'Notes' })
         }}
       >
-          <Text style={styles.textStyle}>Notes</Text>
+        <Text style={styles.textStyle}>Notes</Text>
       </Pressable>
       <Pressable
         style={[styles.button, styles.buttonClose, {backgroundColor: (window ? '#22E734' : '#ee6e73')}]}
         onPress={() => {
           setWindow(true);
+          navigation.setOptions({ title: 'Reminders' })
         }}
       >
-          <Text style={styles.textStyle}>Reminders</Text>
+        <Text style={styles.textStyle}>Reminders</Text>
       </Pressable>
       </View>
-      
-      {/* <View style={styles.content}>
-        {reminders.length === 0 ? (
-          <ReminderListDefaultText />
-        ) : (
-          <RemindersListContent
-            reminders={reminders}
-            handleModifyReminder={handleModifyReminder}
-            onDeleteReminder={handleDeleteReminder}
-            handleNavigation={navigateToReminderEditPage}
-          />
-        )}
-        <AddReminderButton onSubmit={() => handleAddReminder("New Reminder")} />
-      </View> */}
       { window && (
       <View style={styles.content}>
         {reminders.length === 0 ? (
@@ -217,25 +205,23 @@ const RemindersListScreen = ({navigation}: any) => {
         <View style={[styles.centeredView, {marginTop: 0}]}>
           <Text>Create Simple Note</Text>
         </View>
-          <View style={globalStyles.list}>
+        <View style={globalStyles.list}>
           <FlatList
             data={notes}
             renderItem={({ item }) => ( 
               <NoteItem item={item} handleSimpSwipe={handleSimpSwipe}/>
-              // <Text>{item.title}</Text>
             )}
             // ItemSeparatorComponent={() => <View style={styles.separator} />}
             keyExtractor={(item, index) => index.toString()}
             extraData={notes}
           /> 
-          </View>
-        <MaterialIcons
-          name='add'
-          size={24}
-          style={globalStyles.modalToggle}
-          onPress={() => setModalOpen(!modalOpen)}
-        />
-        
+        </View>
+          <MaterialIcons
+            name='add'
+            size={24}
+            style={globalStyles.modalToggle}
+            onPress={() => setModalOpen(!modalOpen)}
+          />
         </View>
       )}
     </SafeAreaView>    

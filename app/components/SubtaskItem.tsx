@@ -1,5 +1,6 @@
 import React, {memo, useDebugValue, useState} from 'react';
 import {
+  Image,
   Modal,
   View,
   Text,
@@ -14,6 +15,7 @@ import {
 import { useSwipe } from '../hooks/useSwipe';
 import {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface SubtaskItemProps {
   subtask: Subtask;
@@ -22,6 +24,7 @@ interface SubtaskItemProps {
     _title?: string,
     _feature?: string,
     _value?: string,
+    _scheduledDatetime?: Date,
   ) => void;
   onDelete: () => void;
   onSwipeLeft: () => void
@@ -37,9 +40,14 @@ function SubtaskItem({
   const [inputTitle, setInputTitle] = useState(subtask.title);
   const [inputFeature, setInputFeature] = useState(subtask.feature);
   const [inputValue, setInputValue] = useState(subtask.value);
+  const [date, setDate] = useState(subtask.scheduledDatetime);
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+
   // const initializeSubtaskInput = () => {
   //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
   // }
+
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
 
   function onSwipeRt() {
@@ -48,7 +56,26 @@ function SubtaskItem({
     // setInputComplete(!inputComplete);
     // onSwipeRight()
     // console.log('right Swipe performed');
-}
+  }
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate);
+  };
+
+  const showMode = currentMode => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
 
   return (
     <Pressable
@@ -100,6 +127,39 @@ function SubtaskItem({
                 style={styles.textInput}
               />
             </View>
+            <View style={{flex: 1, alignItems: 'center'}}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}>
+                <Text>Select Time and Date: </Text>
+                <TouchableOpacity onPress={showDatepicker}>
+                  <Image
+                    style={styles.container}
+                    source={require('../../images/calendar.png')}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={showTimepicker}>
+                  <Image
+                    style={styles.container}
+                    source={require('../../images/clock.png')}
+                  />
+                </TouchableOpacity>
+              </View>
+              {show && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={date}
+                  mode={mode}
+                  is24Hour={false}
+                  onChange={onChange}
+                />
+              )}
+            </View>
+            <Text>selected: {date.toLocaleString()}</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -149,6 +209,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
+  },
+  container: {
+    resizeMode: 'center',
+    height: 30,
+    width: 50,
   },
   task: {
     marginVertical: 8,

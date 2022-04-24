@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
 import {
+  Image,
+  Modal,
   View,
   Text,
   TextInput,
   Pressable,
   Platform,
   StyleSheet,
+  TouchableOpacity
 } from 'react-native';
 
 import colors from '../styles/colors';
@@ -23,19 +26,94 @@ function SubtaskModal({onSubmit}: SubtaskModalProps) {
   };
 
   return (
-    <View style={styles.floatingButtonContainer}>
-      {/* <TextInput
-        value={description}
-        placeholder="Enter new task description"
-        onChangeText={setDescription}
-        autoCorrect={false}
-        autoCapitalize="none"
-        style={styles.textInput}
-      /> */}
-      <Pressable onPress={handleSubmit} style={styles.floatingButton}>
-        <Text style={styles.icon}>＋</Text>
-      </Pressable>
-    </View>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => {
+        setModalVisible(!modalVisible);
+      }}>
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <View style={styles.modalRow}>
+            <Text style={styles.modalText}>Title: </Text>
+            <TextInput
+              value={inputTitle}
+              onChangeText={setInputTitle}
+              placeholder="Enter new task title"
+              autoCorrect={false}
+              autoCapitalize="none"
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.modalRow}>
+            <Text style={styles.modalText}>Feature: </Text>
+            <TextInput
+              value={inputFeature}
+              onChangeText={setInputFeature}
+              placeholder="Add a feature"
+              autoCorrect={false}
+              autoCapitalize="none"
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.modalRow}>
+            <Text style={styles.modalText}>Value: </Text>
+            <TextInput
+              value={inputValue}
+              onChangeText={setInputValue}
+              placeholder="Add a feature value"
+              autoCorrect={false}
+              autoCapitalize="none"
+              style={styles.textInput}
+            />
+          </View>
+
+          <View style={{flex: 1, alignItems: 'center'}}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+              }}>
+              <Text>Select Time and Date: </Text>
+              <TouchableOpacity onPress={showDatepicker}>
+                <Image
+                  style={styles.container}
+                  source={require('../images/calendar.png')}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={showTimepicker}>
+                <Image
+                  style={styles.container}
+                  source={require('../images/clock.png')}
+                />
+              </TouchableOpacity>
+            </View>
+            {show && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode={mode}
+                is24Hour={false}
+                onChange={onChange}
+              />
+            )}
+          </View>
+          <Text>selected: {date.toLocaleString()}</Text>
+          <Pressable
+            style={[styles.button, styles.buttonClose]}
+            onPress={() => {
+              setModalVisible(!modalVisible);
+              handleAddSubtask(inputTitle, inputFeature, inputValue,date );
+              initializeSubtaskInput();
+            }}>
+            <Text style={styles.textStyle}>Done ✓</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
