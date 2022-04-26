@@ -6,16 +6,14 @@ import colors from '../styles/colors';
 function SubtaskListDefaultText() {
   return (
     <View style={styles.content}>
-      <Text style={styles.paragraph}>
-        Use the "+" button to add subtasks to this reminder.
-      </Text>
+      <Text style={styles.paragraph}>Use the "+" button to add subtasks.</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   content: {
-    flex: 1,
+    flex: 0.8,
     marginHorizontal: 20,
     justifyContent: 'center',
   },
@@ -24,7 +22,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     fontSize: 24,
-    fontWeight: 'bold',
+
   },
   link: {
     color: colors.purple,

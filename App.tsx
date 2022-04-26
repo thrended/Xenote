@@ -9,6 +9,7 @@ import PushNotification, {Importance} from "react-native-push-notification";
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
+  'Each child in a list should have a unique "key" prop.',
 ]);
 
 const {RealmProvider} = RealmContext;

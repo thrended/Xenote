@@ -1,6 +1,5 @@
 import React, {memo, useDebugValue, useState} from 'react';
 import {
-  Alert,
   Modal,
   View,
   Text,
@@ -15,7 +14,6 @@ import {
 import { useSwipe } from '../hooks/useSwipe';
 import {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
-import PushNotification, {Importance} from "react-native-push-notification";
 
 interface ReminderItemProps {
   reminder: Reminder;
@@ -37,153 +35,24 @@ function ReminderItem({
   handleNavigation,
 }: ReminderItemProps) {
 
-  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 6);
-
-  const [notifsList, setNotifsList] = useState(['']);
-
-  const notifs = new Set();
+  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
 
   function onSwipeRt() {
-    /* notify function goes here */
-    scheduleNotification(reminder._id, reminder.scheduledDatetime);
+    /* flag or complete function goes here */
+
     // setInputComplete(!inputComplete);
     // onSwipeRight()
     // console.log('right Swipe performed');
-  }
-
-  const handleNotification = () => {
-    PushNotification.localNotification({
-      channelId: "Notif-test-1",
-      title: "Test notification success",
-      message: "You clicked on a pressable reminder",
-    });
-  }
-  
-  const handlePriority = (date?: any) => {
-    let startTime = Date.now();
-    let endTime = date;
-    let seconds = (endTime - startTime) / 1000;
-    let minutes = Math.floor(seconds / 60);
-    let hours = Math.floor(minutes / 60);
-    let days = Math.floor(hours / 24);
-    let weeks = Math.floor(days / 7);
-    let months = Math.floor(weeks / 4.25); 
-    if (months)
-    {
-      return "min";
-    }
-    if (weeks)
-    {
-      return "low";
-    }
-    if (days)
-    {
-      return "default";
-    }
-    if (hours)
-    {
-      return "high";
-    }
-    return "max";
-  }
-
-  const handleRepeatTime = (prio: any) => {
-    switch (prio)
-    {
-      case "min":
-        return 1;
-      case "low":
-        return 3;
-      case "default":
-        return 12;
-      case "high":
-        return 30;
-      case "max":
-        return 1;
-      default:
-        return 10;
-    }
-  }
-
-  const handleRepeatType = (prio: any) => {
-    switch (prio)
-    {
-      case "min":
-        return "week";
-      case "low":
-        return "day";
-      case "default":
-        return "hour";
-      case "high":
-        return "minute";
-      case "max":
-        return "minute";
-      default:
-        return "time";
-    }
-  }
-
-  const newNotifsList = (id: any) => { 
-    setNotifsList([...notifsList, id]);
-  }
-
-  const scheduleNotification = (id: any, date?: any) => {
-    let i = notifs.has(id);
-    console.log("id ", id, "has index i = ", i)  // DEBUG line
-    if(i)   // Notification already exists; turn off
-    {             // Turn off DOESN'T WORK
-      notifs.delete(id);
-      //setNotifsList(notifsList.splice(i, 1));
-      toggleCancelNotification(id);
-      console.log("Notification turned off. New notification list: ", notifs);
-      return;    
-    }
-    //handleNotification();
-    console.log("Reminder id: ",  id);
-    let prio = handlePriority(date);
-    PushNotification.localNotificationSchedule({
-      priority: handlePriority(date),
-      id: id,
-      date: new Date(Date.now() + 1 * 1000),
-      allowWhileIdle: true,
-      repeatType: handleRepeatType(prio),
-      repeatTime: handleRepeatTime(prio), 
-      channelId: "Notif-test-1",
-      title: reminder.title + " " + reminder.scheduledDatetime.toLocaleString(),
-      message: prio.toUpperCase() + " priority scheduled notification \n" 
-      + "This reminder will reappear every " 
-      + handleRepeatTime(prio) + " " + handleRepeatType(prio) + "s",
-      vibrate: (prio == "high" || prio == "max" ? true : false),
-    });
-    setNotifsList([...notifsList, id]);
-    notifs.add(id);
-    console.log(reminder._id);
-    console.log(notifs, "\n");
-    PushNotification.getScheduledLocalNotifications(console.log);
-
-  }
-
-  const toggleCancelNotification = (id?: any) => {
-    PushNotification.cancelLocalNotification(id);
-  }
+}
 
   return (
     <Pressable
-      //onPress={() => scheduleNotification() }   // Testing purposes
       onLongPress={() => handleNavigation(reminder)}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
       hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
       android_ripple={{color:'#00f'}}
     >
-      <View style={styles.dateTimeContainer}>
-        <View>
-          <Text>{reminder.scheduledDatetime.toLocaleTimeString('en-US')}</Text>
-        </View>
-        <View>
-          <Text>{reminder.scheduledDatetime.toLocaleDateString('en-US')}</Text>
-        </View>        
-      </View>
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
@@ -195,10 +64,7 @@ function ReminderItem({
             )}
           </View>
         </View>
-        <Pressable
-         onPress={onDelete} 
-         style={styles.deleteButton}
-        >
+        <Pressable onPress={onDelete} style={styles.deleteButton}>
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable>
       </View>
@@ -220,11 +86,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
-  },
-  dateTimeContainer: {
-    marginTop: 8,
-    flexDirection : "row",
-    justifyContent : "space-between"
   },
   task: {
     marginVertical: 8,

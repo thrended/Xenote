@@ -1,6 +1,5 @@
 import React, {memo, useDebugValue, useState} from 'react';
 import {
-  Image,
   Modal,
   View,
   Text,
@@ -11,11 +10,10 @@ import {
   StyleSheet,
   _Text,
 } from 'react-native';
-import RoundCheckbox from 'rn-round-checkbox';
+
 import { useSwipe } from '../hooks/useSwipe';
 import {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface SubtaskItemProps {
   subtask: Subtask;
@@ -24,8 +22,6 @@ interface SubtaskItemProps {
     _title?: string,
     _feature?: string,
     _value?: string,
-    _scheduledDatetime?: Date,
-    _isComplete?: boolean,
   ) => void;
   onDelete: () => void;
   onSwipeLeft: () => void
@@ -41,15 +37,9 @@ function SubtaskItem({
   const [inputTitle, setInputTitle] = useState(subtask.title);
   const [inputFeature, setInputFeature] = useState(subtask.feature);
   const [inputValue, setInputValue] = useState(subtask.value);
-  const [date, setDate] = useState(subtask.scheduledDatetime);
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
-  const [isChecked, setIsChecked] = useState(subtask.isComplete);
-
   // const initializeSubtaskInput = () => {
   //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
   // }
-
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
 
   function onSwipeRt() {
@@ -58,27 +48,7 @@ function SubtaskItem({
     // setInputComplete(!inputComplete);
     // onSwipeRight()
     // console.log('right Swipe performed');
-  }
-
-  const onChange = (event, selectedDate) => {
-    const newDate = selectedDate;
-    setShow(false);
-    setDate(newDate);
-    handleModifySubtask(subtask, undefined, undefined, undefined, newDate);
-  };
-
-  const showMode = currentMode => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
+}
 
   return (
     <Pressable
@@ -130,35 +100,6 @@ function SubtaskItem({
                 style={styles.textInput}
               />
             </View>
-            <View style={{flex: 1, alignItems: 'center'}}>
-            <View style = {styles.timeanddatestyle}>
-                <Text>Select Time and Date: </Text>
-                <TouchableOpacity onPress={showDatepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../../images/calendar.png')}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={showTimepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../../images/clock.png')}
-                  />
-                </TouchableOpacity>
-              </View>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={false}
-                  onChange={onChange}
-                />
-              )}
-              <Text style={{padding: 8}}>
-                selected: {date.toLocaleString()}
-              </Text>
-            </View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -170,35 +111,16 @@ function SubtaskItem({
                   inputValue,
                 );
                 // initializeSubtaskInput();
-              }}
-            >
+              }}>
               <Text style={styles.textStyle}>Done ✓</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
-      <View style={styles.dateTimeContainer}>
-        <View>
-          <Text>{date.toLocaleTimeString('en-US')}</Text>
-        </View>
-        <View>
-          <Text>{date.toLocaleDateString('en-US')}</Text>
-        </View>        
-      </View>
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
-            <View/>
             <Text style={styles.textTitle}>{subtask.title}</Text>
-            <RoundCheckbox
-              backgroundColor='#3CB043'
-              size={20}
-              checked={isChecked}
-              onValueChange={() => {
-                setIsChecked(!isChecked);
-                handleModifySubtask(subtask, undefined, undefined, undefined , undefined, isChecked)
-              }}
-            />
           </View>
           <View style={styles.featureInputContainer}>
             <Text style={styles.textFeature}>{subtask.feature}</Text>
@@ -214,12 +136,6 @@ function SubtaskItem({
 }
 
 const styles = StyleSheet.create({
-  timeanddatestyle:{
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
   button: {
     borderRadius: 20,
     padding: 10,
@@ -233,17 +149,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
-  },
-  container: {
-    resizeMode: 'center',
-    height: 30,
-    width: 50,
-  },
-  dateTimeContainer: {
-    marginTop: 8,
-    flexDirection : "row",
-    justifyContent : "space-between"
-    
   },
   task: {
     marginVertical: 8,
@@ -319,8 +224,6 @@ const styles = StyleSheet.create({
   titleInputContainer: {
     flex: 1,
     justifyContent: 'center',
-    flexDirection: 'row',
-    alignContent: "space-between",
     alignItems: 'center',
     marginHorizontal: 8,
     marginVertical: 8,

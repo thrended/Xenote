@@ -10,11 +10,11 @@ import {
 
 import colors from '../styles/colors';
 
-interface AddReminderButtonProps {
+interface AddSubtaskButtonProps {
   onSubmit: (description: string) => void;
 }
 
-function AddReminderButton({onSubmit}: AddReminderButtonProps) {
+function AddSubtaskButton({onSubmit}: AddSubtaskButtonProps) {
   const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
@@ -24,6 +24,14 @@ function AddReminderButton({onSubmit}: AddReminderButtonProps) {
 
   return (
     <View style={styles.floatingButtonContainer}>
+      {/* <TextInput
+        value={description}
+        placeholder="Enter new task description"
+        onChangeText={setDescription}
+        autoCorrect={false}
+        autoCapitalize="none"
+        style={styles.textInput}
+      /> */}
       <Pressable onPress={handleSubmit} style={styles.floatingButton}>
         <Text style={styles.icon}>＋</Text>
       </Pressable>
@@ -80,4 +88,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddReminderButton;
+export default AddSubtaskButton;
