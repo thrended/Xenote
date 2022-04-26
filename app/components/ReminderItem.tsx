@@ -53,6 +53,14 @@ function ReminderItem({
       hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
       android_ripple={{color:'#00f'}}
     >
+      <View style={styles.dateTimeContainer}>
+        <View>
+          <Text>{reminder.scheduledDatetime.toLocaleTimeString('en-US')}</Text>
+        </View>
+        <View>
+          <Text>{reminder.scheduledDatetime.toLocaleDateString('en-US')}</Text>
+        </View>        
+      </View>
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
@@ -86,6 +94,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
+  },
+  dateTimeContainer: {
+    marginTop: 8,
+    flexDirection : "row",
+    justifyContent : "space-between"
   },
   task: {
     marginVertical: 8,

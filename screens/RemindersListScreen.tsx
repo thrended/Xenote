@@ -10,6 +10,7 @@ import {
   Text,
   View,
   StyleSheet,
+  Switch,
   TextInput,
   TouchableWithoutFeedback,
 } from 'react-native';
