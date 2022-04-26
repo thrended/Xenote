@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import colors from '../styles/colors';
+import PushNotification from "react-native-push-notification";
 
 interface AddReminderButtonProps {
   onSubmit: (description: string) => void;
@@ -20,7 +21,20 @@ function AddReminderButton({onSubmit}: AddReminderButtonProps) {
   const handleSubmit = () => {
     onSubmit(description);
     setDescription('');
+    //scheduleNotification();
   };
+
+  const scheduleNotification = () => {
+    PushNotification.localNotificationSchedule({
+      date: new Date(Date.now() + 900 * 1000),
+      allowWhileIdle: true,
+      repeatType: 'time',
+      repeatTime: 30000,  
+      channelId: "Notif-test-1",
+      title: "Scheduled notification success",
+      message: "This reminder will reappear every 30 seconds",
+  });
+  }
 
   return (
     <View style={styles.floatingButtonContainer}>

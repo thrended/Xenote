@@ -9,14 +9,19 @@ export class Subtask extends Realm.Object {
   isComplete!: boolean;
   scheduledDatetime!: Date;
 
-  static generate(title: string, feature: string, value: string) {
+  static generate(
+    title: string, 
+    feature: string, 
+    value: string,
+    _scheduledDatetime: Date,
+    ) {
     return {
       _id: new Realm.BSON.ObjectId(),
       title: title,
       feature: feature,
       value: value,
       isComplete: false,
-      scheduledDatetime: Date(),
+      scheduledDatetime: _scheduledDatetime,
     };
   }
 
@@ -42,13 +47,17 @@ export class Reminder extends Realm.Object {
   isComplete!: boolean;
   scheduledDatetime!: Date;
 
-  static generate(title: string, subtasks?: Subtask[]) {
+  static generate(
+    title: string, 
+    _scheduledDatetime: Date,
+    subtasks?: Subtask[]
+    ) {
     return {
       _id: new Realm.BSON.ObjectId(),
       title: title,
       subtasks: subtasks? subtasks: new Array<Subtask>(),
       isComplete: false,
-      scheduledDatetime: new Date(),
+      scheduledDatetime: _scheduledDatetime,
     };
   }
 

@@ -12,6 +12,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import colors from '../app/styles/colors';
 import ReminderListDefaultText from '../app/components/ReminderListDefaultText';
@@ -26,6 +27,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import PushNotification from "react-native-push-notification";
 import Octicons from 'react-native-vector-icons/Octicons';
 import {globalStyles } from '../app/styles/global';
 
@@ -75,6 +77,18 @@ const RemindersListScreen = ({navigation}: any) => {
     },
     [realm],
   );
+
+  const scheduleNotification = () => {
+    PushNotification.localNotificationSchedule({
+      date: new Date(Date.now() + 900 * 1000),
+      allowWhileIdle: true,
+      repeatType: 'time',
+      repeatTime: 30000,  
+      channelId: "Notif-test-1",
+      title: "Scheduled notification success",
+      message: "This reminder will reappear every 30 seconds",
+  });
+  }
   
   const [result, setResult] = useState(useQuery(Reminder));
   const reminders = useMemo(() => result, [result]);
@@ -97,9 +111,9 @@ const RemindersListScreen = ({navigation}: any) => {
   });
 
   const handleAddReminder = useCallback(
-    (_title: string): void => {
+    (_title: string, _scheduledDT: Date): void => {
       realm.write(() => {
-        realm.create('Reminder', Reminder.generate(_title));
+        realm.create('Reminder', Reminder.generate(_title, _scheduledDT));
       });
     },
     [realm],
@@ -116,11 +130,13 @@ const RemindersListScreen = ({navigation}: any) => {
     (
       reminder: Reminder,
       _title?: string,
+      _scheduledDT?: Date,
       _subtasks?: Subtask[]
     ): void => {
       realm.write(() => {
         _title ? (reminder.title = _title) : {};
         _subtasks ? (reminder.subtasks = _subtasks) : {};
+        _scheduledDT? (reminder.scheduledDatetime = _scheduledDT) : {};
         // setSubtasks(result);
       });
     },
@@ -147,6 +163,17 @@ const RemindersListScreen = ({navigation}: any) => {
         }}
       >
           <Text style={styles.textStyle}>Notes</Text>
+      </Pressable>
+      <Pressable
+        style={[styles.button, styles.buttonClose, {backgroundColor: '#77c7cc'}]}
+        onPress={() => { 
+          PushNotification.getScheduledLocalNotifications(console.log);
+          PushNotification.cancelAllLocalNotifications();
+        }}
+      >
+        <Text style={styles.textStyle}>
+          Cancel all notifications
+        </Text>
       </Pressable>
       <Pressable
         style={[styles.button, styles.buttonClose, {backgroundColor: (window ? '#22E734' : '#ee6e73')}]}
@@ -184,7 +211,7 @@ const RemindersListScreen = ({navigation}: any) => {
             handleNavigation={navigateToReminderEditPage}
           />
         )}
-        <AddReminderButton onSubmit={() => handleAddReminder("New Reminder")} />
+        <AddReminderButton onSubmit={() => handleAddReminder("New Reminder", new Date())} />
       </View>
       )}
       { !window && (
@@ -238,6 +265,7 @@ const RemindersListScreen = ({navigation}: any) => {
         
         </View>
       )}
+      
     </SafeAreaView>    
   );
 };

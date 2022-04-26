@@ -22,6 +22,7 @@ import ReminderContent from '../app/components/ReminderContent';
 import colors from '../app/styles/colors';
 import {Results} from 'realm';
 import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
+import PushNotification from "react-native-push-notification";
 
 
 
@@ -40,14 +41,26 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   const [inputTitle, setInputTitle] = useState('');
   const [inputFeature, setInputFeature] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [inputDate, setInputDate] = useState(new Date());
 
  
+  const scheduleNotification = () => {
+    PushNotification.localNotificationSchedule({
+      date: new Date(Date.now() + 900 * 1000),
+      allowWhileIdle: true,
+      repeatType: 'time',
+      repeatTime: 30000,  
+      channelId: "Notif-test-1",
+      title: "Scheduled notification success",
+      message: "This reminder will reappear every 30 seconds",
+  });
+  }
 
   const handleAddSubtask = useCallback(
-    (_title: string, _feature: string, _value: string): void => {
+    (_title: string, _feature: string, _value: string, _scheduledDT: Date): void => {
       realm.write(() => {
         // realm.create('Subtask', Subtask.generate(_title, _feature, _value));
-        reminder.subtasks.push(Subtask.generate(_title, _feature, _value));
+        reminder.subtasks.push(Subtask.generate(_title, _feature, _value, _scheduledDT));
       });
     },
     [realm],
@@ -149,7 +162,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 setModalVisible(!modalVisible);
-                handleAddSubtask(inputTitle, inputFeature, inputValue);
+                handleAddSubtask(inputTitle, inputFeature, inputValue, inputDate);
                 initializeSubtaskInput();
               }}>
               <Text style={styles.textStyle}>Done ✓</Text>

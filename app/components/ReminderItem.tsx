@@ -14,12 +14,14 @@ import {
 import { useSwipe } from '../hooks/useSwipe';
 import {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
+import PushNotification from "react-native-push-notification";
 
 interface ReminderItemProps {
   reminder: Reminder;
   handleModifyReminder: (
     reminder: Reminder,
     _title?: string,
+    _scheduledDT?: Date,
     _subtasks?: Subtask[]
   ) => void;
   onDelete: () => void;
@@ -45,8 +47,30 @@ function ReminderItem({
     // console.log('right Swipe performed');
 }
 
+  const handleNotification = () => {
+    PushNotification.localNotification({
+      channelId: "Notif-test-1",
+      title: "Test notification succession",
+      message: "You clicked on a pressable reminder",
+    });
+  }
+
+  const scheduleNotification = (item?: any) => {
+    handleNotification();
+    PushNotification.localNotificationSchedule({
+      date: new Date(Date.now() + 10 * 1000),
+      allowWhileIdle: true,
+      repeatType: 'time',
+      repeatTime: 10000,  
+      channelId: "Notif-test-1",
+      title: "Scheduled notification success",
+      message: "This reminder will reappear every 10 seconds",
+  });
+  }
+
   return (
     <Pressable
+      onPress={() => scheduleNotification() }
       onLongPress={() => handleNavigation(reminder)}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}

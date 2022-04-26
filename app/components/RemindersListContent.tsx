@@ -13,12 +13,26 @@ import {Realm} from '@realm/react';
 
 import {Reminder, Subtask} from '../models/Schemas';
 import ReminderItem from './ReminderItem';
+import PushNotification from "react-native-push-notification";
 
+
+const scheduleNotification = (item: any) => {
+  PushNotification.localNotificationSchedule({
+  date: new Date(Date.now() + 900 * 1000),
+  allowWhileIdle: true,
+  repeatType: 'time',
+  repeatTime: 30000,  
+  channelId: "Notif-test-1",
+  title: "Scheduled notification success",
+  message: "This reminder will appear every 30 seconds",
+});
+}
 interface ReminderListProps {
   reminders: Realm.Results<Reminder> | [];
   handleModifyReminder: (
     reminder: Reminder,
     _title?: string,
+    _scheduledDT?: Date,
     _subtasks?: Subtask[]
   ) => void;
   handleNavigation: (reminder: Reminder) => void;
@@ -39,14 +53,16 @@ function RemindersListContent({
         data={reminders}
         keyExtractor={reminder => reminder._id.toString()}
         renderItem={({item}) => (
-          <ReminderItem
-            reminder={item}
-            handleModifyReminder={handleModifyReminder}
-            handleNavigation={handleNavigation}
-            onDelete={() => onDeleteReminder(item)}
-            onSwipeLeft={() => onSwipeLeft(item)}
-            // Don't spread the Realm item as such: {...item}
-          />
+          <Pressable onPress={scheduleNotification} >
+            <ReminderItem
+              reminder={item}
+              handleModifyReminder={handleModifyReminder}
+              handleNavigation={handleNavigation}
+              onDelete={() => onDeleteReminder(item)}
+              onSwipeLeft={() => onSwipeLeft(item)}
+              // Don't spread the Realm item as such: {...item}
+            />
+          </Pressable>
         )}
         extraData={reminders}
       />
