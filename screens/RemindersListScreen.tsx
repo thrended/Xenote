@@ -19,7 +19,7 @@ import RemindersListContent from '../app/components/RemindersListContent';
 import AddReminderButton from '../app/components/AddReminderButton';
 import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
 
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import SimpleNote from '../app/components/SimpleNote';
 import NoteItem from '../app/components/sNoteItem';
 import Feather from 'react-native-vector-icons/Feather';
@@ -27,12 +27,11 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
-import {globalStyles } from '../app/styles/global';
+import {globalStyles} from '../app/styles/global';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
 const RemindersListScreen = ({navigation}: any) => {
-
   const realm = useRealm();
   const [modalOpen, setModalOpen] = useState(false);
   const [inputComplete, setInputComplete] = useState(false);
@@ -51,31 +50,40 @@ const RemindersListScreen = ({navigation}: any) => {
     // setNotesResult((prevNotes) => {
     //   return prevNotes.filter(note => note.key != key);
     // })
-  }
+  };
   const showDatePickerModal = () => {
     setDatePickerVisibility(true);
   };
 
   const hideDatePickerModal = () => {
     setDatePickerVisibility(false);
-  }
+  };
 
   const handleConfirm = (date: Date) => {
-    Alert.alert( "A date has been picked: " + date.toLocaleString() );
+    Alert.alert('A date has been picked: ' + date.toLocaleString());
     setInputDate(date);
     hideDatePickerModal();
-  }
+  };
 
   const addNote = useCallback(
     (note: any): void => {
       realm.write(() => {
-        realm.create('Note', Note.generate(note.title, note.author, note.body, note.date, note.prio));
+        realm.create(
+          'Note',
+          Note.generate(
+            note.title,
+            note.author,
+            note.body,
+            note.date,
+            note.prio,
+          ),
+        );
       });
       setModalOpen(false);
     },
     [realm],
   );
-  
+
   const [result, setResult] = useState(useQuery(Reminder));
   const reminders = useMemo(() => result, [result]);
 
@@ -91,7 +99,7 @@ const RemindersListScreen = ({navigation}: any) => {
       });
     } catch (error) {
       console.error(
-        `Unable to update the result state, an exception was thrown within the change listener: ${error}`
+        `Unable to update the result state, an exception was thrown within the change listener: ${error}`,
       );
     }
   });
@@ -107,17 +115,13 @@ const RemindersListScreen = ({navigation}: any) => {
 
   const navigateToReminderEditPage = useCallback(
     (reminder: Reminder): void => {
-      navigation.navigate("ReminderSubtasksScreen", {reminder: reminder} );
+      navigation.navigate('ReminderSubtasksScreen', {reminder: reminder});
     },
     [realm],
   );
 
   const handleModifyReminder = useCallback(
-    (
-      reminder: Reminder,
-      _title?: string,
-      _subtasks?: Subtask[]
-    ): void => {
+    (reminder: Reminder, _title?: string, _subtasks?: Subtask[]): void => {
       realm.write(() => {
         _title ? (reminder.title = _title) : {};
         _subtasks ? (reminder.subtasks = _subtasks) : {};
@@ -139,25 +143,34 @@ const RemindersListScreen = ({navigation}: any) => {
   return (
     <SafeAreaView style={styles.screen}>
       {/* <NewReminderHeaderBar onSubmit={() => {}} /> */}
-      <View style={[{flexDirection: 'row', justifyContent: 'space-around', padding: 10}]} >
-      <Pressable
-        style={[styles.button, styles.buttonClose, {backgroundColor: (window ? '#ee6e73' : '#22E734')}]}
-        onPress={() => {
-          setWindow(false);
-        }}
-      >
+      <View
+        style={[
+          {flexDirection: 'row', justifyContent: 'space-around', padding: 10},
+        ]}>
+        <Pressable
+          style={[
+            styles.button,
+            styles.buttonClose,
+            {backgroundColor: window ? '#ee6e73' : '#22E734'},
+          ]}
+          onPress={() => {
+            setWindow(false);
+          }}>
           <Text style={styles.textStyle}>Notes</Text>
-      </Pressable>
-      <Pressable
-        style={[styles.button, styles.buttonClose, {backgroundColor: (window ? '#22E734' : '#ee6e73')}]}
-        onPress={() => {
-          setWindow(true);
-        }}
-      >
+        </Pressable>
+        <Pressable
+          style={[
+            styles.button,
+            styles.buttonClose,
+            {backgroundColor: window ? '#22E734' : '#ee6e73'},
+          ]}
+          onPress={() => {
+            setWindow(true);
+          }}>
           <Text style={styles.textStyle}>Reminders</Text>
-      </Pressable>
+        </Pressable>
       </View>
-      
+
       {/* <View style={styles.content}>
         {reminders.length === 0 ? (
           <ReminderListDefaultText />
@@ -171,74 +184,81 @@ const RemindersListScreen = ({navigation}: any) => {
         )}
         <AddReminderButton onSubmit={() => handleAddReminder("New Reminder")} />
       </View> */}
-      { window && (
-      <View style={styles.content}>
-        {reminders.length === 0 ? (
-          <ReminderListDefaultText />
-        ) : (
-          <RemindersListContent
-            reminders={reminders}
-            handleModifyReminder={handleModifyReminder}
-            onDeleteReminder={handleDeleteReminder}
-            onSwipeLeft={handleDeleteReminder}
-            handleNavigation={navigateToReminderEditPage}
+      {window && (
+        <View style={styles.content}>
+          {reminders.length === 0 ? (
+            <ReminderListDefaultText />
+          ) : (
+            <RemindersListContent
+              reminders={reminders}
+              handleModifyReminder={handleModifyReminder}
+              onDeleteReminder={handleDeleteReminder}
+              onSwipeLeft={handleDeleteReminder}
+              handleNavigation={navigateToReminderEditPage}
+            />
+          )}
+          <AddReminderButton
+            onSubmit={() => handleAddReminder('New Reminder')}
           />
-        )}
-        <AddReminderButton onSubmit={() => handleAddReminder("New Reminder")} />
-      </View>
+        </View>
       )}
-      { !window && (
+      {!window && (
         <View style={styles.content}>
           <Text>Notes Tab</Text>
-          <Modal visible={modalOpen} animationType='slide'>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={globalStyles.modalContent}>
-              <View style={globalStyles.modalIcon}>
-                <MaterialIcons
-                  name='close'
-                  size={24}
-                  style={{ ...globalStyles.modalToggle, ...globalStyles.modalClose }}
-                  onPress={() => setModalOpen(!modalOpen)}
-                />
-                <Foundation
-                  name='check'
-                  size={24}
-                  style={{ ...globalStyles.modalToggle, ...globalStyles.modalClose }}
-                  onPress={() => setModalOpen(!modalOpen)}
-                />
+          <Modal visible={modalOpen} animationType="slide">
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={globalStyles.modalContent}>
+                <View style={globalStyles.modalIcon}>
+                  <MaterialIcons
+                    name="close"
+                    size={24}
+                    style={{
+                      ...globalStyles.modalToggle,
+                      ...globalStyles.modalClose,
+                    }}
+                    onPress={() => setModalOpen(!modalOpen)}
+                  />
+                  <Foundation
+                    name="check"
+                    size={24}
+                    style={{
+                      ...globalStyles.modalToggle,
+                      ...globalStyles.modalClose,
+                    }}
+                    onPress={() => setModalOpen(!modalOpen)}
+                  />
+                </View>
+                <View style={[globalStyles.containerTitle, {paddingTop: 25}]}>
+                  <Text style={globalStyles.titleMain}>New Simple Note</Text>
+                </View>
+                <SimpleNote addNote={addNote} />
               </View>
-              <View style={[globalStyles.containerTitle, {paddingTop: 25}]}>
-                <Text style={globalStyles.titleMain}>New Simple Note</Text>
-              </View>
-              <SimpleNote addNote={addNote} />
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-        <View style={[styles.centeredView, {marginTop: 0}]}>
-          <Text>Create Simple Note</Text>
-        </View>
-          <View style={globalStyles.list}>
-          <FlatList
-            data={notes}
-            renderItem={({ item }) => ( 
-              <NoteItem item={item} handleSimpSwipe={handleSimpSwipe}/>
-              // <Text>{item.title}</Text>
-            )}
-            // ItemSeparatorComponent={() => <View style={styles.separator} />}
-            keyExtractor={(item, index) => index.toString()}
-            extraData={notes}
-          /> 
+            </TouchableWithoutFeedback>
+          </Modal>
+          <View style={[styles.centeredView, {marginTop: 0}]}>
+            <Text>Create Simple Note</Text>
           </View>
-        <MaterialIcons
-          name='add'
-          size={24}
-          style={globalStyles.modalToggle}
-          onPress={() => setModalOpen(!modalOpen)}
-        />
-        
+          <View style={globalStyles.list}>
+            <FlatList
+              data={notes}
+              renderItem={({item}) => (
+                <NoteItem item={item} handleSimpSwipe={handleSimpSwipe} />
+                // <Text>{item.title}</Text>
+              )}
+              // ItemSeparatorComponent={() => <View style={styles.separator} />}
+              keyExtractor={(item, index) => index.toString()}
+              extraData={notes}
+            />
+          </View>
+          <MaterialIcons
+            name="add"
+            size={24}
+            style={globalStyles.modalToggle}
+            onPress={() => setModalOpen(!modalOpen)}
+          />
         </View>
       )}
-    </SafeAreaView>    
+    </SafeAreaView>
   );
 };
 
@@ -264,9 +284,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+    borderRadius: 18,
+    backgroundColor: 'oldlace',
+    alignSelf: 'flex-start',
+    marginHorizontal: '1%',
+    marginBottom: 6,
+    minWidth: '46%',
+    textAlign: 'center',
   },
   buttonClose: {
     backgroundColor: '#ee6e73',

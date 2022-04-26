@@ -167,13 +167,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
             </View>
 
             <View style={{flex: 1, alignItems: 'center'}}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                }}>
+              <View style = {styles.timeanddatestyle}>
                 <Text>Select Time and Date: </Text>
                 <TouchableOpacity onPress={showDatepicker}>
                   <Image
@@ -197,8 +191,8 @@ function ReminderSubtasksScreen({route, navigation}: any) {
                   onChange={onChange}
                 />
               )}
+            <Text style = {{padding:8}}>selected: {date.toLocaleString()}</Text>
             </View>
-            <Text>selected: {date.toLocaleString()}</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -234,6 +228,12 @@ function ReminderSubtasksScreen({route, navigation}: any) {
 }
 
 const styles = StyleSheet.create({
+  timeanddatestyle:{
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
   container: {
     resizeMode: 'center',
     height: 30,

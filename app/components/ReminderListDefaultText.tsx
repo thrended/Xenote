@@ -14,7 +14,7 @@ function ReminderListDefaultText() {
 
 const styles = StyleSheet.create({
   content: {
-    flex: 1,
+    flex: 0.8,
     marginHorizontal: 20,
     justifyContent: 'center',
   },
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     fontSize: 24,
-    fontWeight: 'bold',
+    
   },
   link: {
     color: colors.purple,

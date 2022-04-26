@@ -1,5 +1,3 @@
-
-
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import React, {useState, useEffect} from 'react';
 import { Formik } from 'formik';
@@ -161,6 +159,7 @@ function SimpleNote({addNote}: SimpleNoteProps ) {
       backgroundColor: '#a3e7ff',
       padding: 20,
       marginVertical: 8,
+      borderRadius: 15,
     },
     header: {
       fontSize: 32,
@@ -185,6 +184,7 @@ function SimpleNote({addNote}: SimpleNoteProps ) {
       backgroundColor: '#25f2f5',
       alignItems: 'center',
       alignSelf: 'center',
+      borderRadius: 15,
     },
     image :  {
       width: 200,
