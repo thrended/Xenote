@@ -27,10 +27,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
 function ReminderSubtasksScreen({route, navigation}: any) {
-  const {reminderId} = route.params;
-  
+  const {reminder} = route.params;
+  // console.log(reminder.subtasks);
   const realm = useRealm();
-  const reminder : (Reminder & Realm.Object) | undefined = realm?.objectForPrimaryKey("Reminder", new Realm.BSON.ObjectId(reminderId))!;
+  // const result = useQuery(Subtask);
   const [result, setResult] = useState(reminder.subtasks);
 
   const subtasks = useMemo(() => result, [result]);
@@ -100,7 +100,6 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     setInputValue('');
     setDate(new Date());
   };
-
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setShow(false);
@@ -166,7 +165,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
             </View>
 
             <View style={{flex: 1, alignItems: 'center'}}>
-            <View style = {styles.timeanddatestyle}>
+              <View style = {styles.timeanddatestyle}>
                 <Text>Select Time and Date: </Text>
                 <TouchableOpacity onPress={showDatepicker}>
                   <Image
@@ -190,7 +189,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
                   onChange={onChange}
                 />
               )}
-              <Text style = {{padding:8}}>selected: {date.toLocaleString()}</Text>
+            <Text style = {{padding:8}}>selected: {date.toLocaleString()}</Text>
             </View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
