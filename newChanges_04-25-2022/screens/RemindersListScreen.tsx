@@ -21,7 +21,7 @@ import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import SimpleNote from '../app/components/SimpleNote';
-import NoteItem from '../app/components/sNoteItem';
+import NoteItem from '../app/components/NoteItem';
 import Feather from 'react-native-vector-icons/Feather';
 import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';

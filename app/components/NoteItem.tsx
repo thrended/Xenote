@@ -1,5 +1,8 @@
 import * as React from 'react';
+import {useState} from 'react';
+
 import {   
+    Keyboard,
     Modal,
     Pressable,
     SafeAreaView,
@@ -10,18 +13,28 @@ import {
     TouchableOpacity,
     useColorScheme,
     View,
-} from 'react-native';;
+    TouchableWithoutFeedback,
+} from 'react-native';
+
+import SimpleNote from './EditNote';
 import { globalStyles } from '../styles/global'
 //import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSwipe } from '../hooks/useSwipe';
 //import SwipeGesture from '../hooks/SwipeGesture';
+import {Note} from '../models/Schemas';
 
-export default function NoteItem({ item, handleSimpSwipe }: any) {
+interface NoteItemProps {
+  note: Note,
+  handleSimpSwipe: (note: Note) => void
+  handleNavigateToEdit: (note: Note) => void
+}
+
+function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteItemProps) {
 
     const { onTouchStart, onTouchEnd} = useSwipe(onSwipeLeft, onSwipeRight, 6)
 
     function onSwipeLeft(){
-        handleSimpSwipe(item);
+        handleSimpSwipe(note);
         console.log('left Swipe performed');
     }
 
@@ -33,7 +46,7 @@ export default function NoteItem({ item, handleSimpSwipe }: any) {
     function viewDetails(){
 
     }
-
+    const [modalOpen, setModalOpen] = useState(false);
     /*const onSwipePerformed = (action: string) => {
 
         switch(action){
@@ -62,22 +75,14 @@ export default function NoteItem({ item, handleSimpSwipe }: any) {
     }*/
 
     return (
-    //   <View style={globalStyles.containerdefault}>  
-    //     <SwipeGesture gestureStyle={globalStyles.swipesGestureContainer}
-    //         onSwipePerformed={onSwipePerformed}>
-    //         <Text style={globalStyles.note}>
-    //             {item.title}
-    //         </Text>
-    //     </SwipeGesture>
-    //   </View>  
-        // //<Pressable onLongPress={() => handleSimpSwipe(item.key)}>
-          <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-            <Text style={globalStyles.note}>
-                {item.title}
-            </Text>
-          </Pressable>
-        //   //</ScrollView>
-        // //</Pressable>
+      <View>
+        <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onLongPress={() => handleNavigateToEdit(note)}>
+          <Text style={globalStyles.note}>
+              {note.title}
+          </Text>
+        </Pressable>
+      </View>
     )
-
 }
+
+export default NoteItem;

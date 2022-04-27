@@ -6,6 +6,7 @@ import ReminderSubtasksScreen from './screens/ReminderSubtasksScreen';
 import RealmContext from './app/models/Schemas';
 import { LogBox } from 'react-native';
 import PushNotification, {Importance} from "react-native-push-notification";
+import SimpleNote from './app/components/EditNote';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -43,12 +44,18 @@ const App = () => {
     <RealmProvider>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
-            name="RemindersListScreen"
-            component={RemindersListScreen}
-            options={{title: 'Reminders'}}
-          />
-          <Stack.Screen name="ReminderSubtasksScreen" component={ReminderSubtasksScreen} />
+          <Stack.Group>
+            <Stack.Screen
+              name="RemindersListScreen"
+              component={RemindersListScreen}
+              options={{title: 'Reminders'}}
+            />
+            <Stack.Screen name="ReminderSubtasksScreen" component={ReminderSubtasksScreen} />
+          </Stack.Group>
+          <Stack.Group screenOptions={{ presentation: 'modal' }}>
+            <Stack.Screen name="EditNoteScreen" component={SimpleNote} />
+          </Stack.Group>
+
         </Stack.Navigator>
       </NavigationContainer>
     </RealmProvider>

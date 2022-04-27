@@ -21,8 +21,8 @@ import AddReminderButton from '../app/components/AddReminderButton';
 import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import SimpleNote from '../app/components/SimpleNote';
-import NoteItem from '../app/components/sNoteItem';
+import SimpleNote from '../app/components/EditNote';
+import NoteItem from '../app/components/NoteItem';
 import Feather from 'react-native-vector-icons/Feather';
 import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -35,7 +35,7 @@ import notifee from '@notifee/react-native';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
-const RemindersListScreen = ({route, navigation}: any) => {
+const RemindersListScreen = ({route, navigation} : any) => {
 
   const realm = useRealm();
   const [modalOpen, setModalOpen] = useState(false);
@@ -70,24 +70,43 @@ const RemindersListScreen = ({route, navigation}: any) => {
     hideDatePickerModal();
   }
 
-  const addNote = useCallback(
-    (note: any): void => {
-      realm.write(() => {
-        realm.create(
-          'Note',
-          Note.generate(
-            note.title,
-            note.author,
-            note.body,
-            note.date,
-            note.prio,
-          ),
-        );
-      });
-      setModalOpen(false);
-    },
-    [realm],
-  );
+  // const [newNote, setNewNote] = useState();
+  // const addNote = useCallback(
+  //   (note: any): void => {
+  //     realm.write(() => {
+  //       const newNote = realm.create(
+  //         'Note',
+  //         Note.generate(
+  //           note.title,
+  //           note.author,
+  //           note.body,
+  //           note.date,
+  //           note.prio,
+  //         ),
+  //       );
+  //       setNewNote(newNote);
+  //     });
+  //     setModalOpen(false);
+  //   },
+  //   [realm],
+  // );
+  const addNote = () : Realm.BSON.ObjectId => {
+    let newNoteId = new Realm.BSON.ObjectId();
+    realm.write(() => {
+      const newNote = realm.create<Note>(
+        'Note',
+        Note.generate(
+          "",
+          "",
+          "",
+          new Date(),
+          5,
+        ),
+      );
+      newNoteId = newNote._id;
+    });
+    return newNoteId;
+  }
 
   const deleteNote = useCallback(
     (note: Note): void => {
@@ -127,12 +146,24 @@ const RemindersListScreen = ({route, navigation}: any) => {
     [realm],
   );
 
-  const navigateToReminderEditPage = useCallback(
+  const handeNavigateToReminderEditPage = useCallback(
     (reminder: Reminder): void => {
       navigation.navigate("ReminderSubtasksScreen", {reminderId: reminder._id.toHexString()} );
     },
     [realm],
   );
+
+  const handleNavigateToNoteEditPage = useCallback(
+    (note: Note): void => {
+      navigateToNoteEditPage(note._id.toHexString());
+    },
+    [realm],
+  );
+
+  const navigateToNoteEditPage = 
+    (noteId: string): void => {
+      navigation.navigate("EditNoteScreen", {noteId: noteId} );
+    }
 
   const handleModifyReminder = useCallback(
     (reminder: Reminder, _title?: string, _subtasks?: Subtask[]): void => {
@@ -160,7 +191,6 @@ const RemindersListScreen = ({route, navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.screen}>
-      {/* <NewReminderHeaderBar onSubmit={() => {}} /> */}
       <View
         style={[
           {flexDirection: 'row', justifyContent: 'space-around', padding: 10},
@@ -215,7 +245,7 @@ const RemindersListScreen = ({route, navigation}: any) => {
             handleModifyReminder={handleModifyReminder}
             onDeleteReminder={handleDeleteReminder}
             onSwipeLeft={handleDeleteReminder}
-            handleNavigation={navigateToReminderEditPage}
+            handleNavigation={handeNavigateToReminderEditPage}
           />
         )}
           <AddReminderButton
@@ -226,52 +256,29 @@ const RemindersListScreen = ({route, navigation}: any) => {
       { !window && (
         <View style={styles.content}>
           <Text>Notes Tab</Text>
-          <Modal visible={modalOpen} animationType='slide'>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={globalStyles.modalContent}>
-              <View style={globalStyles.modalIcon}>
-                <MaterialIcons
-                  name='close'
-                  size={24}
-                  style={{ ...globalStyles.modalToggle, ...globalStyles.modalClose }}
-                  onPress={() => setModalOpen(!modalOpen)}
-                />
-                <Foundation
-                  name='check'
-                  size={24}
-                    style={{
-                      ...globalStyles.modalToggle,
-                      ...globalStyles.modalClose,
-                    }}
-                  onPress={() => setModalOpen(!modalOpen)}
-                />
-              </View>
-              <View style={[globalStyles.containerTitle, {paddingTop: 25}]}>
-                <Text style={globalStyles.titleMain}>New Simple Note</Text>
-              </View>
-              <SimpleNote addNote={addNote} />
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-        <View style={[styles.centeredView, {marginTop: 0}]}>
-          <Text>Create Simple Note</Text>
-        </View>
-        <View style={globalStyles.list}>
-          <FlatList
-            data={notes}
-            renderItem={({ item }) => ( 
-              <NoteItem item={item} handleSimpSwipe={deleteNote}/>
-            )}
-            // ItemSeparatorComponent={() => <View style={styles.separator} />}
-            keyExtractor={({_id}) => _id.toHexString()}
-            extraData={notes}
-          /> 
-        </View>
+          <View style={[styles.centeredView, {marginTop: 0}]}>
+            <Text>Create Simple Note</Text>
+          </View>
+          <View style={globalStyles.list}>
+            <FlatList
+              data={notes}
+              renderItem={({ item }) => ( 
+                <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
+              )}
+              // ItemSeparatorComponent={() => <View style={styles.separator} />}
+              keyExtractor={({_id}) => _id.toHexString()}
+              extraData={notes}
+            /> 
+          </View>
           <MaterialIcons
             name='add'
             size={24}
             style={globalStyles.modalToggle}
-            onPress={() => setModalOpen(!modalOpen)}
+            onPress={() => {
+              const newObjectId = addNote();
+              console.log("On main screen, newObjectId: " + newObjectId);
+              navigateToNoteEditPage(newObjectId.toHexString());
+            }}
           />
         </View>
       )}
