@@ -194,9 +194,9 @@ function SubtaskItem({
               backgroundColor='#3CB043'
               size={20}
               checked={isChecked}
-              onValueChange={() => {
-                setIsChecked(!isChecked);
-                handleModifySubtask(subtask, undefined, undefined, undefined , undefined, isChecked)
+              onValueChange={(newValue) => {
+                setIsChecked(newValue);
+                handleModifySubtask(subtask, undefined, undefined, undefined , undefined, newValue)
               }}
             />
           </View>
