@@ -6,7 +6,7 @@ buildscript {
         firebaseMessagingVersion = "+"
         buildToolsVersion = "30.0.3"
         minSdkVersion = 21
-        compileSdkVersion = 30
+        compileSdkVersion = 31
         targetSdkVersion = 30
         ndkVersion = "21.4.7075529"
     }
@@ -38,5 +38,9 @@ allprojects {
 
         google()
         maven { url 'https://www.jitpack.io' }
+        // ADD THIS BLOCK - this is how Notifee finds its Android library:
+        maven {
+            url "$rootDir/../node_modules/@notifee/react-native/android/libs"
+        }
     }
 }

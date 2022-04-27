@@ -21,7 +21,7 @@ export default function NoteItem({ item, handleSimpSwipe }: any) {
     const { onTouchStart, onTouchEnd} = useSwipe(onSwipeLeft, onSwipeRight, 6)
 
     function onSwipeLeft(){
-        handleSimpSwipe(item.key);
+        handleSimpSwipe(item);
         console.log('left Swipe performed');
     }
 

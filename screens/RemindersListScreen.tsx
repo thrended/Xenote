@@ -31,6 +31,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import {globalStyles } from '../app/styles/global';
 import Entypo from 'react-native-vector-icons/Entypo';
 import PushNotification from "react-native-push-notification";
+import notifee from '@notifee/react-native';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
@@ -84,6 +85,15 @@ const RemindersListScreen = ({route, navigation}: any) => {
         );
       });
       setModalOpen(false);
+    },
+    [realm],
+  );
+
+  const deleteNote = useCallback(
+    (note: Note): void => {
+      realm.write(() => {
+        realm.delete(note);
+      });
     },
     [realm],
   );
@@ -177,6 +187,7 @@ const RemindersListScreen = ({route, navigation}: any) => {
           Alert.alert("Cancelled all active push notifications.")
           PushNotification.getScheduledLocalNotifications(console.log);
           PushNotification.cancelAllLocalNotifications();
+          notifee.cancelTriggerNotifications();
         }}
       />
       
@@ -249,7 +260,7 @@ const RemindersListScreen = ({route, navigation}: any) => {
           <FlatList
             data={notes}
             renderItem={({ item }) => ( 
-              <NoteItem item={item} handleSimpSwipe={handleSimpSwipe}/>
+              <NoteItem item={item} handleSimpSwipe={deleteNote}/>
             )}
             // ItemSeparatorComponent={() => <View style={styles.separator} />}
             keyExtractor={({_id}) => _id.toHexString()}

@@ -1323,6 +1323,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@notifee/react-native@^5.2.1":
+  "integrity" "sha512-qtGU2161qF7SQEFBOGec+EMLVX6ISBgpBllEjq6zd/zRZ35RraqkyFS/S84N6J14l6D5MyNLUqKRkZNG2aMFqg=="
+  "resolved" "https://registry.npmjs.org/@notifee/react-native/-/react-native-5.2.1.tgz"
+  "version" "5.2.1"
+
 "@react-native-community/cli-debugger-ui@^7.0.3":
   "integrity" "sha512-G4SA6jFI0j22o+j+kYP8/7sxzbCDqSp2QiHA/X5E0lsGEd2o9qN2zbIjiFr8b8k+VVAYSUONhoC0+uKuINvmkA=="
   "resolved" "https://registry.npmjs.org/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-7.0.3.tgz"
