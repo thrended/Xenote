@@ -11,7 +11,7 @@ import {
   StyleSheet,
   _Text,
 } from 'react-native';
-
+import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
 import {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
@@ -25,6 +25,7 @@ interface SubtaskItemProps {
     _feature?: string,
     _value?: string,
     _scheduledDatetime?: Date,
+    _isComplete?: boolean,
   ) => void;
   onDelete: () => void;
   onSwipeLeft: () => void
@@ -43,6 +44,7 @@ function SubtaskItem({
   const [date, setDate] = useState(subtask.scheduledDatetime);
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+  const [isChecked, setIsChecked] = useState(subtask.isComplete);
 
   // const initializeSubtaskInput = () => {
   //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
@@ -59,9 +61,10 @@ function SubtaskItem({
   }
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
+    const newDate = selectedDate;
     setShow(false);
-    setDate(currentDate);
+    setDate(newDate);
+    handleModifySubtask(subtask, undefined, undefined, undefined, newDate);
   };
 
   const showMode = currentMode => {
@@ -128,13 +131,7 @@ function SubtaskItem({
               />
             </View>
             <View style={{flex: 1, alignItems: 'center'}}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                }}>
+            <View style = {styles.timeanddatestyle}>
                 <Text>Select Time and Date: </Text>
                 <TouchableOpacity onPress={showDatepicker}>
                   <Image
@@ -158,8 +155,10 @@ function SubtaskItem({
                   onChange={onChange}
                 />
               )}
+              <Text style={{padding: 8}}>
+                selected: {date.toLocaleString()}
+              </Text>
             </View>
-            <Text>selected: {date.toLocaleString()}</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -171,16 +170,35 @@ function SubtaskItem({
                   inputValue,
                 );
                 // initializeSubtaskInput();
-              }}>
+              }}
+            >
               <Text style={styles.textStyle}>Done ✓</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
+      <View style={styles.dateTimeContainer}>
+        <View>
+          <Text>{date.toLocaleTimeString('en-US')}</Text>
+        </View>
+        <View>
+          <Text>{date.toLocaleDateString('en-US')}</Text>
+        </View>        
+      </View>
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
+            <View/>
             <Text style={styles.textTitle}>{subtask.title}</Text>
+            <RoundCheckbox
+              backgroundColor='#3CB043'
+              size={20}
+              checked={isChecked}
+              onValueChange={(newValue) => {
+                setIsChecked(newValue);
+                handleModifySubtask(subtask, undefined, undefined, undefined , undefined, newValue)
+              }}
+            />
           </View>
           <View style={styles.featureInputContainer}>
             <Text style={styles.textFeature}>{subtask.feature}</Text>
@@ -196,6 +214,12 @@ function SubtaskItem({
 }
 
 const styles = StyleSheet.create({
+  timeanddatestyle:{
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
   button: {
     borderRadius: 20,
     padding: 10,
@@ -214,6 +238,12 @@ const styles = StyleSheet.create({
     resizeMode: 'center',
     height: 30,
     width: 50,
+  },
+  dateTimeContainer: {
+    marginTop: 8,
+    flexDirection : "row",
+    justifyContent : "space-between"
+    
   },
   task: {
     marginVertical: 8,
@@ -289,6 +319,8 @@ const styles = StyleSheet.create({
   titleInputContainer: {
     flex: 1,
     justifyContent: 'center',
+    flexDirection: 'row',
+    alignContent: "space-between",
     alignItems: 'center',
     marginHorizontal: 8,
     marginVertical: 8,

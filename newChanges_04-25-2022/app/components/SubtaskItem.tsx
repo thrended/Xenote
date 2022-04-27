@@ -12,29 +12,34 @@ import {
 } from 'react-native';
 
 import { useSwipe } from '../hooks/useSwipe';
-import {Reminder, Subtask} from '../models/Schemas';
+import {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
 
-interface ReminderItemProps {
-  reminder: Reminder;
-  handleModifyReminder: (
-    reminder: Reminder,
+interface SubtaskItemProps {
+  subtask: Subtask;
+  handleModifySubtask: (
+    subtask: Subtask,
     _title?: string,
-    _subtasks?: Subtask[]
+    _feature?: string,
+    _value?: string,
   ) => void;
   onDelete: () => void;
   onSwipeLeft: () => void
-  handleNavigation: (reminder: Reminder) => void;
 }
 
-function ReminderItem({
-  reminder: reminder,
-  handleModifyReminder,
+function SubtaskItem({
+  subtask: subtask,
+  handleModifySubtask,
   onDelete,
   onSwipeLeft,
-  handleNavigation,
-}: ReminderItemProps) {
-
+}: SubtaskItemProps) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [inputTitle, setInputTitle] = useState(subtask.title);
+  const [inputFeature, setInputFeature] = useState(subtask.feature);
+  const [inputValue, setInputValue] = useState(subtask.value);
+  // const initializeSubtaskInput = () => {
+  //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
+  // }
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
 
   function onSwipeRt() {
@@ -47,29 +52,79 @@ function ReminderItem({
 
   return (
     <Pressable
-      onLongPress={() => handleNavigation(reminder)}
+      onLongPress={() => setModalVisible(true)}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
       hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
       android_ripple={{color:'#00f'}}
     >
-      <View style={styles.dateTimeContainer}>
-        <View>
-          <Text>{reminder.scheduledDatetime.toLocaleTimeString('en-US')}</Text>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalText}>Title: </Text>
+              <TextInput
+                value={inputTitle}
+                onChangeText={setInputTitle}
+                placeholder="Enter new task title"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.textInput}
+              />
+            </View>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalText}>Feature: </Text>
+              <TextInput
+                value={inputFeature}
+                onChangeText={setInputFeature}
+                placeholder="Add a feature"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.textInput}
+              />
+            </View>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalText}>Value: </Text>
+              <TextInput
+                value={inputValue}
+                onChangeText={setInputValue}
+                placeholder="Add a feature value"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.textInput}
+              />
+            </View>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                handleModifySubtask(
+                  subtask,
+                  inputTitle,
+                  inputFeature,
+                  inputValue,
+                );
+                // initializeSubtaskInput();
+              }}>
+              <Text style={styles.textStyle}>Done ✓</Text>
+            </Pressable>
+          </View>
         </View>
-        <View>
-          <Text>{reminder.scheduledDatetime.toLocaleDateString('en-US')}</Text>
-        </View>        
-      </View>
+      </Modal>
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
-            <Text style={styles.textTitle}>{reminder.title}</Text>
+            <Text style={styles.textTitle}>{subtask.title}</Text>
           </View>
-          <View style={styles.subtaskListContainer}>
-            {reminder.subtasks.map((subtask) => 
-              <Text style={styles.textStyle}>{subtask.title}</Text>
-            )}
+          <View style={styles.featureInputContainer}>
+            <Text style={styles.textFeature}>{subtask.feature}</Text>
+            <Text style={styles.textValue}>{subtask.value}</Text>
           </View>
         </View>
         <Pressable onPress={onDelete} style={styles.deleteButton}>
@@ -94,11 +149,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
-  },
-  dateTimeContainer: {
-    marginTop: 8,
-    flexDirection : "row",
-    justifyContent : "space-between"
   },
   task: {
     marginVertical: 8,
@@ -130,12 +180,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
-  subtaskListContainer: {
-    flex: 1,
-    flexDirection: "column",
-    borderColor: "black",
-    borderRadius: 2,
-  },
   textInput: {
     flex: 1,
     // textAlign: "center",
@@ -145,9 +189,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   textStyle: {
-    color: 'black',
+    color: 'white',
+    fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 16
   },
   featureInputContainer: {
     flex: 1,
@@ -229,16 +273,19 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 
 // We want to make sure only tasks that change are rerendered
 const shouldNotRerender = (
-  prevProps: ReminderItemProps,
-  nextProps: ReminderItemProps,
-) => {};
-  // prevProps.reminder.title === nextProps.reminder.title;
-  // prevProps.reminder.title === nextProps.reminder.title &&
-  // prevProps.reminder.subtasks === nextProps.reminder.subtasks;
+  prevProps: SubtaskItemProps,
+  nextProps: SubtaskItemProps,
+) =>
+  prevProps.subtask.title === nextProps.subtask.title &&
+  prevProps.subtask.feature === nextProps.subtask.feature &&
+  prevProps.subtask.value === nextProps.subtask.value;
 
-export default memo(ReminderItem);
+export default memo(SubtaskItem, shouldNotRerender);

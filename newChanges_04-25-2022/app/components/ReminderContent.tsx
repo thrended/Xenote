@@ -21,8 +21,6 @@ interface ReminderContentProps {
     _title?: string,
     _feature?: string,
     _value?: string,
-    _scheduledDatetime?: Date,
-    _isComplete?: boolean,
   ) => void;
   onDeleteSubtask: (subtask: Subtask) => void;
   onSwipeLeft: (subtask: Subtask) => void;

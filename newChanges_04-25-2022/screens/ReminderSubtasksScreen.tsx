@@ -9,7 +9,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Switch,
   TextInput,
 } from 'react-native';
 
@@ -28,10 +27,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
 function ReminderSubtasksScreen({route, navigation}: any) {
-  const {reminderId} = route.params;
-  
+  const {reminder} = route.params;
+  // console.log(reminder.subtasks);
   const realm = useRealm();
-  const reminder : (Reminder & Realm.Object) | undefined = realm?.objectForPrimaryKey("Reminder", new Realm.BSON.ObjectId(reminderId))!;
+  // const result = useQuery(Subtask);
   const [result, setResult] = useState(reminder.subtasks);
 
   const subtasks = useMemo(() => result, [result]);
@@ -43,14 +42,11 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   const handleAddSubtask = useCallback(
     (_title: string, _feature: string, _value: string, _scheduledDatetime: Date): void => {
       realm.write(() => {
-        // const newSubtask = realm.create('Subtask', Subtask.generate(_title, _feature, _value, _scheduledDatetime));
-        // reminder.subtasks.push(newSubtask);
+        // realm.create('Subtask', Subtask.generate(_title, _feature, _value));
         reminder.subtasks.push(Subtask.generate(_title, _feature, _value, _scheduledDatetime));
       });
     },
@@ -64,14 +60,12 @@ function ReminderSubtasksScreen({route, navigation}: any) {
       _feature?: string,
       _value?: string,
       _scheduledDatetime?: Date,
-      _isComplete?: boolean,
     ): void => {
       realm.write(() => {
         _title ? (subtask.title = _title) : {};
         _feature ? (subtask.feature = _feature) : {};
         _value ? (subtask.value = _value) : {};
         _scheduledDatetime? (subtask.scheduledDatetime = _scheduledDatetime) : {};
-        _isComplete? (subtask.isComplete = _isComplete) : {};
         // setSubtasks(result);
       });
     },
@@ -106,8 +100,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     setInputValue('');
     setDate(new Date());
   };
-
-  const onDateTimeChange = (event, selectedDate) => {
+  const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setShow(false);
     setDate(currentDate);
@@ -172,7 +165,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
             </View>
 
             <View style={{flex: 1, alignItems: 'center'}}>
-            <View style = {styles.timeanddatestyle}>
+              <View style = {styles.timeanddatestyle}>
                 <Text>Select Time and Date: </Text>
                 <TouchableOpacity onPress={showDatepicker}>
                   <Image
@@ -193,16 +186,16 @@ function ReminderSubtasksScreen({route, navigation}: any) {
                   value={date}
                   mode={mode}
                   is24Hour={false}
-                  onChange={onDateTimeChange}
+                  onChange={onChange}
                 />
               )}
-              <Text style = {{padding:8}}>selected: {date.toLocaleString()}</Text>
+            <Text style = {{padding:8}}>selected: {date.toLocaleString()}</Text>
             </View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 setModalVisible(!modalVisible);
-                handleAddSubtask(inputTitle, inputFeature, inputValue, date);
+                handleAddSubtask(inputTitle, inputFeature, inputValue,date );
                 initializeSubtaskInput();
               }}>
               <Text style={styles.textStyle}>Done ✓</Text>
@@ -216,16 +209,6 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         updateReminderCallback={handleModifyReminderTitle}
       />
       <View style={styles.content}>
-        <View style={{flexDirection: "row", alignContent: "center"}}>
-          <Text>{isEnabled ? "Show Completed" : "Hide Completed"}</Text>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-          />
-        </View>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />
         ) : (
