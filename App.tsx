@@ -7,6 +7,7 @@ import RealmContext from './app/models/Schemas';
 import { LogBox } from 'react-native';
 import PushNotification, {Importance} from "react-native-push-notification";
 import SimpleNote from './app/components/EditNote';
+import SubtaskModal from './app/components/SubtaskModal';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -54,6 +55,7 @@ const App = () => {
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name="EditNoteScreen" component={SimpleNote} />
+            <Stack.Screen name="EditSubtaskScreen" component={SubtaskModal} />
           </Stack.Group>
 
         </Stack.Navigator>

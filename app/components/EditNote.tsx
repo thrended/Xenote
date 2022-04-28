@@ -2,27 +2,14 @@
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import React, {useCallback, useState, useEffect} from 'react';
-import { Formik } from 'formik';
 import {
-  Alert,
-  Button,
-  FlatList,
   Keyboard,
-  KeyboardAvoidingView,
-  Image,
-  Modal,
   Pressable,
   Platform,
-  SafeAreaView,
-  ScrollView,
-  SectionList,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
-  useColorScheme,
   View,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';

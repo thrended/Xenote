@@ -34,49 +34,42 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   const reminder : (Reminder & Realm.Object) | undefined = realm?.objectForPrimaryKey("Reminder", new Realm.BSON.ObjectId(reminderId))!;
   const [result, setResult] = useState(reminder.subtasks);
 
-  const subtasks = useMemo(() => result, [result]);
+  const subtasks = useMemo(() => result, [result, result.length]);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [inputTitle, setInputTitle] = useState('');
-  const [inputFeature, setInputFeature] = useState('');
-  const [inputValue, setInputValue] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
+  useEffect(() => {
+    try {
+      reminder.addListener(() => {
+        // update state of tasks to the updated value
+        setResult(reminder.subtasks);
+      });
+    } catch (error) {
+      console.error(
+        `Unable to update the result state, an exception was thrown within the change listener: ${error}`
+      );
+    }
+  });
+
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
-  const handleAddSubtask = useCallback(
-    (_title: string, _feature: string, _value: string, _scheduledDatetime: Date): void => {
-      realm.write(() => {
-        // const newSubtask = realm.create('Subtask', Subtask.generate(_title, _feature, _value, _scheduledDatetime));
-        // reminder.subtasks.push(newSubtask);
-        reminder.subtasks.push(Subtask.generate(_title, _feature, _value, _scheduledDatetime));
-      });
+  const addSubtask = () : number => {
+    realm.write(() => {
+      reminder.subtasks.push(Subtask.generate("", "", "", new Date(reminder.scheduledDatetime)));
+    });
+    return reminder.subtasks.length - 1;
+  }
+
+  const handeNavigateToSubtaskEditPage = useCallback(
+    (index: number, reminderId: string): void => {
+      navigateToSubtaskEditPage(index, reminderId);
     },
     [realm],
   );
 
-  const handleModifySubtask = useCallback(
-    (
-      subtask: Subtask,
-      _title?: string,
-      _feature?: string,
-      _value?: string,
-      _scheduledDatetime?: Date,
-      _isComplete?: boolean,
-    ): void => {
-      realm.write(() => {
-        _title ? (subtask.title = _title) : {};
-        _feature ? (subtask.feature = _feature) : {};
-        _value ? (subtask.value = _value) : {};
-        _scheduledDatetime ? (subtask.scheduledDatetime = _scheduledDatetime) : {};
-        _isComplete !== undefined? (subtask.isComplete = _isComplete) : {};
-        // setSubtasks(result);
-      });
-    },
-    [realm],
-  );
+  const navigateToSubtaskEditPage = 
+    (index: number, reminderId: string): void => {
+      navigation.navigate("EditSubtaskScreen", {subtaskIndex: index, reminderId: reminderId} );
+    }
 
   const handleDeleteSubtask = useCallback(
     (task: Subtask): void => {
@@ -100,116 +93,8 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     [realm],
   );
 
-  const initializeSubtaskInput = () => {
-    setInputTitle('');
-    setInputFeature('');
-    setInputValue('');
-    setDate(new Date());
-  };
-
-  const onDateTimeChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-  };
-
-  const showMode = currentMode => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
   return (
     <SafeAreaView style={styles.screen}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Title: </Text>
-              <TextInput
-                value={inputTitle}
-                onChangeText={setInputTitle}
-                placeholder="Enter new task title"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Feature: </Text>
-              <TextInput
-                value={inputFeature}
-                onChangeText={setInputFeature}
-                placeholder="Add a feature"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Value: </Text>
-              <TextInput
-                value={inputValue}
-                onChangeText={setInputValue}
-                placeholder="Add a feature value"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-
-            <View style={{flex: 1, alignItems: 'center'}}>
-            <View style = {styles.timeanddatestyle}>
-                <Text>Select Time and Date: </Text>
-                <TouchableOpacity onPress={showDatepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../images/calendar.png')}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={showTimepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../images/clock.png')}
-                  />
-                </TouchableOpacity>
-              </View>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={false}
-                  onChange={onDateTimeChange}
-                />
-              )}
-              <Text style = {{padding:8}}>selected: {date.toLocaleString()}</Text>
-            </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                handleAddSubtask(inputTitle, inputFeature, inputValue, date);
-                initializeSubtaskInput();
-              }}>
-              <Text style={styles.textStyle}>Done ✓</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
       {/* <NewReminderHeaderBar onSubmit={() => {}} /> */}
       <NewReminderTitleAndDateTimeBar
         reminder={reminder}
@@ -231,12 +116,16 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         ) : (
           <ReminderContent
             subtasks={subtasks}
-            handleModifySubtask={handleModifySubtask}
+            reminderId={reminder._id.toHexString()}
             onDeleteSubtask={handleDeleteSubtask}
             onSwipeLeft={handleDeleteSubtask}
+            handleNavigation={handeNavigateToSubtaskEditPage}
           />
         )}
-        <AddSubtaskButton onSubmit={() => setModalVisible(true)} />
+        <AddSubtaskButton onSubmit={() => {
+          const newSubtaskIndex = addSubtask();
+          handeNavigateToSubtaskEditPage(newSubtaskIndex, reminder._id.toHexString())
+        }} />
       </View>
     </SafeAreaView>
   );

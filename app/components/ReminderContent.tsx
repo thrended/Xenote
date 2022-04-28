@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   FlatList,
@@ -11,43 +11,53 @@ import {
 } from 'react-native';
 import {Realm} from '@realm/react';
 
-import {Subtask} from '../models/Schemas';
+import RealmContext, {Subtask, Reminder} from '../models/Schemas';
 import SubtaskItem from './SubtaskItem';
+const {useRealm} = RealmContext;
 
 interface ReminderContentProps {
   subtasks: Realm.Results<Subtask> | [];
-  handleModifySubtask: (
-    subtask: Subtask,
-    _title?: string,
-    _feature?: string,
-    _value?: string,
-    _scheduledDatetime?: Date,
-    _isComplete?: boolean,
-  ) => void;
+  reminderId: string;
   onDeleteSubtask: (subtask: Subtask) => void;
   onSwipeLeft: (subtask: Subtask) => void;
+  handleNavigation: (index : number, reminderId : string) => void;
 }
 
 function ReminderContent({
   subtasks: subtasks,
-  handleModifySubtask,
+  reminderId: reminderId,
   onDeleteSubtask,
   onSwipeLeft,
+  handleNavigation,
 }: ReminderContentProps) {
+
+  const [subtaskList, setSubtaskList] = useState(subtasks);
+
+  const refreshSubtaskList = () => {
+    setSubtaskList(subtasks);
+  }
+
+  const subtaskRenderItem = ({item, index}) => {
+    return (
+      <SubtaskItem
+        subtask={item}
+        reminderId={reminderId}
+        index={index}
+        onDelete={() => onDeleteSubtask(item)}
+        onSwipeLeft={() => onSwipeLeft(item)}
+        handleNavigation={handleNavigation}
+        onChange={refreshSubtaskList}
+        // Don't spread the Realm item as such: {...item}
+      />
+    );
+  }
+
   return (
     <View style={styles.subtaskListContainer}>
       <FlatList
-        data={subtasks}
+        data={subtaskList}
         keyExtractor={subtask => subtask._id.toString()}
-        renderItem={({item}) => (
-          <SubtaskItem
-            subtask={item}
-            handleModifySubtask={handleModifySubtask}
-            onDelete={() => onDeleteSubtask(item)}
-            onSwipeLeft={() => onSwipeLeft(item)}
-            // Don't spread the Realm item as such: {...item}
-          />
-        )}
+        renderItem={subtaskRenderItem}
         extraData={subtasks}
       />
     </View>

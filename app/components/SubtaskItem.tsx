@@ -1,11 +1,7 @@
-import React, {memo, useDebugValue, useCallback, useState} from 'react';
+import React, {memo, useEffect, useCallback, useState} from 'react';
 import {
-  Image,
-  Modal,
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   Platform,
   Pressable,
   StyleSheet,
@@ -14,45 +10,34 @@ import {
 
 import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
-import SubtaskContext, {Subtask} from '../models/Schemas';
+import SubtaskContext, {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { NavigationContainer } from '@react-navigation/native';
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
 interface SubtaskItemProps {
   subtask: Subtask;
-  handleModifySubtask: (
-    subtask: Subtask,
-    _title?: string,
-    _feature?: string,
-    _value?: string,
-    _scheduledDatetime?: Date,
-    _isComplete?: boolean,
-  ) => void;
+  reminderId: string;
+  index: number
   onDelete: () => void;
   onSwipeLeft: () => void
+  handleNavigation: (index : number, reminderId : string) => void
+  onChange: () => void
 }
 
 function SubtaskItem({
   subtask: subtask,
-  handleModifySubtask,
+  reminderId: reminderId,
+  index: index,
   onDelete,
   onSwipeLeft,
+  handleNavigation,
+  onChange: refreshSubtaskList
 }: SubtaskItemProps) {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [inputTitle, setInputTitle] = useState(subtask.title);
-  const [inputFeature, setInputFeature] = useState(subtask.feature);
-  const [inputValue, setInputValue] = useState(subtask.value);
   const [date, setDate] = useState(subtask.scheduledDatetime);
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
   const [isChecked, setIsChecked] = useState(subtask.isComplete);
 
-  // const initializeSubtaskInput = () => {
-  //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
-  // }
 
-  const realm = useRealm();
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
 
   function onSwipeRt() {
@@ -63,26 +48,7 @@ function SubtaskItem({
     // console.log('right Swipe performed');
   }
 
-  const onChange = (event, selectedDate) => {
-    const newDate = selectedDate;
-    setShow(false);
-    setDate(newDate);
-    handleModifySubtask(subtask, undefined, undefined, undefined, newDate);
-  };
-
-  const showMode = currentMode => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
+  const realm = useRealm();
   const updateIsCompleted = useCallback(
     (
       subtask: Subtask,
@@ -97,101 +63,13 @@ function SubtaskItem({
 
   return (
     <Pressable
-      onLongPress={() => setModalVisible(true)}
+      onPress={() => console.log(index)}
+      onLongPress={() => {handleNavigation(index, reminderId)}}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
       hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
       android_ripple={{color:'#00f'}}
     >
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Title: </Text>
-              <TextInput
-                value={inputTitle}
-                onChangeText={setInputTitle}
-                placeholder="Enter new task title"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Feature: </Text>
-              <TextInput
-                value={inputFeature}
-                onChangeText={setInputFeature}
-                placeholder="Add a feature"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Value: </Text>
-              <TextInput
-                value={inputValue}
-                onChangeText={setInputValue}
-                placeholder="Add a feature value"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={{flex: 1, alignItems: 'center'}}>
-            <View style = {styles.timeanddatestyle}>
-                <Text>Select Time and Date: </Text>
-                <TouchableOpacity onPress={showDatepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../../images/calendar.png')}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={showTimepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../../images/clock.png')}
-                  />
-                </TouchableOpacity>
-              </View>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={false}
-                  onChange={onChange}
-                />
-              )}
-              <Text style={{padding: 8}}>
-                selected: {date.toLocaleString()}
-              </Text>
-            </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                handleModifySubtask(
-                  subtask,
-                  inputTitle,
-                  inputFeature,
-                  inputValue,
-                );
-                // initializeSubtaskInput();
-              }}
-            >
-              <Text style={styles.textStyle}>Done ✓</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
       <View style={styles.dateTimeContainer}>
         <View>
           <Text>{date.toLocaleTimeString('en-US')}</Text>
@@ -221,7 +99,13 @@ function SubtaskItem({
             <Text style={styles.textValue}>{subtask.value}</Text>
           </View>
         </View>
-        <Pressable onPress={onDelete} style={styles.deleteButton}>
+        <Pressable 
+          onPress={() => {
+            onDelete();
+            refreshSubtaskList();
+          }} 
+          style={styles.deleteButton}
+        >
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable>
       </View>
