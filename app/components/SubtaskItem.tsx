@@ -12,11 +12,18 @@ import {
   _Text,
 } from 'react-native';
 
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
 import SubtaskContext, {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import notifee, 
+{ AndroidCategory, AndroidColor, AndroidImportance, AndroidVisibility, 
+  AuthorizationStatus, EventType, IntervalTrigger, RepeatFrequency, 
+  TimestampTrigger, TimeUnit, TriggerNotification, TriggerType, 
+} from '@notifee/react-native';
+
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
 interface SubtaskItemProps {
@@ -53,14 +60,146 @@ function SubtaskItem({
   // }
 
   const realm = useRealm();
-  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
+  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, 8);
 
-  function onSwipeRt() {
+  function onSwipeRight() {
     /* flag or complete function goes here */
+    onDisplayNotification();
+    onCreateSubtaskTriggerNotification();
+  }
 
-    // setInputComplete(!inputComplete);
-    // onSwipeRight()
-    // console.log('right Swipe performed');
+  function onSwipeUp() {
+
+  }
+
+  function onSwipeDown() {
+
+  }
+
+  function calcTime(date: any) {
+    let now = Date.now();
+    let end = date;
+    let diff = (end - now);
+    return diff;
+  }
+
+  async function onDisplayNotification() {
+    // Create a channel
+    const channelId = await notifee.createChannel({
+      id: 'Notifee-2',
+      name: 'Notifee Subtasks Channel',
+      visibility: AndroidVisibility.PRIVATE,
+    });
+
+    try 
+    {
+    // Display a notification
+    await notifee.displayNotification({
+      title: subtask.title, // required
+      body: 'Subtask notification set for ' + subtask.scheduledDatetime.toLocaleString(),
+      android: {
+        autoCancel: false,
+        channelId,
+        importance: AndroidImportance.HIGH,
+        smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+        tag: "M gud",
+        //chronometerDirection: 'down',
+        showTimestamp: true,
+        //showChronometer: true,
+        timestamp: Date.now() + calcTime(subtask.scheduledDatetime),
+      },
+    });
+    } catch(e)
+    {
+      console.log("Reminder is already gone", e);
+    }
+  }
+
+  async function onCreateSubtaskTriggerNotification() {
+
+    let trigType = 0;
+    let trigInterval = RepeatFrequency.WEEKLY;
+    let DT = calcTime(subtask.scheduledDatetime) / 60000;
+    // switch(handlePriority(subtask.scheduledDatetime))
+    // {
+      
+    //   case "min":
+    //     break;
+    //   case "low":
+    //     trigInterval = RepeatFrequency.DAILY;
+    //     break;
+    //   case "default":
+    //     //trigInterval = Math.max(Math.round(DT/120), 1);
+    //     trigInterval = RepeatFrequency.HOURLY;
+    //     break;
+    //   default:
+    //     trigType = 1;
+    //     break;
+    // }
+
+    // Create a time-based trigger
+    const trigger1: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: Date.now(),
+      repeatFrequency: trigInterval,
+      //alarmManager: true,
+      alarmManager: {
+      allowWhileIdle: true,
+      },
+    };
+    
+    // Create an interval trigger if time is short
+    const trigger2: IntervalTrigger = {
+      type: TriggerType.INTERVAL,
+      interval: 15,     // MIN = 15
+      timeUnit: TimeUnit.MINUTES,
+    };
+    
+    try 
+    {
+    // Create a trigger notification
+    await notifee.createTriggerNotification(
+      {
+        id: subtask._id.toHexString(),
+        title: subtask.title,
+        body: subtask.scheduledDatetime.toLocaleString(),
+        android: {
+          autoCancel: false,
+          channelId: 'Notifee-2',
+          category: AndroidCategory.REMINDER,
+          importance: AndroidImportance.HIGH,
+          largeIcon: require('../../images/clock.png'),
+          circularLargeIcon: true,
+          ongoing: true,
+          tag: subtask._id.toHexString(),
+          chronometerDirection: 'down',
+          showTimestamp: true,
+          showChronometer: false,
+          timestamp: Date.now() + calcTime(subtask.scheduledDatetime),
+          actions: [
+            {
+              title: 'Actions',
+                icon: 'ic_small_icon',
+                pressAction: {
+                  id: 'subtask',
+                },
+                input: {
+                  allowFreeFormInput: false, // set to false
+                  choices: ['Snooze', 'Renew', 'Delete'],
+                  placeholder: 'placeholder',
+                },
+            },
+          ],
+        },
+      },
+      (trigType ? trigger1 : trigger2),
+      );
+      console.log("trigger type = ", trigType);
+      notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
+    } catch(e) 
+    {
+      console.log("Reminder is already gone", e);
+    }
   }
 
   const onChange = (event, selectedDate) => {
@@ -213,6 +352,19 @@ function SubtaskItem({
                 setIsChecked(previousState => !previousState);
                 updateIsCompleted(subtask, newValue);
                 // console.log("isChecked (local state): " + isChecked + ", subtask.isChecked: " + subtask.isComplete);
+              }}
+            />
+            <BouncyCheckbox
+              isChecked={isChecked}
+              size={25}
+              fillColor="#3CB043"
+              unfillColor="#FFFFFF"
+              text={subtask.isComplete.toString()}
+              iconStyle={{ borderColor: "#3CB043" }}
+              textStyle={{ fontFamily: "JosefinSans-Regular" }}
+              onPress={(isChecked: boolean) => {
+                setIsChecked(isChecked => !isChecked);
+                updateIsCompleted(subtask, isChecked);
               }}
             />
           </View>
