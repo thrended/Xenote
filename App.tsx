@@ -5,7 +5,7 @@ import RemindersListScreen from './screens/RemindersListScreen';
 import ReminderSubtasksScreen from './screens/ReminderSubtasksScreen';
 import RealmContext from './app/models/Schemas';
 import { LogBox } from 'react-native';
-import PushNotification, {Importance} from "react-native-push-notification";
+import notifee, {AuthorizationStatus} from '@notifee/react-native';
 import SimpleNote from './app/components/EditNote';
 
 LogBox.ignoreLogs([
@@ -19,23 +19,20 @@ const Stack = createNativeStackNavigator();
 const App = () => {
 
   React.useEffect( () => {
-    createTestNotifChannels();
+    checkNotificationPermissions();
   })
-
-  const createTestNotifChannels = () => {
-    PushNotification.createChannel(
-      {
-        channelId: "Notif-test-1", // REQUIRED
-        channelName: "Test notifications channel 1", // REQUIRED
-        channelDescription: "A channel to categorise your notifications", // (optional) default: undefined.
-        playSound: true, // (optional) default: true
-        soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
-        importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
-        vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
-      },
-      (created) => console.log(`createChannel returned '${created}'`) 
-    )
-  };
+  
+  async function checkNotificationPermissions() {
+    const settings = await notifee.getNotificationSettings();
+  
+    if (settings.authorizationStatus == AuthorizationStatus.AUTHORIZED) {
+      console.log('Notification permissions have been authorized');
+    } 
+    else if (settings.authorizationStatus == AuthorizationStatus.DENIED) {
+      console.log('Notification permissions status is currently denied. Requesting permission...');
+      await notifee.openNotificationSettings();
+    }
+  }
 
   if (!RealmProvider) {
     return null;

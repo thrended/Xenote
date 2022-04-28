@@ -16,10 +16,11 @@ import { useSwipe } from '../hooks/useSwipe';
 import ReminderContext, {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
 import RoundCheckbox from 'rn-round-checkbox';
-import PushNotification, {Importance} from "react-native-push-notification";
 import notifee, 
-{ AndroidColor, AndroidImportance, AndroidVisibility, EventType, IntervalTrigger, RepeatFrequency, TimestampTrigger, TimeUnit, TriggerNotification, TriggerType }
- from '@notifee/react-native';
+{ AndroidCategory, AndroidColor, AndroidImportance, AndroidVisibility, 
+  AuthorizationStatus, EventType, IntervalTrigger, RepeatFrequency, 
+  TimestampTrigger, TimeUnit, TriggerNotification, TriggerType, 
+} from '@notifee/react-native';
 
  const {useRealm, useQuery, RealmProvider} = ReminderContext;
 interface ReminderItemProps {
@@ -55,26 +56,35 @@ function ReminderItem({
     [realm],
   );
 
-  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 6);
+  const { onTouchStart, onTouchEnd } = 
+  useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, 8);
   const [notifsList, setNotifsList] = useState(['']);
   const notifs = new Set();
 
   const [isChecked, setIsChecked] = useState(reminder.isComplete);
 
-  function onSwipeRt() {
+  function onSwipeRight() {
     /* notify function goes here */
-    //scheduleNotification(reminder._id, reminder.scheduledDatetime);
-    onCreateTriggerNotification();
+    onDisplayNotification();
+    onCreateStackTriggerNotification();
     // setInputComplete(!inputComplete);
     // onSwipeRight()
     // console.log('right Swipe performed');
+  }
+
+  function onSwipeUp() {
+
+  }
+
+  function onSwipeDown() {
+
   }
 
   async function onDisplayNotification() {
     // Create a channel
     const channelId = await notifee.createChannel({
       id: 'Notifee-1',
-      name: 'New Notifee Channel',
+      name: 'Notifee Reminder Channel',
       visibility: AndroidVisibility.PUBLIC,
     });
 
@@ -83,16 +93,16 @@ function ReminderItem({
     // Display a notification
     await notifee.displayNotification({
       title: reminder.title, // required
-      body: 'Notifee notification set',
+      body: 'Reminder notification set for ' + reminder.scheduledDatetime.toLocaleString(),
       android: {
         autoCancel: false,
         channelId,
         importance: AndroidImportance.HIGH,
         smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
         tag: "M gud",
-        chronometerDirection: 'down',
+        //chronometerDirection: 'down',
         showTimestamp: true,
-        showChronometer: true,
+        //showChronometer: true,
         timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
       },
     });
@@ -150,14 +160,15 @@ function ReminderItem({
     // Create a trigger notification
     await notifee.createTriggerNotification(
       {
-        id: reminder._id.toString(),
+        id: reminder._id.toHexString(),
         title: reminder.title,
         body: reminder.scheduledDatetime.toLocaleString(),
         android: {
           autoCancel: false,
           channelId: 'Notifee-1',
+          category: AndroidCategory.ALARM,
           importance: AndroidImportance.HIGH,
-          tag: reminder._id.toString(),
+          tag: reminder._id.toHexString(),
           chronometerDirection: 'down',
           showTimestamp: true,
           showChronometer: true,
@@ -186,6 +197,177 @@ function ReminderItem({
       console.log("Reminder is already gone", e);
     }
   }
+
+  async function onCreateStackTriggerNotification() {
+    const enddate = Date.now() + calcTime(reminder.scheduledDatetime);
+    const lateNotif = enddate + 3600000;
+    const thirdNotif = enddate - 900000;
+    const secondNotif = enddate - 1800000;
+    const firstNotif = enddate - 3600000;
+
+    let trigType = 0;
+    let trigInterval = RepeatFrequency.WEEKLY;
+    let DT = calcTime(reminder.scheduledDatetime) / 60000;
+    switch(handlePriority(reminder.scheduledDatetime))
+    {
+      
+      case "min":
+        break;
+      case "low":
+        trigInterval = RepeatFrequency.DAILY;
+        break;
+      case "default":
+        //trigInterval = Math.max(Math.round(DT/120), 1);
+        trigInterval = RepeatFrequency.HOURLY;
+        break;
+      default:
+        trigInterval = RepeatFrequency.HOURLY;
+        trigType = 1;
+        break;
+    }
+
+    // Create time-based triggers
+
+    const trigger1: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: firstNotif,    // 1 hr before
+      //alarmManager: true,
+      alarmManager: {
+      allowWhileIdle: true,
+      },
+    };
+
+    const trigger2: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: secondNotif,   // 30 min before
+      //alarmManager: true,
+      alarmManager: {
+      allowWhileIdle: true,
+      },
+    };
+
+    const trigger3: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: thirdNotif,    // 15 min before
+      //repeatFrequency: trigInterval,
+      //alarmManager: true,
+      alarmManager: {
+      allowWhileIdle: true,
+      },
+    };
+
+    const trigger4: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: enddate,       // at reminder time
+      //repeatFrequency: RepeatFrequency.HOURLY,
+      //alarmManager: true,
+      alarmManager: {
+      allowWhileIdle: true,
+      },
+    };
+
+    const trigger5: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: lateNotif,     // 1 hour late reminder repeats hourly until cancelled
+      repeatFrequency: RepeatFrequency.HOURLY,
+      //alarmManager: true,
+      alarmManager: {
+      allowWhileIdle: true,
+      },
+    };
+    
+    const triggerlist = [ trigger1, trigger2, trigger3, trigger4, trigger5 ];
+    
+    for (let i = 0; i <= 4; i++) {
+      try 
+      {
+        // Create a trigger notification
+        if (i < 3)
+        {
+          await notifee.createTriggerNotification(
+          {
+            id: reminder._id.toHexString() + i.toString(),
+            title: reminder.title,
+            body: reminder.scheduledDatetime.toLocaleString(),
+            android: {
+              autoCancel: false,
+              channelId: 'Notifee-1',
+              category: AndroidCategory.REMINDER,
+              importance: AndroidImportance.HIGH,
+              ongoing: false,
+              tag: reminder._id.toHexString(),
+              chronometerDirection: 'down',
+              showTimestamp: true,
+              showChronometer: (i == 2 || i == 3 ? true : false),
+              timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
+              actions: [
+                {
+                  title: 'Options',
+                  icon: 'ic_small_icon',
+                  pressAction: {
+                    id: 'reminder',
+                  },
+                  input: {
+                    allowFreeFormInput: false, // set to false
+                    choices: ['Snooze', 'Renew', 'Delete'],
+                    placeholder: 'placeholder',
+                  },
+                },
+              ],
+            },
+          },
+          (triggerlist[i]),
+          );
+          notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
+        }
+        else
+        {
+          await notifee.createTriggerNotification(
+          {
+            id: (i == 4 ? reminder._id.toHexString() : reminder._id.toHexString() + i.toString()),
+            title: reminder.title,
+            body: reminder.scheduledDatetime.toLocaleString(),
+            android: {
+              autoCancel: false,
+              channelId: 'Notifee-1',
+              category: AndroidCategory.ALARM,
+              importance: AndroidImportance.HIGH,
+              largeIcon: require('../../images/clock.png'),
+              circularLargeIcon: true,
+              ongoing: i == 4,
+              tag: reminder._id.toHexString(),
+              showTimestamp: true,
+              timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
+              actions: [
+                {
+                  title: 'Options',
+                  icon: 'ic_small_icon',
+                  pressAction: {
+                    id: 'reminder',
+                  },
+                  input: {
+                    allowFreeFormInput: false, // set to false
+                    choices: ['Snooze', 'Renew', 'Delete'],
+                    placeholder: 'placeholder',
+                  },
+                },
+              ],
+              fullScreenAction: {
+                id: 'timer',
+              }
+            },
+          },
+          (triggerlist[i]),
+          );
+          notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
+        }
+      }
+      catch(e) 
+      {
+        console.log("Reminder is already gone", e);
+      }
+    };
+  }
   
   // notifee.onBackgroundEvent(async ({ type, detail }) => {
   //   if (type === EventType.ACTION_PRESS && detail.action.id === 'reply') {
@@ -203,14 +385,6 @@ function ReminderItem({
     let end = date;
     let diff = (end - now);
     return diff;
-  }
-
-  const handleNotification = () => {
-    PushNotification.localNotification({
-      channelId: "Notif-test-1",
-      title: "Test notification success",
-      message: "You clicked on a pressable reminder",
-    });
   }
   
   const handlePriority = (date?: any) => {
@@ -277,54 +451,9 @@ function ReminderItem({
     }
   }
 
-  const newNotifsList = (id: any) => { 
-    setNotifsList([...notifsList, id]);
-  }
-
-  const scheduleNotification = (id = reminder._id.toString(), date = reminder.scheduledDatetime) => {
-    let i = notifs.has(id);
-    console.log("id ", id, "has index i = ", i)  // DEBUG line
-    if(i)   // Notification already exists; turn off
-    {             // Turn off DOESN'T WORK
-      notifs.delete(id);
-      //setNotifsList(notifsList.splice(i, 1));
-      toggleCancelNotification();
-      console.log("Notification turned off. New notification list: ", notifs);
-      return;    
-    }
-    //handleNotification();
-    console.log("Reminder id: ",  id);
-    let prio = handlePriority(date);
-    PushNotification.localNotificationSchedule({
-      priority: handlePriority(date),
-      id: id,
-      date: new Date(Date.now() + 250),
-      allowWhileIdle: true,
-      repeatType: handleRepeatType(prio),
-      repeatTime: handleRepeatTime(prio), 
-      channelId: "Notif-test-1",
-      title: reminder.title + " " + reminder.scheduledDatetime.toLocaleString(),
-      message: prio.toUpperCase() + " priority scheduled notification \n" 
-      + "This reminder will reappear every " 
-      + handleRepeatTime(prio) + " " + handleRepeatType(prio) + "s",
-      vibrate: (prio == "high" || prio == "max" ? true : false),
-    });
-    setNotifsList([...notifsList, id]);
-    notifs.add(id);
-    console.log(reminder._id);
-    console.log(notifs, "\n");
-    PushNotification.getScheduledLocalNotifications(console.log);
-
-  }
-
-  async function toggleCancelNotification (id = reminder._id.toString()) {
-    PushNotification.cancelLocalNotification(id);
-  }
-
   return (
     <Pressable
-      onPress={() => onDisplayNotification() }   // Testing purposes
-      //onPress={() => scheduleNotification()}
+      //onPress={() => onDisplayNotification() }   // Testing purposes
       onLongPress={() => handleNavigation(reminder)}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}

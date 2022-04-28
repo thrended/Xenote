@@ -1,8 +1,5 @@
 
-
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import React, {useCallback, useState, useEffect} from 'react';
-import { Formik } from 'formik';
 import {
   Alert,
   Button,
@@ -64,6 +61,18 @@ function SimpleNote({route, navigation} : any) {
   const [inputAuthor, setInputAuthor] = useState(note.author);
   const [inputBody, setInputBody] = useState(note.body);
   const [inputPrio, setInputPrio] = useState(note.priority)
+  const prioButtonColors = ['#84FFEB', 'cyan', '#3666E9', '#0400FF', '#22E734', '#FBFF00', '#FFBB00', 'coral', '#E9443E', '#C5184C', '#992323'];
+
+  const renderButtons = () => {
+    for (let i = 0; i <= 10; i++)
+    {
+      <Pressable
+      onPress ={() => 
+        setInputPrio(i)} 
+      style={[globalStyles.buttonprio, {backgroundColor: prioButtonColors[i]}]} 
+      />
+    }
+  }
 
   return(
       <View style={styles.container}>
@@ -120,17 +129,17 @@ function SimpleNote({route, navigation} : any) {
               
               <View style={globalStyles.multibutton}>
                 <Text style={{paddingRight: 20}}>Priority</Text>
-                <Pressable onPress ={() => setInputPrio(0)} style={[globalStyles.buttonprio, {backgroundColor: '#84FFEB'}]} />
-                <Pressable onPress ={() => setInputPrio(1)} style={[globalStyles.buttonprio, {backgroundColor: 'cyan'}]} />
-                <Pressable onPress ={() => setInputPrio(2)} style={[globalStyles.buttonprio, {backgroundColor: '#3666E9'}]} />
-                <Pressable onPress ={() => setInputPrio(3)} style={[globalStyles.buttonprio, {backgroundColor: '#0400FF'}]} />
-                <Pressable onPress ={() => setInputPrio(4)} style={[globalStyles.buttonprio, {backgroundColor: '#22E734'}]} />
-                <Pressable onPress ={() => setInputPrio(5)} style={[globalStyles.buttonprio, {backgroundColor: '#FBFF00'}]} />
-                <Pressable onPress ={() => setInputPrio(6)} style={[globalStyles.buttonprio, {backgroundColor: '#FFBB00'}]} />
-                <Pressable onPress ={() => setInputPrio(7)} style={[globalStyles.buttonprio, {backgroundColor: 'coral'}]} />
-                <Pressable onPress ={() => setInputPrio(8)} style={[globalStyles.buttonprio, {backgroundColor: '#E9443E'}]} />
-                <Pressable onPress ={() => setInputPrio(9)} style={[globalStyles.buttonprio, {backgroundColor: '#C5184C'}]} />
-                <Pressable onPress ={() => setInputPrio(10)} style={[globalStyles.buttonprio, {backgroundColor: '#992323'}]} />
+                <Pressable onPress ={() => setInputPrio(0)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 0 ? 1.5 : 0), opacity: (inputPrio == 0 ? 1 : 0.35), backgroundColor: '#84FFEB'}]} />
+                <Pressable onPress ={() => setInputPrio(1)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 1 ? 1.5 : 0), opacity: (inputPrio == 1 ? 1 : 0.3),backgroundColor: 'cyan'}]} />
+                <Pressable onPress ={() => setInputPrio(2)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 2 ? 1.5 : 0), opacity: (inputPrio == 2 ? 1 : 0.3),backgroundColor: '#3666E9'}]} />
+                <Pressable onPress ={() => setInputPrio(3)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 3 ? 1.5 : 0), opacity: (inputPrio == 3 ? 1 : 0.3),backgroundColor: '#0400FF'}]} />
+                <Pressable onPress ={() => setInputPrio(4)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 4 ? 1.5 : 0), opacity: (inputPrio == 4 ? 1 : 0.3),backgroundColor: '#22E734'}]} />
+                <Pressable onPress ={() => setInputPrio(5)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 5 ? 1.5 : 0), opacity: (inputPrio == 5 ? 1 : 0.35),backgroundColor: '#FBFF00'}]} />
+                <Pressable onPress ={() => setInputPrio(6)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 6 ? 1.5 : 0), opacity: (inputPrio == 6 ? 1 : 0.35),backgroundColor: '#FFBB00'}]} />
+                <Pressable onPress ={() => setInputPrio(7)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 7 ? 1.5 : 0), opacity: (inputPrio == 7 ? 1 : 0.35),backgroundColor: 'coral'}]} />
+                <Pressable onPress ={() => setInputPrio(8)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 8 ? 1.5 : 0), opacity: (inputPrio == 8 ? 1 : 0.35),backgroundColor: '#E9443E'}]} />
+                <Pressable onPress ={() => setInputPrio(9)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 9 ? 1.5 : 0), opacity: (inputPrio == 9 ? 1 : 0.35),backgroundColor: '#C5184C'}]} />
+                <Pressable onPress ={() => setInputPrio(10)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 10 ? 1.5 : 0), opacity: (inputPrio == 10 ? 1 : 0.35),backgroundColor: '#992323'}]} />
               </View>
 
               <View style={[globalStyles.separatorV, {marginVertical: 20}]}/>
