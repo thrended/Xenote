@@ -57,18 +57,71 @@ function ReminderItem({
   );
 
   const { onTouchStart, onTouchEnd } = 
-  useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, 8);
+  useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
   const [notifsList, setNotifsList] = useState(['']);
   const notifs = new Set();
 
   const [isChecked, setIsChecked] = useState(reminder.isComplete);
+  
+
+  function clearNotifications() {
+    let idStrings = [ reminder._id.toHexString(), reminder._id.toHexString() + '1', 
+    reminder._id.toHexString() + '2', reminder._id.toHexString() + '3', reminder._id.toHexString() + '4' ];
+
+    try
+    {
+      notifee.cancelTriggerNotifications(idStrings);
+    }
+    catch(e)
+    {
+      console.log("id does not exist, skipping deletion", e);
+    }
+    finally
+    {
+      console.log("All notifications for this reminder have been deleted.");
+      Alert.alert("Cancelled all notifications for this reminder");
+    }
+  }
+
+  // function setNotificationImportance() {
+  //   let idStrings = [ reminder._id.toHexString(), reminder._id.toHexString() + '1', 
+  //   reminder._id.toHexString() + '2', reminder._id.toHexString() + '3', reminder._id.toHexString() + '4' ];
+    
+  //   for (const id in idStrings) {
+  //     try
+  //     {
+  //       notifee.cancelTriggerNotifications(idStrings);
+  //     }
+  //     catch(e)
+  //     {
+  //       console.log("Reminder id does not exist, skipping deletion", e);
+  //     }
+  //     finally
+  //     {
+  //       console.log("All notifications for this reminder have been deleted.");
+  //       (x ? Alert.alert("Cancelled all notifications for this reminder") : {});
+  //     }
+  //   }
+  // }
+
+  function onClearButton() {
+    clearNotifications();
+      Alert.alert("Cancelled all notifications for this reminder");
+  }
+
+  function onDeleteFunc() {
+    clearNotifications();
+    onDelete();
+  }
+  function onSwipeLeftFunc() {
+    clearNotifications();
+    onSwipeLeft();
+  }
 
   function onSwipeRight() {
     /* notify function goes here */
     onDisplayNotification();
     onCreateStackTriggerNotification();
-    // setInputComplete(!inputComplete);
-    // onSwipeRight()
     // console.log('right Swipe performed');
   }
 
@@ -83,9 +136,10 @@ function ReminderItem({
   async function onDisplayNotification() {
     // Create a channel
     const channelId = await notifee.createChannel({
-      id: 'Notifee-1',
-      name: 'Notifee Reminder Channel',
-      visibility: AndroidVisibility.PUBLIC,
+      id: 'Channel-0',
+      name: 'Reminder initial notifications',
+      visibility: AndroidVisibility.SECRET,
+      importance: AndroidImportance.DEFAULT,
     });
 
     try 
@@ -97,7 +151,7 @@ function ReminderItem({
       android: {
         autoCancel: false,
         channelId,
-        importance: AndroidImportance.HIGH,
+        importance: AndroidImportance.DEFAULT,
         smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
         tag: "M gud",
         //chronometerDirection: 'down',
@@ -113,9 +167,6 @@ function ReminderItem({
   }
 
   async function onCreateTriggerNotification() {
-    const date = new Date(Date.now());
-    date.setHours(11);
-    date.setMinutes(10);
 
     let trigType = 0;
     let trigInterval = RepeatFrequency.WEEKLY;
@@ -155,6 +206,14 @@ function ReminderItem({
       timeUnit: TimeUnit.MINUTES,
     };
     
+    // Create a new channel
+    const channelId = await notifee.createChannel({
+      id: 'Channel-1',
+      name: 'Reminders',
+      visibility: AndroidVisibility.PUBLIC,
+      importance: AndroidImportance.HIGH,
+    });
+
     try 
     {
     // Create a trigger notification
@@ -165,7 +224,7 @@ function ReminderItem({
         body: reminder.scheduledDatetime.toLocaleString(),
         android: {
           autoCancel: false,
-          channelId: 'Notifee-1',
+          channelId,
           category: AndroidCategory.ALARM,
           importance: AndroidImportance.HIGH,
           tag: reminder._id.toHexString(),
@@ -175,14 +234,14 @@ function ReminderItem({
           timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
           actions: [
             {
-              title: 'Turn off',
-              icon: 'https://my-cdn.com/icons/reply.png',
+              title: 'Options',
+              icon: 'ic_small_icon',
               pressAction: {
-                id: 'default',
+                id: 'reminder',
               },
               input: {
                 allowFreeFormInput: false, // set to false
-                choices: ['Yes', 'No', 'Maybe'],
+                choices: ['Snooze', 'Renew', 'Delete'],
                 placeholder: 'placeholder',
               },
             },
@@ -192,7 +251,8 @@ function ReminderItem({
       (trigType ? trigger1 : trigger2),
       );
       notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
-    } catch(e) 
+    } 
+    catch(e) 
     {
       console.log("Reminder is already gone", e);
     }
@@ -275,8 +335,17 @@ function ReminderItem({
       allowWhileIdle: true,
       },
     };
+
+    // Create a new channel
+    const channelId = await notifee.createChannel({
+      id: 'Channel-1',
+      name: 'Reminders',
+      visibility: AndroidVisibility.PUBLIC,
+      importance: AndroidImportance.HIGH,
+    });
     
     const triggerlist = [ trigger1, trigger2, trigger3, trigger4, trigger5 ];
+    const importanceList = [AndroidImportance.MIN, AndroidImportance.LOW, AndroidImportance.DEFAULT];
     
     for (let i = 0; i <= 4; i++) {
       try 
@@ -291,14 +360,14 @@ function ReminderItem({
             body: reminder.scheduledDatetime.toLocaleString(),
             android: {
               autoCancel: false,
-              channelId: 'Notifee-1',
+              channelId,
               category: AndroidCategory.REMINDER,
-              importance: AndroidImportance.HIGH,
+              importance: importanceList[i],
               ongoing: false,
               tag: reminder._id.toHexString(),
               chronometerDirection: 'down',
               showTimestamp: true,
-              showChronometer: (i == 2 || i == 3 ? true : false),
+              showChronometer: (i == 2 || i == 3 ? true : false),   // show countdown on second and third notifs
               timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
               actions: [
                 {
@@ -325,11 +394,12 @@ function ReminderItem({
           await notifee.createTriggerNotification(
           {
             id: (i == 4 ? reminder._id.toHexString() : reminder._id.toHexString() + i.toString()),
-            title: reminder.title,
-            body: reminder.scheduledDatetime.toLocaleString(),
+            title: '<p style="color: #4caf50;"><b>reminder.title</span></p></b></p> &#128576;',
+            subtitle: '&#129395;',
+            body: reminder.scheduledDatetime.toLocaleString() + '&#129395;',
             android: {
               autoCancel: false,
-              channelId: 'Notifee-1',
+              channelId: 'Channel-1',
               category: AndroidCategory.ALARM,
               importance: AndroidImportance.HIGH,
               largeIcon: require('../../images/clock.png'),
@@ -484,6 +554,7 @@ function ReminderItem({
               onPress={(isChecked: boolean) => {
                 setIsChecked(isChecked => !isChecked);
                 updateIsCompleted(reminder, isChecked);
+                isChecked ? clearNotifications() : {};
               }}
             />
           </View>
@@ -494,7 +565,7 @@ function ReminderItem({
           </View>
         </View>
         <Pressable
-         onPress={onDelete} 
+         onPress={onDeleteFunc} 
          style={styles.deleteButton}
         >
           <Text style={styles.deleteText}>Delete</Text>

@@ -92,9 +92,13 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
     <View style={[globalStyles.content, {flexDirection: 'row'} ]}>
       <View style={{flex: 6.5}}>
       <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onLongPress={() => handleNavigateToEdit(note)}>
-        <Text style={globalStyles.note}>
-            {note.title}    {note.body.slice(0, Math.min(50, note.body.length))}            Priority: {note.priority}
+      <Text style={[globalStyles.note, {fontSize: 20, fontWeight: 'bold'}]}>
+        {note.title}
+        <Text style={[globalStyles.note, {padding: 10, fontSize: 10, fontWeight: 'normal'}]}>
+          {note.body.slice(0, Math.min(50, note.body.length))}            Priority: {note.priority}
         </Text>
+      </Text>
+        
       </Pressable>
       </View>
       <View style = {{flex: 1}}>
