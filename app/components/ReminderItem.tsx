@@ -15,7 +15,7 @@ import {
 import { useSwipe } from '../hooks/useSwipe';
 import ReminderContext, {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
-import RoundCheckbox from 'rn-round-checkbox';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import notifee, 
 { AndroidCategory, AndroidColor, AndroidImportance, AndroidVisibility, 
   AuthorizationStatus, EventType, IntervalTrigger, RepeatFrequency, 
@@ -471,16 +471,19 @@ function ReminderItem({
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
-            <View/>
+            <View style={{width: 30}}/>
             <Text style={styles.textTitle}>{reminder.title}</Text>
-            <RoundCheckbox
-              backgroundColor='#3CB043'
-              size={20}
-              checked={isChecked}
-              onValueChange={(newValue) => {
-                setIsChecked(previousState => !previousState);
-                updateIsCompleted(reminder, newValue);
-                // console.log("isChecked (local state): " + isChecked + ", subtask.isChecked: " + subtask.isComplete);
+            <BouncyCheckbox
+              isChecked={isChecked}
+              size={25}
+              fillColor="#3CB043"
+              unfillColor="#FFFFFF"
+              iconStyle={{ borderColor: "#3CB043" }}
+              textStyle={{ fontFamily: "JosefinSans-Regular" }}
+              disableText={true}
+              onPress={(isChecked: boolean) => {
+                setIsChecked(isChecked => !isChecked);
+                updateIsCompleted(reminder, isChecked);
               }}
             />
           </View>
