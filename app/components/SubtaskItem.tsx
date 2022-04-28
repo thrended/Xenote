@@ -15,6 +15,7 @@ import {
 import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
 import SubtaskContext, {Subtask} from '../models/Schemas';
+import SubtaskModal from '../components/SubtaskModal';
 import colors from '../styles/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
@@ -40,13 +41,20 @@ function SubtaskItem({
   onSwipeLeft,
 }: SubtaskItemProps) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [inputTitle, setInputTitle] = useState(subtask.title);
-  const [inputFeature, setInputFeature] = useState(subtask.feature);
-  const [inputValue, setInputValue] = useState(subtask.value);
   const [date, setDate] = useState(subtask.scheduledDatetime);
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
   const [isChecked, setIsChecked] = useState(subtask.isComplete);
+
+  const closeModal = () => {
+    if (modalVisible) {
+      setModalVisible(previousState => !previousState);
+    }
+  }
+
+  const openModal = () => {
+    if (!modalVisible) {
+      setModalVisible(previousState => !previousState);
+    }
+  }
 
   // const initializeSubtaskInput = () => {
   //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
@@ -63,26 +71,6 @@ function SubtaskItem({
     // console.log('right Swipe performed');
   }
 
-  const onChange = (event, selectedDate) => {
-    const newDate = selectedDate;
-    setShow(false);
-    setDate(newDate);
-    handleModifySubtask(subtask, undefined, undefined, undefined, newDate);
-  };
-
-  const showMode = currentMode => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
   const updateIsCompleted = useCallback(
     (
       subtask: Subtask,
@@ -97,7 +85,7 @@ function SubtaskItem({
 
   return (
     <Pressable
-      onLongPress={() => setModalVisible(true)}
+      onLongPress={openModal}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
       hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
@@ -107,90 +95,16 @@ function SubtaskItem({
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Title: </Text>
-              <TextInput
-                value={inputTitle}
-                onChangeText={setInputTitle}
-                placeholder="Enter new task title"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Feature: </Text>
-              <TextInput
-                value={inputFeature}
-                onChangeText={setInputFeature}
-                placeholder="Add a feature"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Value: </Text>
-              <TextInput
-                value={inputValue}
-                onChangeText={setInputValue}
-                placeholder="Add a feature value"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={{flex: 1, alignItems: 'center'}}>
-            <View style = {styles.timeanddatestyle}>
-                <Text>Select Time and Date: </Text>
-                <TouchableOpacity onPress={showDatepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../../images/calendar.png')}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={showTimepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../../images/clock.png')}
-                  />
-                </TouchableOpacity>
-              </View>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={false}
-                  onChange={onChange}
-                />
-              )}
-              <Text style={{padding: 8}}>
-                selected: {date.toLocaleString()}
-              </Text>
-            </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                handleModifySubtask(
-                  subtask,
-                  inputTitle,
-                  inputFeature,
-                  inputValue,
-                );
-                // initializeSubtaskInput();
-              }}
-            >
-              <Text style={styles.textStyle}>Done ✓</Text>
-            </Pressable>
-          </View>
-        </View>
+        onRequestClose={closeModal}
+      >
+        <SubtaskModal 
+          onSubmit={() => {}}
+          handleAddSubtask={() => {}}
+          handleModifySubtask={handleModifySubtask}
+          isNew={false}
+          closeModal={closeModal}
+          subtask={subtask}
+        />
       </Modal>
       <View style={styles.dateTimeContainer}>
         <View>
@@ -221,9 +135,9 @@ function SubtaskItem({
             <Text style={styles.textValue}>{subtask.value}</Text>
           </View>
         </View>
-        <Pressable onPress={onDelete} style={styles.deleteButton}>
+        {/* <Pressable onPress={onDelete} style={styles.deleteButton}>
           <Text style={styles.deleteText}>Delete</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </Pressable>
   );

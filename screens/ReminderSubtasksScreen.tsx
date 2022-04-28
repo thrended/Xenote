@@ -20,6 +20,7 @@ import SubtaskListDefaultText from '../app/components/SubtaskListDefaultText';
 import AddSubtaskButton from '../app/components/AddSubtaskButton';
 import NewReminderHeaderBar from '../app/components/NewReminderHeaderBar';
 import ReminderContent from '../app/components/ReminderContent';
+import SubtaskModal from '../app/components/SubtaskModal';
 import colors from '../app/styles/colors';
 import {Results} from 'realm';
 import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
@@ -100,32 +101,6 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     [realm],
   );
 
-  const initializeSubtaskInput = () => {
-    setInputTitle('');
-    setInputFeature('');
-    setInputValue('');
-    setDate(new Date());
-  };
-
-  const onDateTimeChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-  };
-
-  const showMode = currentMode => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
   return (
     <SafeAreaView style={styles.screen}>
       <Modal
@@ -135,80 +110,13 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Title: </Text>
-              <TextInput
-                value={inputTitle}
-                onChangeText={setInputTitle}
-                placeholder="Enter new task title"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Feature: </Text>
-              <TextInput
-                value={inputFeature}
-                onChangeText={setInputFeature}
-                placeholder="Add a feature"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-            <View style={styles.modalRow}>
-              <Text style={styles.modalText}>Value: </Text>
-              <TextInput
-                value={inputValue}
-                onChangeText={setInputValue}
-                placeholder="Add a feature value"
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={styles.textInput}
-              />
-            </View>
-
-            <View style={{flex: 1, alignItems: 'center'}}>
-            <View style = {styles.timeanddatestyle}>
-                <Text>Select Time and Date: </Text>
-                <TouchableOpacity onPress={showDatepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../images/calendar.png')}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={showTimepicker}>
-                  <Image
-                    style={styles.container}
-                    source={require('../images/clock.png')}
-                  />
-                </TouchableOpacity>
-              </View>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={false}
-                  onChange={onDateTimeChange}
-                />
-              )}
-              <Text style = {{padding:8}}>selected: {date.toLocaleString()}</Text>
-            </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                handleAddSubtask(inputTitle, inputFeature, inputValue, date);
-                initializeSubtaskInput();
-              }}>
-              <Text style={styles.textStyle}>Done ✓</Text>
-            </Pressable>
-          </View>
-        </View>
+        <SubtaskModal 
+          onSubmit={() => {}}
+          handleAddSubtask={handleAddSubtask}
+          handleModifySubtask={handleModifySubtask}
+          isNew={true}
+          closeModal={() => setModalVisible(!modalVisible)}
+        />
       </Modal>
       {/* <NewReminderHeaderBar onSubmit={() => {}} /> */}
       <NewReminderTitleAndDateTimeBar
@@ -236,7 +144,8 @@ function ReminderSubtasksScreen({route, navigation}: any) {
             onSwipeLeft={handleDeleteSubtask}
           />
         )}
-        <AddSubtaskButton onSubmit={() => setModalVisible(true)} />
+        <AddSubtaskButton onSubmit={() => {
+          setModalVisible(true);}} />
       </View>
     </SafeAreaView>
   );
