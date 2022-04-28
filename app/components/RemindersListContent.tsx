@@ -49,6 +49,7 @@ function RemindersListContent({
           />
         )}
         extraData={reminders}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

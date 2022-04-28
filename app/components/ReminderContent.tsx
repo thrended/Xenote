@@ -49,6 +49,7 @@ function ReminderContent({
           />
         )}
         extraData={subtasks}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

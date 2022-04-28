@@ -256,26 +256,16 @@ function SubtaskItem({
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
-            <View/>
+            <View style={{width: 30}}/>
             <Text style={styles.textTitle}>{subtask.title}</Text>
-            <RoundCheckbox
-              backgroundColor='#3CB043'
-              size={20}
-              checked={isChecked}
-              onValueChange={(newValue) => {
-                setIsChecked(previousState => !previousState);
-                updateIsCompleted(subtask, newValue);
-                // console.log("isChecked (local state): " + isChecked + ", subtask.isChecked: " + subtask.isComplete);
-              }}
-            />
             <BouncyCheckbox
               isChecked={isChecked}
               size={25}
               fillColor="#3CB043"
               unfillColor="#FFFFFF"
-              text={subtask.isComplete.toString()}
               iconStyle={{ borderColor: "#3CB043" }}
               textStyle={{ fontFamily: "JosefinSans-Regular" }}
+              disableText={true}
               onPress={(isChecked: boolean) => {
                 setIsChecked(isChecked => !isChecked);
                 updateIsCompleted(subtask, isChecked);
