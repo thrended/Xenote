@@ -12,6 +12,7 @@ import {
   Image,
   Modal,
   Pressable,
+  Platform,
   SafeAreaView,
   ScrollView,
   SectionList,
@@ -29,6 +30,7 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import { globalStyles } from "../styles/global";
 import RealmContext, {Note} from '../models/Schemas';
 import { NavigationEvents } from "react-navigation";
+import colors from '../styles/colors';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
@@ -71,9 +73,12 @@ function SimpleNote({route, navigation} : any) {
               <MaterialIcons
                 name='close'
                 size={24}
-                style={{ ...globalStyles.modalToggle, ...globalStyles.modalClose }}
-                onPress={() => {}}
+                style={{ ...globalStyles.modalToggle}}
+                onPress={() => navigation.goBack()}
               />
+              <View style={[globalStyles.containerTitle]}>
+                <Text style={globalStyles.titleMain}>New Simple Note</Text>
+              </View>
               <Foundation
                 name='check'
                 size={24}
@@ -81,11 +86,11 @@ function SimpleNote({route, navigation} : any) {
                     ...globalStyles.modalToggle,
                     ...globalStyles.modalClose,
                   }}
-                onPress={() => {}}
+                onPress={() => {
+                  modifyNote(note, inputTitle, inputAuthor, inputBody, inputPrio);
+                  navigation.goBack();
+                }}
               />
-            </View>
-            <View style={[globalStyles.containerTitle, {paddingTop: 25}]}>
-              <Text style={globalStyles.titleMain}>New Simple Note</Text>
             </View>
             <View>
               <TextInput
@@ -129,42 +134,28 @@ function SimpleNote({route, navigation} : any) {
               </View>
 
               <View style={[globalStyles.separatorV, {marginVertical: 20}]}/>
-              <Pressable
-                onPress={() => {
-                  modifyNote(note, inputTitle, inputAuthor, inputBody, inputPrio);
-                  navigation.goBack();
-                }}
-                hitSlop={{ top: 5, bottom: 5, right: 10, left: 10}}
-                android_ripple={{color:'#00f'}}
-                style={({pressed}) => [
-                  { backgroundColor: pressed ? '#1a75ee' : '#0ffdac' },
-                styles.button
-                ]}
-              >
-                <Text style={[styles.button, {alignItems: 'center'}]}>
-                  Save Note
-                </Text>
-              </Pressable>
             </View>
           </View>
         </TouchableWithoutFeedback>
-
       </View>
     )
-
   }
-
 
   const styles = StyleSheet.create({
     container: {
+      backgroundColor: colors.white,
       flex: 1,
-      paddingTop: StatusBar.currentHeight,
-      marginHorizontal: 16,
+      // paddingTop: StatusBar.currentHeight,
+      paddingHorizontal: 20,
     },
     item: {
-      backgroundColor: '#a3e7ff',
-      padding: 20,
-      marginVertical: 8,
+      // textAlign: "center",
+      paddingHorizontal: 8,
+      paddingVertical: Platform.OS === 'ios' ? 8 : 0,
+      backgroundColor: colors.white,
+      fontSize: 16,
+      borderRadius: 10,
+      borderWidth: 1
     },
     header: {
       fontSize: 32,

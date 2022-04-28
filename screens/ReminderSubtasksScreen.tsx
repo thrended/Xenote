@@ -70,8 +70,8 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         _title ? (subtask.title = _title) : {};
         _feature ? (subtask.feature = _feature) : {};
         _value ? (subtask.value = _value) : {};
-        _scheduledDatetime? (subtask.scheduledDatetime = _scheduledDatetime) : {};
-        _isComplete? (subtask.isComplete = _isComplete) : {};
+        _scheduledDatetime ? (subtask.scheduledDatetime = _scheduledDatetime) : {};
+        _isComplete !== undefined? (subtask.isComplete = _isComplete) : {};
         // setSubtasks(result);
       });
     },

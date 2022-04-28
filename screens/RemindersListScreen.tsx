@@ -19,7 +19,6 @@ import ReminderListDefaultText from '../app/components/ReminderListDefaultText';
 import RemindersListContent from '../app/components/RemindersListContent';
 import AddReminderButton from '../app/components/AddReminderButton';
 import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
-
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import SimpleNote from '../app/components/EditNote';
 import NoteItem from '../app/components/NoteItem';
@@ -137,21 +136,37 @@ const RemindersListScreen = ({route, navigation} : any) => {
     }
   });
 
-  const handleAddReminder = useCallback(
-    (_title: string, _scheduledDatetime: Date): void => {
-      realm.write(() => {
-        realm.create('Reminder', Reminder.generate(_title, _scheduledDatetime));
-      });
+  // const handleAddReminder = useCallback(
+  //   (_title: string, _scheduledDatetime: Date): void => {
+  //     realm.write(() => {
+  //       realm.create('Reminder', Reminder.generate(_title, _scheduledDatetime));
+  //     });
+  //   },
+  //   [realm],
+  // );
+
+  const addReminder = () : Realm.BSON.ObjectId => {
+    let newReminderId = new Realm.BSON.ObjectId();
+    realm.write(() => {
+      const newReminder = realm.create<Reminder>(
+        'Reminder', Reminder.generate("", new Date()),
+      );
+      newReminderId = newReminder._id;
+    });
+    return newReminderId;
+  }
+
+  const handeNavigateToReminderEditPage = useCallback(
+    (reminder: Reminder): void => {
+      navigateToReminderEditPage(reminder._id.toHexString());
     },
     [realm],
   );
 
-  const handeNavigateToReminderEditPage = useCallback(
-    (reminder: Reminder): void => {
-      navigation.navigate("ReminderSubtasksScreen", {reminderId: reminder._id.toHexString()} );
-    },
-    [realm],
-  );
+  const navigateToReminderEditPage = 
+    (reminderId: string): void => {
+      navigation.navigate("ReminderSubtasksScreen", {reminderId: reminderId} );
+    }
 
   const handleNavigateToNoteEditPage = useCallback(
     (note: Note): void => {
@@ -249,7 +264,10 @@ const RemindersListScreen = ({route, navigation} : any) => {
           />
         )}
           <AddReminderButton
-            onSubmit={() => handleAddReminder('New Reminder', new Date())}
+            onSubmit={() => {
+              const newReminderId = addReminder();
+              navigateToReminderEditPage(newReminderId.toHexString());
+            }}
           />
       </View>
       )}

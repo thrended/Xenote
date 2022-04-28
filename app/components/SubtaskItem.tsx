@@ -1,4 +1,4 @@
-import React, {memo, useDebugValue, useState} from 'react';
+import React, {memo, useDebugValue, useCallback, useState} from 'react';
 import {
   Image,
   Modal,
@@ -11,11 +11,13 @@ import {
   StyleSheet,
   _Text,
 } from 'react-native';
+
 import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
-import {Subtask} from '../models/Schemas';
+import SubtaskContext, {Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
+const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
 interface SubtaskItemProps {
   subtask: Subtask;
@@ -50,6 +52,7 @@ function SubtaskItem({
   //   setInputTitle(title); setInputFeature(feature); setInputValue(value);
   // }
 
+  const realm = useRealm();
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 12);
 
   function onSwipeRt() {
@@ -79,6 +82,18 @@ function SubtaskItem({
   const showTimepicker = () => {
     showMode('time');
   };
+
+  const updateIsCompleted = useCallback(
+    (
+      subtask: Subtask,
+      _isComplete: boolean,
+    ): void => {
+      realm.write(() => {
+        subtask.isComplete = _isComplete;
+      });
+    },
+    [realm],
+  );
 
   return (
     <Pressable
@@ -195,8 +210,9 @@ function SubtaskItem({
               size={20}
               checked={isChecked}
               onValueChange={(newValue) => {
-                setIsChecked(newValue);
-                handleModifySubtask(subtask, undefined, undefined, undefined , undefined, newValue)
+                setIsChecked(previousState => !previousState);
+                updateIsCompleted(subtask, newValue);
+                // console.log("isChecked (local state): " + isChecked + ", subtask.isChecked: " + subtask.isComplete);
               }}
             />
           </View>

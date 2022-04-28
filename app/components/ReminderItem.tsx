@@ -1,4 +1,4 @@
-import React, {memo, useDebugValue, useState} from 'react';
+import React, {memo, useCallback, useDebugValue, useState} from 'react';
 import {
   Alert,
   Modal,
@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 
 import { useSwipe } from '../hooks/useSwipe';
-import {Reminder, Subtask} from '../models/Schemas';
+import ReminderContext, {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
+import RoundCheckbox from 'rn-round-checkbox';
 import PushNotification, {Importance} from "react-native-push-notification";
 import notifee, 
 { AndroidColor, AndroidImportance, AndroidVisibility, EventType, IntervalTrigger, RepeatFrequency, TimestampTrigger, TimeUnit, TriggerNotification, TriggerType }
  from '@notifee/react-native';
 
+ const {useRealm, useQuery, RealmProvider} = ReminderContext;
 interface ReminderItemProps {
   reminder: Reminder;
   handleModifyReminder: (
@@ -40,11 +42,24 @@ function ReminderItem({
   handleNavigation,
 }: ReminderItemProps) {
 
+  const realm = useRealm();
+  const updateIsCompleted = useCallback(
+    (
+      reminder: Reminder,
+      _isComplete: boolean,
+    ): void => {
+      realm.write(() => {
+        reminder.isComplete = _isComplete;
+      });
+    },
+    [realm],
+  );
+
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRt, 6);
-
   const [notifsList, setNotifsList] = useState(['']);
-
   const notifs = new Set();
+
+  const [isChecked, setIsChecked] = useState(reminder.isComplete);
 
   function onSwipeRt() {
     /* notify function goes here */
@@ -327,7 +342,18 @@ function ReminderItem({
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
+            <View/>
             <Text style={styles.textTitle}>{reminder.title}</Text>
+            <RoundCheckbox
+              backgroundColor='#3CB043'
+              size={20}
+              checked={isChecked}
+              onValueChange={(newValue) => {
+                setIsChecked(previousState => !previousState);
+                updateIsCompleted(reminder, newValue);
+                // console.log("isChecked (local state): " + isChecked + ", subtask.isChecked: " + subtask.isComplete);
+              }}
+            />
           </View>
           <View style={styles.subtaskListContainer}>
             {reminder.subtasks.map((subtask) => 
@@ -446,6 +472,8 @@ const styles = StyleSheet.create({
   titleInputContainer: {
     flex: 1,
     justifyContent: 'center',
+    flexDirection: 'row',
+    alignContent: "space-between",
     alignItems: 'center',
     marginHorizontal: 8,
     marginVertical: 8,
