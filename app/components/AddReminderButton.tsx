@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,            
-    backgroundColor: '#3CB043',                                    
+    backgroundColor: colors.dark,                                    
     ...Platform.select({
       ios: {
         shadowColor: colors.black,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     }),
   },
   icon: {
-    color: colors.white,
+    color: colors.subtle,
     textAlign: 'center',
     fontSize: 24,
     fontWeight: 'bold',

@@ -17,6 +17,7 @@
     "@react-navigation/native-stack": "^6.6.1",
     "@realm/react": "^0.1.0",
     "@types/react-native-vector-icons": "^6.4.10",
+    "date-fns": "^2.28.0",
     "formik": "^2.2.9",
     "react": "17.0.2",
     "react-native-bouncy-checkbox": "^2.1.10",

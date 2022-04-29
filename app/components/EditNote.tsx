@@ -23,17 +23,19 @@ import {
   View,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import { globalStyles } from "../styles/global";
 import RealmContext, {Note} from '../models/Schemas';
 import { NavigationEvents } from "react-navigation";
 import colors from '../styles/colors';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
 function SimpleNote({route, navigation} : any) {
 
-  const {noteId} = route.params;
+  const {noteId, isNew} = route.params;
   const realm = useRealm();
   const note : (Note & Realm.Object) | undefined = realm?.objectForPrimaryKey("Note", new Realm.BSON.ObjectId(noteId))!;
 
@@ -46,11 +48,11 @@ function SimpleNote({route, navigation} : any) {
       prio?: number
       ): void => {
         realm.write(() => {
-          title? note.title = title : {};
-          author? note.author = author : {};
-          body? note.body = body : {};
-          prio? note.priority = prio : {};
-          body? note.size = body.length : {};
+          title?  note.title    = title : {};
+          author? note.author   = author : {};
+          body?   note.body     = body : {};
+          prio?   note.priority = prio : {};
+          body?   note.size     = body.length : {};
           note.dateModified = new Date(Date.now())
         });
       },
@@ -79,14 +81,14 @@ function SimpleNote({route, navigation} : any) {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={globalStyles.modalContent}>
             <View style={globalStyles.modalIcon}>
-              <MaterialIcons
+              <FontAwesome
                 name='close'
                 size={24}
-                style={{ ...globalStyles.modalToggle}}
+                style={{ ...globalStyles.modalToggle, color: colors.dark}}
                 onPress={() => navigation.goBack()}
               />
               <View style={[globalStyles.containerTitle]}>
-                <Text style={globalStyles.titleMain}>New Simple Note</Text>
+                <Text style={globalStyles.titleMain}>{isNew? "New" : "Edit"} Note</Text>
               </View>
               <Foundation
                 name='check'
@@ -94,6 +96,7 @@ function SimpleNote({route, navigation} : any) {
                   style={{
                     ...globalStyles.modalToggle,
                     ...globalStyles.modalClose,
+                    color: colors.dark
                   }}
                 onPress={() => {
                   modifyNote(note, inputTitle, inputAuthor, inputBody, inputPrio);
@@ -108,20 +111,20 @@ function SimpleNote({route, navigation} : any) {
                 onChangeText={setInputTitle}
                 value={inputTitle}
               />
-
+              <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
               <TextInput
                 style={styles.item}
-                placeholder='Author'
+                placeholder='Subject'
                 onChangeText={setInputAuthor}
                 value={inputAuthor}
               />
-
+              <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
               <TextInput
                 style={styles.item}
                 multiline
-                numberOfLines={10}
+                numberOfLines={8}
                 // mode="outlined"
-                placeholder='Main body of note goes here'
+                placeholder='Body'
                 onChangeText={setInputBody}
                 value={inputBody}
               />

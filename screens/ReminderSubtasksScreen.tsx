@@ -67,7 +67,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         _value ? (subtask.value = _value) : {};
         _scheduledDatetime ? (subtask.scheduledDatetime = _scheduledDatetime) : {};
         _isComplete !== undefined? (subtask.isComplete = _isComplete) : {};
-        // setSubtasks(result);
+        // setResult(reminder.subtasks);
       });
     },
     [realm],

@@ -162,10 +162,8 @@ function SubtaskModal({
           onPress={() => {
             if (isNew === true) {
               handleAddSubtask(inputTitle, inputFeature, inputValue, date);
-            } else {
-              if (subtask) {
-                handleModifySubtask(subtask, inputTitle, inputFeature, inputValue, date);
-              }
+            } else if (!isNew && subtask) {
+              handleModifySubtask(subtask, inputTitle, inputFeature, inputValue, date);
             }
             closeModal();
           }}>
@@ -183,7 +181,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonClose: {
-    backgroundColor: '#ee6e73',
+    backgroundColor: colors.dark,
   },
   centeredView: {
     flex: 1,

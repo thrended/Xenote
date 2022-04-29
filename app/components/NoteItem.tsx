@@ -26,7 +26,7 @@ const {useRealm, useQuery, RealmProvider} = NoteContext;
 interface NoteItemProps {
   note: Note,
   handleSimpSwipe: (note: Note) => void
-  handleNavigateToEdit: (note: Note) => void
+  handleNavigateToEdit: (note: Note, isNew: boolean) => void
 }
 
 function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteItemProps) {
@@ -91,24 +91,28 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
   return (
     <View style={[globalStyles.content]}>
       <View style={{flex: 5}}>
-        <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onLongPress={() => handleNavigateToEdit(note)}>
+        <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onLongPress={() => handleNavigateToEdit(note, false)}>
           <View style={globalStyles.note}>
             <View style={globalStyles.noteFields}>
-              <Text>{note.title}</Text>
+              <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                  <Text style={globalStyles.titleText}>{note.title}</Text>
+                  { flagged && ( 
+                    <FontAwesome5
+                      name='flag-checkered'
+                      size={16}
+                        style={{
+                          ...globalStyles.modalToggle,
+                          ...globalStyles.modalClose,
+                          padding: 5
+                        }}
+                      onPress={() => {}}
+                    />
+                  )}
+              </View>
+              <Text style={globalStyles.authorText}>{note.author}</Text>
               <Text>{note.body.slice(0, Math.min(50, note.body.length))}</Text>
-              <Text>Priority: {note.priority}</Text>
+              <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
             </View>
-          { flagged && ( 
-            <FontAwesome5
-              name='flag-checkered'
-              size={24}
-                style={{
-                  ...globalStyles.modalToggle,
-                  ...globalStyles.modalClose,
-                }}
-              onPress={() => {}}
-            />
-          )}
           </View>
         </Pressable>
       </View>

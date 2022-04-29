@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   subtaskListContainer: {
     marginTop: 0,
     flex: 1,
-    // justifyContent: 'center',
+    marginBottom: 40
   },
   buttonStyle: {
     justifyContent: 'center',

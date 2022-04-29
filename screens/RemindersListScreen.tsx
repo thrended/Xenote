@@ -166,15 +166,15 @@ const RemindersListScreen = ({route, navigation} : any) => {
     }
 
   const handleNavigateToNoteEditPage = useCallback(
-    (note: Note): void => {
-      navigateToNoteEditPage(note._id.toHexString());
+    (note: Note, isNew: boolean): void => {
+      navigateToNoteEditPage(note._id.toHexString(), isNew);
     },
     [realm],
   );
 
   const navigateToNoteEditPage = 
-    (noteId: string): void => {
-      navigation.navigate("EditNoteScreen", {noteId: noteId} );
+    (noteId: string, isNew: boolean): void => {
+      navigation.navigate("EditNoteScreen", {noteId: noteId, isNew: isNew} );
     }
 
   const handleModifyReminder = useCallback(
@@ -225,75 +225,77 @@ const RemindersListScreen = ({route, navigation} : any) => {
         style={[
           {flexDirection: 'row', justifyContent: 'space-around', padding: 10},
         ]}>
-      <Pressable
+
+        <Pressable
+            style={[
+              styles.button,
+              styles.buttonClose,
+              {
+                backgroundColor: window ? colors.subtle : colors.strong,
+                borderColor: window ? colors.strong : colors.strong,
+                borderWidth: 1,
+              },
+            ]}
+          onPress={() => {
+            setWindow(false);
+            navigation.setOptions({ title: 'Notes' })
+          }}
+        >
+          <Text style={[
+            styles.textStyle,
+            { color : window? '#000000' : '#ffffff'}
+          ]}>Notes</Text>
+        </Pressable>
+        
+        <Pressable
           style={[
             styles.button,
             styles.buttonClose,
             {
-              backgroundColor: window ? '#ffffff' : '#3CB043',
-              borderColor: window ? '#3CB043' : '#000000',
+              backgroundColor: !window ? colors.subtle : colors.strong,
+              borderColor: !window ? colors.strong : colors.strong,
               borderWidth: 1,
             },
           ]}
-        onPress={() => {
-          setWindow(false);
-          navigation.setOptions({ title: 'Notes' })
-        }}
-      >
-        <Text style={[
-          styles.textStyle,
-          { color : window? '#000000' : '#ffffff'}
-        ]}>Notes</Text>
-      </Pressable>
-      
-      <MaterialCommunityIcons
-        name='notification-clear-all'
-        size={24}
-        style={{...globalStyles.modalToggle, ...globalStyles.modalIcon}}
-        onPress={() => { 
-          Alert.alert("Cancelled all trigger push notifications.");
-          console.log(notifee.getTriggerNotifications());
-          notifee.cancelTriggerNotifications();
-        }}
-        onLongPress={() => {
-          Alert.alert("Cancelled all active push notifications.");
-          console.log(notifee.getDisplayedNotifications());
-          notifee.cancelAllNotifications();
-        }}
-      />
-      
-      <Pressable
-          style={[
-            styles.button,
-            styles.buttonClose,
-            {
-              backgroundColor: !window ? '#ffffff' : '#3CB043',
-              borderColor: !window ? '#3CB043' : '#000000',
-              borderWidth: 1,
-            },
-          ]}
-        onPress={() => {
-          setWindow(true);
-          navigation.setOptions({ title: 'Reminders' })
-        }}
-      >
-        <Text style={[
-          styles.textStyle,
-          { color : !window? '#000000' : '#ffffff'}
-        ]}>Reminders</Text>
-      </Pressable>
+          onPress={() => {
+            setWindow(true);
+            navigation.setOptions({ title: 'Reminders' })
+          }}
+        >
+          <Text style={[
+            styles.textStyle,
+            { color : !window? '#000000' : '#ffffff'}
+          ]}>Reminders</Text>
+        </Pressable>
       </View>
       { window && (
       <View style={styles.content}>
-        <View style={styles.switchContainer}>
-          <Text>{hideSwitchIsEnabled ? "Show Completed" : "Hide Completed"}</Text>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={hideSwitchIsEnabled ? "#f5dd4b" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={hideSwitchIsEnabled}
+        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+          <MaterialCommunityIcons
+            name='notification-clear-all'
+            size={28}
+            style={{...globalStyles.modalToggle, ...globalStyles.modalIcon, padding: 5}}
+            onPress={() => { 
+              Alert.alert("Cancelled all trigger push notifications.");
+              console.log(notifee.getTriggerNotifications());
+              notifee.cancelTriggerNotifications();
+            }}
+            onLongPress={() => {
+              Alert.alert("Cancelled all active push notifications.");
+              console.log(notifee.getDisplayedNotifications());
+              notifee.cancelAllNotifications();
+            }}
           />
+          <View style={styles.switchContainer}>
+            <Text>{hideSwitchIsEnabled ? "Show Completed" : "Hide Completed"}</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: colors.medium }}
+              thumbColor={hideSwitchIsEnabled ? colors.strong : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={hideSwitchIsEnabled}
+            />
+          </View>
         </View>
         {reminders.length === 0 ? (
           <ReminderListDefaultText />
@@ -338,7 +340,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
             onPress={() => {
               const newObjectId = addNote();
               console.log("On main screen, newObjectId: " + newObjectId);
-              navigateToNoteEditPage(newObjectId.toHexString());
+              navigateToNoteEditPage(newObjectId.toHexString(), true);
             }}
           />
       </View>

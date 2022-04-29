@@ -68,34 +68,31 @@ function NewReminderTitleAndDateTimeBar({
           autoCapitalize="none"
           style={styles.textInput}
         />
-        <View>
-          <View style={styles.row2}>
-            <TouchableOpacity onPress={showDatepicker}>
-              <Image
-                style={styles.container}
-                source={require('../../images/calendar.png')}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={showTimepicker}>
-              <Image
-                style={styles.container}
-                source={require('../../images/clock.png')}
-              />
-            </TouchableOpacity>
-          </View>
-
-          {show && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={date}
-              mode={mode}
-              is24Hour={false}
-              onChange={onChange}
-              minimumDate={new Date(Date.now())}
-            />
-          )}
-        </View>
       </View>
+      <View style={styles.row2}>
+        <TouchableOpacity onPress={showDatepicker}>
+          <Image
+            style={styles.container}
+            source={require('../../images/calendar.png')}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={showTimepicker}>
+          <Image
+            style={styles.container}
+            source={require('../../images/clock.png')}
+          />
+        </TouchableOpacity>
+      </View>
+      {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode={mode}
+          is24Hour={false}
+          onChange={onChange}
+          minimumDate={new Date(Date.now())}
+        />
+      )}
     </View>
   );
 }
@@ -104,15 +101,15 @@ function NewReminderTitleAndDateTimeBar({
 const styles = StyleSheet.create({
   row2: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    // flexWrap: 'wrap',
     borderRadius: 5,
     padding: 3,
   },
   row: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    width: 350,
+    // justifyContent: 'space-between',
+    // flexWrap: 'wrap',
     padding: 5,
   },
   container: {
@@ -124,8 +121,9 @@ const styles = StyleSheet.create({
     // width: Dimensions.get('window').width,
     height: 50,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#3CB043',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: colors.strong,
     ...Platform.select({
       ios: {
         shadowColor: colors.black,
