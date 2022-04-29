@@ -29,7 +29,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Octicons from 'react-native-vector-icons/Octicons';
 import {globalStyles } from '../app/styles/global';
 import Entypo from 'react-native-vector-icons/Entypo';
-import PushNotification from "react-native-push-notification";
 import notifee from '@notifee/react-native';
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
@@ -45,10 +44,6 @@ const RemindersListScreen = ({route, navigation} : any) => {
 
   const [notesResult, setNotesResult] = useState(useQuery(Note));
   const notes = useMemo(() => notesResult, [notesResult]);
-  // const  = useState([
-  //   { title: 'Note 1', author: 'jack frost', body: 'semper ad meliora', date: new Date().toLocaleString(), prio: 0, key: '1' },
-  //   { title: 'TOP SECRET', author: 'CIA', body: 'top secret files', date: new Date().toLocaleString(), prio: 7, key: '2' },
-  // ]);
 
   const handleSimpSwipe = (key: string) => {
     // setNotesResult((prevNotes) => {
@@ -199,9 +194,27 @@ const RemindersListScreen = ({route, navigation} : any) => {
     },
     [realm],
   );
+
+  const handleDeleteNotification = () => {
+    try
+    {
+      
+    }
+    catch
+    {
+
+    }
+  }
   
-  const cancelNotificationonDelete = (id?: any) => {
-    PushNotification.cancelLocalNotification(id);
+  const handleCancelNotificationonDelete = (id?: any) => {
+    try
+    {
+      
+    }
+    catch
+    {
+
+    }
   }
 
   return (
@@ -229,10 +242,14 @@ const RemindersListScreen = ({route, navigation} : any) => {
         size={24}
         style={{...globalStyles.modalToggle, ...globalStyles.modalIcon}}
         onPress={() => { 
-          Alert.alert("Cancelled all active push notifications.")
-          PushNotification.getScheduledLocalNotifications(console.log);
-          PushNotification.cancelAllLocalNotifications();
+          Alert.alert("Cancelled all trigger push notifications.");
+          console.log(notifee.getTriggerNotifications());
           notifee.cancelTriggerNotifications();
+        }}
+        onLongPress={() => {
+          Alert.alert("Cancelled all active push notifications.");
+          console.log(notifee.getDisplayedNotifications());
+          notifee.cancelAllNotifications();
         }}
       />
       
@@ -272,33 +289,33 @@ const RemindersListScreen = ({route, navigation} : any) => {
       </View>
       )}
       { !window && (
-        <View style={styles.content}>
-          <Text>Notes Tab</Text>
-          <View style={[styles.centeredView, {marginTop: 0}]}>
-            <Text>Create Simple Note</Text>
-          </View>
-          <View style={globalStyles.list}>
-            <FlatList
-              data={notes}
-              renderItem={({ item }) => ( 
-                <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
-              )}
-              // ItemSeparatorComponent={() => <View style={styles.separator} />}
-              keyExtractor={({_id}) => _id.toHexString()}
-              extraData={notes}
-            /> 
-          </View>
-          <MaterialIcons
-            name='add'
-            size={24}
-            style={globalStyles.modalToggle}
-            onPress={() => {
-              const newObjectId = addNote();
-              console.log("On main screen, newObjectId: " + newObjectId);
-              navigateToNoteEditPage(newObjectId.toHexString());
-            }}
-          />
+      <View style={styles.content}>
+        <Text>Notes Tab</Text>
+        <View style={[styles.centeredView, {marginTop: 0}]}>
+          <Text>Create Simple Note</Text>
         </View>
+        <View style={globalStyles.list}>
+          <FlatList
+            data={notes}
+            renderItem={({ item }) => ( 
+              <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
+            )}
+            // ItemSeparatorComponent={() => <View style={styles.separator} />}
+            keyExtractor={({_id}) => _id.toHexString()}
+            extraData={notes}
+          /> 
+        </View>
+        <MaterialIcons
+          name='add'
+          size={24}
+          style={globalStyles.modalToggle}
+          onPress={() => {
+            const newObjectId = addNote();
+            console.log("On main screen, newObjectId: " + newObjectId);
+            navigateToNoteEditPage(newObjectId.toHexString());
+          }}
+        />
+      </View>
       )}
     </SafeAreaView>    
   );
