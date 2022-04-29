@@ -561,7 +561,7 @@ function ReminderItem({
           </View>
           <View style={styles.subtaskListContainer}>
             {reminder.subtasks.map((subtask) => 
-              <Text style={styles.textStyle}>{subtask.title}</Text>
+              <Text style={styles.textStyle}>{subtask.title} {subtask.isComplete? "✓" : {}}</Text>
             )}
           </View>
         </View>
