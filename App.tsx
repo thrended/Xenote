@@ -47,7 +47,11 @@ const App = () => {
               component={RemindersListScreen}
               options={{title: 'Reminders'}}
             />
-            <Stack.Screen name="ReminderSubtasksScreen" component={ReminderSubtasksScreen} />
+            <Stack.Screen 
+              name="ReminderSubtasksScreen" 
+              component={ReminderSubtasksScreen} 
+              options={{title: 'Reminder'}}
+            />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name="EditNoteScreen" component={SimpleNote} />

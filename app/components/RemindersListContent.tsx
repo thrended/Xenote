@@ -57,7 +57,7 @@ function RemindersListContent({
 
 const styles = StyleSheet.create({
   subtaskListContainer: {
-    marginTop: 50,
+    marginTop: 0,
     flex: 1,
     // justifyContent: 'center',
   },

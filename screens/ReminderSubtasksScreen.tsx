@@ -17,7 +17,7 @@ import {Button, TouchableOpacity, Image} from 'react-native';
 
 import SubtaskContext, {Reminder, Subtask} from '../app/models/Schemas';
 import SubtaskListDefaultText from '../app/components/SubtaskListDefaultText';
-import AddSubtaskButton from '../app/components/AddSubtaskButton';
+import AddReminderButton from '../app/components/AddReminderButton';
 import NewReminderHeaderBar from '../app/components/NewReminderHeaderBar';
 import ReminderContent from '../app/components/ReminderContent';
 import SubtaskModal from '../app/components/SubtaskModal';
@@ -38,14 +38,8 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   const subtasks = useMemo(() => result, [result]);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [inputTitle, setInputTitle] = useState('');
-  const [inputFeature, setInputFeature] = useState('');
-  const [inputValue, setInputValue] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const [hideSwitchIsEnabled, setHideSwitchIsEnabled] = useState(false);
+  const toggleSwitch = () => setHideSwitchIsEnabled(previousState => !previousState);
 
   const handleAddSubtask = useCallback(
     (_title: string, _feature: string, _value: string, _scheduledDatetime: Date): void => {
@@ -124,27 +118,27 @@ function ReminderSubtasksScreen({route, navigation}: any) {
         updateReminderCallback={handleModifyReminderTitle}
       />
       <View style={styles.content}>
-        <View style={{flexDirection: "row", alignContent: "center"}}>
-          <Text>{isEnabled ? "Show Completed" : "Hide Completed"}</Text>
+        <View style={styles.switchContainer}>
+          <Text>{hideSwitchIsEnabled ? "Show Completed" : "Hide Completed"}</Text>
           <Switch
             trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+            thumbColor={hideSwitchIsEnabled ? "#f5dd4b" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
-            value={isEnabled}
+            value={hideSwitchIsEnabled}
           />
         </View>
         {subtasks.length === 0 ? (
           <SubtaskListDefaultText />
         ) : (
           <ReminderContent
-            subtasks={subtasks}
+            subtasks={!hideSwitchIsEnabled? subtasks : subtasks.filter(subtask => !subtask.isComplete)}
             handleModifySubtask={handleModifySubtask}
             onDeleteSubtask={handleDeleteSubtask}
             onSwipeLeft={handleDeleteSubtask}
           />
         )}
-        <AddSubtaskButton onSubmit={() => {
+        <AddReminderButton onSubmit={() => {
           setModalVisible(true);}} />
       </View>
     </SafeAreaView>
@@ -152,6 +146,12 @@ function ReminderSubtasksScreen({route, navigation}: any) {
 }
 
 const styles = StyleSheet.create({
+  switchContainer: {
+    flexDirection: "row", 
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center"
+  },
   timeanddatestyle:{
     flex: 1,
     flexDirection: 'row',

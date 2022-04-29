@@ -89,30 +89,31 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <View style={[globalStyles.content, {flexDirection: 'row'} ]}>
-      <View style={{flex: 6.5}}>
-      <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onLongPress={() => handleNavigateToEdit(note)}>
-      <Text style={[globalStyles.note, {fontSize: 20, fontWeight: 'bold'}]}>
-        {note.title}
-        <Text style={[globalStyles.note, {padding: 10, fontSize: 10, fontWeight: 'normal'}]}>
-          {note.body.slice(0, Math.min(50, note.body.length))}            Priority: {note.priority}
-        </Text>
-      </Text>
-        
-      </Pressable>
+    <View style={[globalStyles.content]}>
+      <View style={{flex: 5}}>
+        <Pressable onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onLongPress={() => handleNavigateToEdit(note)}>
+          <View style={globalStyles.note}>
+            <View style={globalStyles.noteFields}>
+              <Text>{note.title}</Text>
+              <Text>{note.body.slice(0, Math.min(50, note.body.length))}</Text>
+              <Text>Priority: {note.priority}</Text>
+            </View>
+          { flagged && ( 
+            <FontAwesome5
+              name='flag-checkered'
+              size={24}
+                style={{
+                  ...globalStyles.modalToggle,
+                  ...globalStyles.modalClose,
+                }}
+              onPress={() => {}}
+            />
+          )}
+          </View>
+        </Pressable>
       </View>
-      <View style = {{flex: 1}}>
-      { flagged && ( 
-        <FontAwesome5
-          name='flag-checkered'
-          size={24}
-            style={{
-              ...globalStyles.modalToggle,
-              ...globalStyles.modalClose,
-            }}
-          onPress={() => {}}
-        />
-      )}
+      <View style = {{flex: 1, alignContent: "center"}}>
+
       </View>
       {/* <View style = {{flex: 1}}>
       { showPrio && (

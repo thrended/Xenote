@@ -61,7 +61,9 @@ function SubtaskModal({
   // }
 
   const onChange = (event, selectedDate) => {
-    const newDate = selectedDate;
+    const newDate : Date = selectedDate;
+    newDate.setSeconds(0);
+    newDate.setMilliseconds(0);
     setShow(false);
     setDate(newDate);
     if (isNew === false) {
@@ -150,6 +152,7 @@ function SubtaskModal({
               mode={mode}
               is24Hour={false}
               onChange={onChange}
+              minimumDate={new Date(Date.now())}
             />
           )}
         </View>

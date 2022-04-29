@@ -13,6 +13,7 @@ import {
   _Text,
 } from 'react-native';
 
+import { format, compareAsc } from 'date-fns'
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
@@ -299,10 +300,10 @@ function SubtaskItem({
       </Modal>
       <View style={styles.dateTimeContainer}>
         <View>
-          <Text>{date.toLocaleTimeString('en-US')}</Text>
+          <Text>{format(date, "K:hh b")}</Text>
         </View>
         <View>
-          <Text>{date.toLocaleDateString('en-US')}</Text>
+          <Text>{format(date, "MMMM dd, yyyy")}</Text>
         </View>        
       </View>
       <View style={styles.task}>
