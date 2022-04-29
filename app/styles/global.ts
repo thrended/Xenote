@@ -12,6 +12,10 @@ import {
 } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
+    slide: {
+        backgroundColor: colors.subtle
+    },
+    
     authorText: {
         color: colors.strong,
         fontSize: 16
