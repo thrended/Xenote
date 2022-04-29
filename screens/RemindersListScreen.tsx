@@ -304,7 +304,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
         <View style={[styles.content, {marginBottom: 50}]}>
           {/* <Text>Notes Tab</Text> */}
           <View style={[styles.centeredView, {marginTop: 0}]}>
-            <Text>Create Simple Note</Text>
+            <Text style={{fontSize: 16, color: "green"}}>Use the "+" button to create a simple note.</Text>
           </View>
           <View style={globalStyles.list}>
             <FlatList

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   paragraph: {
     marginVertical: 10,
     textAlign: 'center',
-    color: 'black',
+    color: 'green',
     fontSize: 24,
 
   },
