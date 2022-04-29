@@ -109,7 +109,9 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
               </View>
               <Text style={globalStyles.authorText}>{note.author}</Text>
               <Text>{note.body.slice(0, Math.min(50, note.body.length))}</Text>
-              <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
+              <View style={{alignItems: "flex-end",justifyContent: "flex-end"}}>
+                <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
+              </View>
             </View>
           </View>
         </Pressable>
