@@ -1,5 +1,6 @@
 import React, {memo, useDebugValue, useCallback, useState} from 'react';
 import {
+  Alert,
   Image,
   Modal,
   View,
@@ -52,6 +53,56 @@ function SubtaskItem({
   const [date, setDate] = useState(subtask.scheduledDatetime);
   const [isChecked, setIsChecked] = useState(subtask.isComplete);
 
+
+  function clearNotifications() {
+    let b = true;
+    try
+    {
+      notifee.cancelTriggerNotification(subtask._id.toHexString());
+    }
+    catch(e)
+    {
+      b = false;
+      console.log("This subtask has no associated notifications, skipping deletion", e);
+    }
+    finally
+    {
+      (b ? console.log("Subtask notification has been deleted") : {});
+      (b ? Alert.alert("Subtask notification cancelled") : {});
+    }
+  }
+
+  async function lowerNotificationImportance() {
+    let x = true;
+    try
+    {
+      await notifee.createChannel({
+        id: 'Channel-3',
+        name: 'Subtasks',
+        importance: AndroidImportance.DEFAULT ? AndroidImportance.LOW : AndroidImportance.MIN,
+      });
+    }
+    catch(e)
+    {
+      x = false;
+      console.log("Channel does not exist", e);
+    }
+    finally
+    {
+      console.log(x ? "Channel notification importance level has been lowered" : {});
+      (x ? Alert.alert("Channel notification importance level has been lowered") : {});
+    }
+  }
+
+  function onDeleteFunc() {
+    clearNotifications();
+    onDelete();
+  }
+  function onSwipeLeftFunc() {
+    clearNotifications();
+    onSwipeLeft();
+  }
+
   const closeModal = () => {
     if (modalVisible) {
       setModalVisible(previousState => !previousState);
@@ -69,7 +120,7 @@ function SubtaskItem({
   // }
 
   const realm = useRealm();
-  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, 8);
+  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
 
   function onSwipeRight() {
     /* flag or complete function goes here */
@@ -95,9 +146,10 @@ function SubtaskItem({
   async function onDisplayNotification() {
     // Create a channel
     const channelId = await notifee.createChannel({
-      id: 'Notifee-2',
-      name: 'Notifee Subtasks Channel',
+      id: 'Channel-2',
+      name: 'Subtasks',
       visibility: AndroidVisibility.PRIVATE,
+      importance: AndroidImportance.DEFAULT,
     });
 
     try 
@@ -109,7 +161,7 @@ function SubtaskItem({
       android: {
         autoCancel: false,
         channelId,
-        importance: AndroidImportance.HIGH,
+        importance: AndroidImportance.LOW,
         smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
         tag: "M gud",
         //chronometerDirection: 'down',
@@ -120,7 +172,7 @@ function SubtaskItem({
     });
     } catch(e)
     {
-      console.log("Reminder is already gone", e);
+      console.log("Subtask is already gone", e);
     }
   }
 
@@ -175,8 +227,8 @@ function SubtaskItem({
         android: {
           autoCancel: false,
           channelId: 'Notifee-2',
-          category: AndroidCategory.REMINDER,
-          importance: AndroidImportance.HIGH,
+          category: AndroidCategory.EVENT,
+          importance: AndroidImportance.DEFAULT,
           largeIcon: require('../../images/clock.png'),
           circularLargeIcon: true,
           ongoing: true,
@@ -207,7 +259,7 @@ function SubtaskItem({
       notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
     } catch(e) 
     {
-      console.log("Reminder is already gone", e);
+      console.log("Subtask is already gone", e);
     }
   }
 
@@ -270,6 +322,7 @@ function SubtaskItem({
               onPress={(isChecked: boolean) => {
                 setIsChecked(isChecked => !isChecked);
                 updateIsCompleted(subtask, isChecked);
+                isChecked ? clearNotifications() : {};
               }}
             />
           </View>
@@ -278,7 +331,7 @@ function SubtaskItem({
             <Text style={styles.textValue}>{subtask.value}</Text>
           </View>
         </View>
-        {/* <Pressable onPress={onDelete} style={styles.deleteButton}>
+        {/* <Pressable onPress={onDeleteFunc} style={styles.deleteButton}>
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable> */}
       </View>
