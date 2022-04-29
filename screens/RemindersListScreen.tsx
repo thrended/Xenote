@@ -42,6 +42,8 @@ const RemindersListScreen = ({route, navigation} : any) => {
   const [inputDate, setInputDate] = useState(new Date());
   const [window, setWindow] = useState(true);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [hideSwitchIsEnabled, setHideSwitchIsEnabled] = useState(false);
+  const toggleSwitch = () => setHideSwitchIsEnabled(previousState => !previousState);
 
   const [notesResult, setNotesResult] = useState(useQuery(Note));
   const notes = useMemo(() => notesResult, [notesResult]);
@@ -214,14 +216,21 @@ const RemindersListScreen = ({route, navigation} : any) => {
           style={[
             styles.button,
             styles.buttonClose,
-            {backgroundColor: window ? '#ee6e73' : '#22E734'},
+            {
+              backgroundColor: window ? '#ffffff' : '#3CB043',
+              borderColor: window ? '#3CB043' : '#000000',
+              borderWidth: 1,
+            },
           ]}
         onPress={() => {
           setWindow(false);
           navigation.setOptions({ title: 'Notes' })
         }}
       >
-        <Text style={styles.textStyle}>Notes</Text>
+        <Text style={[
+          styles.textStyle,
+          { color : window? '#000000' : '#ffffff'}
+        ]}>Notes</Text>
       </Pressable>
       
       <MaterialCommunityIcons
@@ -240,23 +249,40 @@ const RemindersListScreen = ({route, navigation} : any) => {
           style={[
             styles.button,
             styles.buttonClose,
-            {backgroundColor: window ? '#22E734' : '#ee6e73'},
+            {
+              backgroundColor: !window ? '#ffffff' : '#3CB043',
+              borderColor: !window ? '#3CB043' : '#000000',
+              borderWidth: 1,
+            },
           ]}
         onPress={() => {
           setWindow(true);
           navigation.setOptions({ title: 'Reminders' })
         }}
       >
-        <Text style={styles.textStyle}>Reminders</Text>
+        <Text style={[
+          styles.textStyle,
+          { color : !window? '#000000' : '#ffffff'}
+        ]}>Reminders</Text>
       </Pressable>
       </View>
       { window && (
       <View style={styles.content}>
+        <View style={styles.switchContainer}>
+          <Text>{hideSwitchIsEnabled ? "Show Completed" : "Hide Completed"}</Text>
+          <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={hideSwitchIsEnabled ? "#f5dd4b" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={hideSwitchIsEnabled}
+          />
+        </View>
         {reminders.length === 0 ? (
           <ReminderListDefaultText />
         ) : (
           <RemindersListContent
-            reminders={reminders}
+            reminders={!hideSwitchIsEnabled? reminders : reminders.filter(reminder => !reminder.isComplete)}
             handleModifyReminder={handleModifyReminder}
             onDeleteReminder={handleDeleteReminder}
             onSwipeLeft={handleDeleteReminder}
@@ -273,7 +299,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
       )}
       { !window && (
         <View style={styles.content}>
-          <Text>Notes Tab</Text>
+          {/* <Text>Notes Tab</Text> */}
           <View style={[styles.centeredView, {marginTop: 0}]}>
             <Text>Create Simple Note</Text>
           </View>
@@ -305,6 +331,12 @@ const RemindersListScreen = ({route, navigation} : any) => {
 };
 
 const styles = StyleSheet.create({
+  switchContainer: {
+    flexDirection: "row", 
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center"
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -313,7 +345,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: 0,
     paddingHorizontal: 20,
   },
   screen: {
@@ -335,6 +367,20 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     minWidth: '33%',
     textAlign: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.black,
+        shadowOffset: {
+          width: 0,
+          height: 4,
+        },
+        shadowOpacity: 0.7,
+        shadowRadius: 5,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   buttonClose: {
     backgroundColor: '#ee6e73',

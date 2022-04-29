@@ -3,6 +3,7 @@ import colors from './colors';
 import {
   Image,
   Modal,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -35,9 +36,9 @@ export const globalStyles = StyleSheet.create({
         justifyContent: 'center',
     },
     content: {
-        flex: 1,
+        // flex: 1,
         paddingTop: 20,
-        paddingHorizontal: 20,
+        paddingHorizontal: 0,
     },
     header: {
       fontSize: 32,
@@ -60,10 +61,10 @@ export const globalStyles = StyleSheet.create({
       marginVertical: 8,
     },
     list: {
-        //flex: 1,
+        // flex: 1,
     },
     modalClose: {
-        marginTop: 20,
+        marginTop: 0,
         marginBottom: 0,
     },
     modalContent: {
@@ -74,7 +75,6 @@ export const globalStyles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     modalToggle: {
-        marginBottom: 10,
         borderWidth: 1,
         borderColor: '#f2f2f2',
         padding: 10,
@@ -90,16 +90,21 @@ export const globalStyles = StyleSheet.create({
     note: {
         color: '#369aaa',
         flex: 1,
-        padding: 25,
-        marginTop: 8,
+        flexDirection: "row",
+        padding: 15,
+        marginTop: 4,
         borderColor: '#aad',
         borderWidth: 1,
         borderStyle: 'dashed',
         borderRadius: 12,
     },
+    noteFields: {
+        flex: 1,
+        flexDirection: "column"
+    },
     screen: {
-    flex: 1,
-    backgroundColor: colors.white,
+        flex: 1,
+        backgroundColor: colors.white,
     },
     separatorH: {
         marginHorizontal: 25,

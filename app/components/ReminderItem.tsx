@@ -12,6 +12,7 @@ import {
   _Text,
 } from 'react-native';
 
+import { format, compareAsc } from 'date-fns'
 import { useSwipe } from '../hooks/useSwipe';
 import ReminderContext, {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
@@ -462,10 +463,10 @@ function ReminderItem({
     >
       <View style={styles.dateTimeContainer}>
         <View>
-          <Text>{reminder.scheduledDatetime.toLocaleTimeString('en-US')}</Text>
+          <Text>{format(reminder.scheduledDatetime, "K:hh b")}</Text>
         </View>
         <View>
-          <Text>{reminder.scheduledDatetime.toLocaleDateString('en-US')}</Text>
+          <Text>{format(reminder.scheduledDatetime, "MMMM dd, yyyy")}</Text>
         </View>        
       </View>
       <View style={styles.task}>
@@ -493,12 +494,12 @@ function ReminderItem({
             )}
           </View>
         </View>
-        <Pressable
+        {/* <Pressable
          onPress={onDelete} 
          style={styles.deleteButton}
         >
           <Text style={styles.deleteText}>Delete</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </Pressable>
   );
@@ -528,7 +529,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     backgroundColor: colors.white,
     borderRadius: 10,
-    borderWidth: 2,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     ...Platform.select({
@@ -559,6 +560,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     borderColor: "black",
     borderRadius: 2,
+    marginBottom: 8,
   },
   textInput: {
     flex: 1,

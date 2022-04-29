@@ -34,7 +34,9 @@ function NewReminderTitleAndDateTimeBar({
   const [show, setShow] = useState(false);
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
+    const currentDate : Date = selectedDate;
+    currentDate.setSeconds(0);
+    currentDate.setMilliseconds(0);
     setShow(false);
     setDate(currentDate);
     updateReminderCallback(reminder, undefined, currentDate);
@@ -89,6 +91,7 @@ function NewReminderTitleAndDateTimeBar({
               mode={mode}
               is24Hour={false}
               onChange={onChange}
+              minimumDate={new Date(Date.now())}
             />
           )}
         </View>
@@ -118,11 +121,11 @@ const styles = StyleSheet.create({
     width: 50,
   },
   titlebar: {
-    width: Dimensions.get('window').width,
+    // width: Dimensions.get('window').width,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'orchid',
+    backgroundColor: '#3CB043',
     ...Platform.select({
       ios: {
         shadowColor: colors.black,
