@@ -529,14 +529,14 @@ function ReminderItem({
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
       hitSlop={{ top: 10, bottom: 10, right: 100, left: 100}}
-      android_ripple={{color:'#00f'}}
+      android_ripple={{color: colors.subtle}}
     >
       <View style={styles.dateTimeContainer}>
         <View>
-          <Text>{format(reminder.scheduledDatetime, "K:hh b")}</Text>
+          <Text>{format(reminder.scheduledDatetime, "h:mm b")}</Text>
         </View>
         <View>
-          <Text>{format(reminder.scheduledDatetime, "MMMM dd, yyyy")}</Text>
+          <Text>{format(reminder.scheduledDatetime, "E MMMM d, yyyy")}</Text>
         </View>        
       </View>
       <View style={styles.task}>
@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
   },
   task: {
     marginVertical: 8,
-    backgroundColor: colors.white,
+    backgroundColor: colors.subtle,
     borderRadius: 10,
     borderWidth: 1,
     justifyContent: 'center',
@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 8,
     paddingVertical: Platform.OS === 'ios' ? 8 : 0,
-    backgroundColor: colors.white,
+    backgroundColor: colors.subtle,
     fontSize: 24,
   },
   textValue: {

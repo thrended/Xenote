@@ -50,7 +50,6 @@ function SubtaskItem({
   onSwipeLeft,
 }: SubtaskItemProps) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [date, setDate] = useState(subtask.scheduledDatetime);
   const [isChecked, setIsChecked] = useState(subtask.isComplete);
 
 
@@ -281,7 +280,7 @@ function SubtaskItem({
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
       hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
-      android_ripple={{color:'#00f'}}
+      android_ripple={{color: colors.subtle}}
     >
       <Modal
         animationType="slide"
@@ -300,10 +299,10 @@ function SubtaskItem({
       </Modal>
       <View style={styles.dateTimeContainer}>
         <View>
-          <Text>{format(date, "K:hh b")}</Text>
+          <Text>{format(subtask.scheduledDatetime, "h:mm b")}</Text>
         </View>
         <View>
-          <Text>{format(date, "MMMM dd, yyyy")}</Text>
+          <Text>{format(subtask.scheduledDatetime, "E MMMM d, yyyy")}</Text>
         </View>        
       </View>
       <View style={styles.task}>
@@ -373,7 +372,7 @@ const styles = StyleSheet.create({
   },
   task: {
     marginVertical: 8,
-    backgroundColor: colors.white,
+    backgroundColor: colors.subtle,
     borderRadius: 10,
     borderWidth: 2,
     justifyContent: 'center',
@@ -406,7 +405,7 @@ const styles = StyleSheet.create({
     // textAlign: "center",
     paddingHorizontal: 8,
     paddingVertical: Platform.OS === 'ios' ? 8 : 0,
-    backgroundColor: colors.white,
+    backgroundColor: colors.subtle,
     fontSize: 24,
   },
   textStyle: {
@@ -423,7 +422,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 8,
     paddingVertical: Platform.OS === 'ios' ? 8 : 0,
-    backgroundColor: colors.white,
     fontSize: 24,
   },
   textTitle: {
@@ -431,7 +429,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 8,
     paddingVertical: Platform.OS === 'ios' ? 8 : 0,
-    backgroundColor: colors.white,
     fontSize: 24,
   },
   textValue: {
@@ -439,7 +436,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 8,
     paddingVertical: Platform.OS === 'ios' ? 8 : 0,
-    backgroundColor: colors.white,
     fontSize: 24,
   },
   titleInputContainer: {

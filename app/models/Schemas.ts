@@ -110,6 +110,7 @@ export class Note extends Realm.Object {
     properties: {
       _id: "objectId",
       title: "string",
+      author: "string",
       body: "string",
       priority: { type: "int", default: 5 },
       isFlagged: { type: "bool", default: false },

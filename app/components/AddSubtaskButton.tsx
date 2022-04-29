@@ -76,12 +76,11 @@ const styles = StyleSheet.create({
     height: 60,   
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30,            
-    backgroundColor: '#ee6e73',                                    
+    borderRadius: 30,                                 
 
   },
   icon: {
-    color: colors.white,
+    color: colors.subtle,
     textAlign: 'center',
     fontSize: 24,
     fontWeight: 'bold',

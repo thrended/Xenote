@@ -54,7 +54,11 @@ const App = () => {
             />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
-            <Stack.Screen name="EditNoteScreen" component={SimpleNote} />
+            <Stack.Screen 
+              name="EditNoteScreen" 
+              component={SimpleNote} 
+              options={{title: 'Note'}}  
+            />
           </Stack.Group>
 
         </Stack.Navigator>

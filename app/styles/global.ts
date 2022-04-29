@@ -12,7 +12,10 @@ import {
 } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
-
+    authorText: {
+        color: colors.strong,
+        fontSize: 16
+    },
     button:  {
         width: 150,
         height: 50,
@@ -37,7 +40,7 @@ export const globalStyles = StyleSheet.create({
     },
     content: {
         // flex: 1,
-        paddingTop: 20,
+        paddingTop: 0,
         paddingHorizontal: 0,
     },
     header: {
@@ -72,7 +75,7 @@ export const globalStyles = StyleSheet.create({
     },
     modalIcon: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
     },
     modalToggle: {
         borderWidth: 1,
@@ -80,6 +83,7 @@ export const globalStyles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         alignSelf: 'center',
+        marginVertical: 4
     },
     multibutton: {
         flexDirection: 'row',
@@ -124,6 +128,7 @@ export const globalStyles = StyleSheet.create({
       fontSize: 24,
     },
     titleMain: {
+        color: colors.dark,
         fontSize: 24,
         fontWeight: 'bold',
     },
@@ -131,5 +136,8 @@ export const globalStyles = StyleSheet.create({
         fontSize: 15,
         alignSelf: 'center',
     },
-
+    titleText: {
+        color: colors.dark,
+        fontSize: 24
+    }
 });
