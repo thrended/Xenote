@@ -243,7 +243,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
         >
           <Text style={[
             styles.textStyle,
-            { color : window? '#000000' : '#ffffff'}
+            { color : window? colors.dark : colors.subtle}
           ]}>Notes</Text>
         </Pressable>
         
@@ -264,7 +264,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
         >
           <Text style={[
             styles.textStyle,
-            { color : !window? '#000000' : '#ffffff'}
+            { color : !window? colors.dark : colors.subtle}
           ]}>Reminders</Text>
         </Pressable>
       </View>
@@ -375,6 +375,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 16
   },
   button: {
     paddingHorizontal: 8,
@@ -384,7 +385,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginHorizontal: '1%',
     marginBottom: 6,
-    minWidth: '33%',
+    minWidth: '40%',
     textAlign: 'center',
     ...Platform.select({
       ios: {
