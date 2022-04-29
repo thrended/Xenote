@@ -132,7 +132,9 @@ function ReminderSubtasksScreen({route, navigation}: any) {
           <SubtaskListDefaultText />
         ) : (
           <ReminderContent
-            subtasks={!hideSwitchIsEnabled? subtasks : subtasks.filter(subtask => !subtask.isComplete)}
+            subtasks={
+              !hideSwitchIsEnabled? 
+                subtasks : subtasks.filter(subtask => !subtask.isComplete)}
             handleModifySubtask={handleModifySubtask}
             onDeleteSubtask={handleDeleteSubtask}
             onSwipeLeft={handleDeleteSubtask}

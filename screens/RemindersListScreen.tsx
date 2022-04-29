@@ -285,7 +285,9 @@ const RemindersListScreen = ({route, navigation} : any) => {
           <ReminderListDefaultText />
         ) : (
           <RemindersListContent
-            reminders={!hideSwitchIsEnabled? reminders : reminders.filter(reminder => !reminder.isComplete)}
+            reminders={
+              !hideSwitchIsEnabled? reminders.sorted('scheduledDatetime', false) 
+              : reminders.filter(reminder => !reminder.isComplete)}
             handleModifyReminder={handleModifyReminder}
             onDeleteReminder={handleDeleteReminder}
             onSwipeLeft={handleDeleteReminder}
