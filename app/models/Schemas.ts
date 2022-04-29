@@ -75,7 +75,6 @@ export class Reminder extends Realm.Object {
   };
 }
 
-// not implemented yet
 export class Note extends Realm.Object {
   _id!: Realm.BSON.ObjectId;
   title!: string;

@@ -54,6 +54,8 @@ function SimpleNote({route, navigation} : any) {
           prio?   note.priority = prio : {};
           body?   note.size     = body.length : {};
           note.dateModified = new Date(Date.now())
+          //realm.objects(Note).sorted('priority', true);
+          //console.log(realm.objects(Note));
         });
       },
       [realm],
@@ -132,7 +134,6 @@ function SimpleNote({route, navigation} : any) {
               
               <View style={globalStyles.multibutton}>
                 <Text style={{paddingRight: 20}}>Priority</Text>
-                <Pressable onPress ={() => setInputPrio(0)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 0 ? 1.5 : 0), opacity: (inputPrio == 0 ? 1 : 0.35), backgroundColor: '#84FFEB'}]} />
                 <Pressable onPress ={() => setInputPrio(1)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 1 ? 1.5 : 0), opacity: (inputPrio == 1 ? 1 : 0.3),backgroundColor: 'cyan'}]} />
                 <Pressable onPress ={() => setInputPrio(2)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 2 ? 1.5 : 0), opacity: (inputPrio == 2 ? 1 : 0.3),backgroundColor: '#3666E9'}]} />
                 <Pressable onPress ={() => setInputPrio(3)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 3 ? 1.5 : 0), opacity: (inputPrio == 3 ? 1 : 0.3),backgroundColor: '#0400FF'}]} />

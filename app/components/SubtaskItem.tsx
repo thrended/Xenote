@@ -146,7 +146,7 @@ function SubtaskItem({
     // Create a channel
     const channelId = await notifee.createChannel({
       id: 'Channel-2',
-      name: 'Subtasks',
+      name: 'Subtask Initial Notifications',
       visibility: AndroidVisibility.PRIVATE,
       importance: AndroidImportance.DEFAULT,
     });
@@ -215,6 +215,13 @@ function SubtaskItem({
       timeUnit: TimeUnit.MINUTES,
     };
     
+    const channelId = await notifee.createChannel({
+      id: 'Channel-3',
+      name: 'Subtasks',
+      visibility: AndroidVisibility.PRIVATE,
+      importance: AndroidImportance.DEFAULT,
+    });
+
     try 
     {
     // Create a trigger notification
@@ -225,7 +232,7 @@ function SubtaskItem({
         body: subtask.scheduledDatetime.toLocaleString(),
         android: {
           autoCancel: false,
-          channelId: 'Notifee-2',
+          channelId: 'Channel-3',
           category: AndroidCategory.EVENT,
           importance: AndroidImportance.DEFAULT,
           largeIcon: require('../../images/clock.png'),
@@ -374,7 +381,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     backgroundColor: colors.subtle,
     borderRadius: 10,
-    borderWidth: 2,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     ...Platform.select({

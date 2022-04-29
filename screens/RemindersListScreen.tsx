@@ -100,6 +100,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
         ),
       );
       newNoteId = newNote._id;
+      //setNotesResult(notesResult.sorted('priority', true));
     });
     return newNoteId;
   }
@@ -115,6 +116,11 @@ const RemindersListScreen = ({route, navigation} : any) => {
   
   const [result, setResult] = useState(useQuery(Reminder));
   const reminders = useMemo(() => result, [result]);
+
+  const sortNotes = () => {
+   console.log ( realm.objects(Note).sorted('priority', true) );
+   return ( realm.objects(Note).sorted('priority', true) );
+  }
 
   useEffect(() => {
     try {
@@ -196,28 +202,6 @@ const RemindersListScreen = ({route, navigation} : any) => {
     },
     [realm],
   );
-
-  const handleDeleteNotification = () => {
-    try
-    {
-      
-    }
-    catch
-    {
-
-    }
-  }
-  
-  const handleCancelNotificationonDelete = (id?: any) => {
-    try
-    {
-      
-    }
-    catch
-    {
-
-    }
-  }
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -317,14 +301,14 @@ const RemindersListScreen = ({route, navigation} : any) => {
       </View>
       )}
       { !window && (
-        <View style={styles.content}>
+        <View style={[styles.content, {marginBottom: 50}]}>
           {/* <Text>Notes Tab</Text> */}
           <View style={[styles.centeredView, {marginTop: 0}]}>
             <Text>Create Simple Note</Text>
           </View>
           <View style={globalStyles.list}>
             <FlatList
-              data={notes}
+              data={realm.objects(Note).sorted('priority', true)}
               renderItem={({ item }) => ( 
                 <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
               )}
@@ -336,7 +320,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
           <MaterialIcons
             name='add'
             size={24}
-            style={globalStyles.modalToggle}
+            style={[globalStyles.modalToggle, {marginBottom: 0}]}
             onPress={() => {
               const newObjectId = addNote();
               console.log("On main screen, newObjectId: " + newObjectId);
