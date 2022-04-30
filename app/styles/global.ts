@@ -124,6 +124,12 @@ export const globalStyles = StyleSheet.create({
         height:'100%',
         width:'100%'
     },
+    switchContainer: {
+        flexDirection: "row", 
+        alignItems: "center",
+        alignContent: "center",
+        justifyContent: "center"
+    },
     title: {
       fontSize: 24,
     },

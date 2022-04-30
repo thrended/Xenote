@@ -86,10 +86,11 @@ function ReminderSubtasksScreen({route, navigation}: any) {
   );
 
   const handleModifyReminderTitle = useCallback(
-    (reminder: Reminder, _title?: string, _scheduledDatetime?): void => {
+    (reminder: Reminder, _title?: string, _scheduledDatetime?, _isExpired?: boolean): void => {
       realm.write(() => {
         _title ? (reminder.title = _title) : {};
         _scheduledDatetime ? (reminder.scheduledDatetime = _scheduledDatetime) : {};
+        _isExpired ? (reminder.isExpired = _isExpired) : {};
       });
     },
     [realm],

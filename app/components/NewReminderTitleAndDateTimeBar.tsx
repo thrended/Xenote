@@ -16,7 +16,7 @@ import colors from '../styles/colors';
 
 interface NewReminderTitleAndDateTimeBarProps {
   reminder: Reminder;
-  updateReminderCallback: (reminder: Reminder, _title?: string, _scheduledDatetime?: Date) => void;
+  updateReminderCallback: (reminder: Reminder, _title?: string, _scheduledDatetime?: Date, _isExpired?: boolean) => void;
 }
 function NewReminderTitleAndDateTimeBar({
   reminder: reminder,
@@ -30,6 +30,7 @@ function NewReminderTitleAndDateTimeBar({
   };
  
   const [date, setDate] = useState(reminder.scheduledDatetime);
+  const [expired, setExpired] = useState(reminder.isExpired);
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
@@ -39,6 +40,7 @@ function NewReminderTitleAndDateTimeBar({
     currentDate.setMilliseconds(0);
     setShow(false);
     setDate(currentDate);
+    setExpired(calcTime(currentDate) < -999999);
     updateReminderCallback(reminder, undefined, currentDate);
 
   };
@@ -56,6 +58,12 @@ function NewReminderTitleAndDateTimeBar({
     showMode('time');
   };
 
+  function calcTime(dt: any) {
+    let now = Date.now();
+    let end = dt;
+    let diff = (end - now);
+    return diff;
+  }
 
   return (
     <View style={styles.titlebar}>

@@ -34,6 +34,18 @@ const App = () => {
     }
   }
 
+  // let timeoutLoop = setTimeout(function tick() {
+  //   console.log('M gud');
+  //   try{
+  //     //checkTimeforRenew();
+  //   }
+  //   catch (e)
+  //   {
+  //     console.log("M error", e);
+  //   }
+  //   timeoutLoop = setTimeout(tick, 3000);
+  // }, 3000);
+
   if (!RealmProvider) {
     return null;
   }
