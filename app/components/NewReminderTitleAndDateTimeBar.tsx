@@ -40,7 +40,7 @@ function NewReminderTitleAndDateTimeBar({
     currentDate.setMilliseconds(0);
     setShow(false);
     setDate(currentDate);
-    setExpired(calcTime(currentDate) < -333333);
+    setExpired(calcTime(currentDate) < -3333333);
     updateReminderCallback(reminder, undefined, currentDate);
 
   };

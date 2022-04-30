@@ -26,6 +26,7 @@ import notifee,
 } from '@notifee/react-native';
 import {globalStyles } from '../styles/global';
 import SwitchSelector from "react-native-switch-selector";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const {useRealm, useQuery, RealmProvider} = ReminderContext;
 interface ReminderItemProps {
@@ -52,7 +53,9 @@ function ReminderItem({
 
   const { onTouchStart, onTouchEnd } = 
   useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
-  let delay = 60000;
+  // can adjust the frequency of pinging notifications here
+  // too low values will probably (definitely) impact performance
+  let delay = 30000;
 
   const [isChecked, setIsChecked] = useState(reminder.isComplete);
   const [isAutoRenewSwitchOn, setAutoRenewSwitchOn] = useState(reminder.isAutoRenewOn);
@@ -137,7 +140,7 @@ function ReminderItem({
     let checkReminderRenewalTimer = setTimeout(function tick() {
       //console.log('scanning for autorenewals');
       try{
-        setExpired(() => calcTime (reminder.scheduledDatetime) < -333333 );
+        setExpired(() => calcTime (reminder.scheduledDatetime) < -3333333 );
         checkTimeforRenew();
       }
       catch (e)
@@ -160,7 +163,7 @@ function ReminderItem({
     {
       return;
     }
-    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -333333 || calcTime(reminder.scheduledDatetime) > delay * 1.5 )
+    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -3333333 || calcTime(reminder.scheduledDatetime) > delay * 0.5 )
     {
       return;
     }
@@ -168,9 +171,10 @@ function ReminderItem({
   }
 
   function checkExpiration() {
-    setExpired(() => calcTime (reminder.scheduledDatetime) < -333333 );
+    setExpired(() => calcTime (reminder.scheduledDatetime) < -3333333 );
     expiredCallback(reminder);
-    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -333333 );
+    isExpired ? clearNonLateNotifications() : {};
+    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -3333333 );
   }
   
   const updateIsCompleted = useCallback(
@@ -258,9 +262,36 @@ function ReminderItem({
     console.log("New auto-renew date set for ", reminder.autoRenewDate.toLocaleString());
     console.log("s =", s,"seconds");
     console.log("Renewfreq =", reminder.autoRenewFreq,"seconds");
-  }  
+  }
+  
+  async function regenerateNotifications() {
+    if(!reminder.isAutoRenewOn)
+    {
+      Alert.alert("Cannot regenerate notifications without auto-renew.");
+      return;
+    }
+    try
+    {
+      notifee.cancelTriggerNotifications([reminder._id.toHexString() + '1', reminder._id.toHexString() + '2', reminder._id.toHexString() + '3']);
+      onCreateStackTriggerNotification(3, 4, false, true);
+    }
+    catch (e)
+    {
 
-  function clearNotifications() {
+    }
+    finally
+    {
+      Alert.alert("Renewed notifications for this reminder.");
+      notifee.getTriggerNotificationIds().then(ids => console.log('Renewed notifications. All notification ids: ', ids));
+    }
+  }
+
+  function clearNonLateNotifications() {
+    console.log("clearing non-late notifications");
+    clearNotifications(1);
+  }
+
+  function clearNotifications(y = 0) {
     if(reminder == undefined)
     {
       return;
@@ -270,7 +301,7 @@ function ReminderItem({
 
     try
     {
-      notifee.cancelTriggerNotifications(idStrings);
+      y ? notifee.cancelTriggerNotifications(idStrings) : notifee.cancelTriggerNotifications(idStrings.slice(y));
     }
     catch(e)
     {
@@ -303,15 +334,19 @@ function ReminderItem({
   }
 
   function onSwipeRight() {
-    /* don't notify on expired reminders */
-    if (calcTime(reminder.scheduledDatetime) < 1000)
+    /* don't notify on expired reminders
+    *  notification timeout window = 59 minutes
+    *  notifications past the current time will not be triggered
+    */
+    if (calcTime(reminder.scheduledDatetime) < -3550000)
     {
-      Alert.alert("Cannot set notifications for an expired reminder.");
+      Alert.alert("Cannot set notifications for an expired reminder past 1 hour.");
       return;
     }
     /* notify function goes here */
     onDisplayNotification();
     onCreateStackTriggerNotification();
+    notifee.getTriggerNotificationIds().then(ids => console.log('Created trigger notifications. All scheduled notifications: ', ids));
     // console.log('right Swipe performed');
   }
 
@@ -339,7 +374,7 @@ function ReminderItem({
       title: reminder.title, // required
       body: 'Reminder notification set for ' + reminder.scheduledDatetime.toLocaleString(),
       android: {
-        autoCancel: false,
+        autoCancel: true,
         channelId,
         importance: AndroidImportance.DEFAULT,
         smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
@@ -352,7 +387,7 @@ function ReminderItem({
     });
     } catch(e)
     {
-      console.log("Reminder is already gone", e);
+      //console.log("Reminder is already gone", e);
     }
   }
 
@@ -440,15 +475,15 @@ function ReminderItem({
       },
       (trigType ? trigger1 : trigger2),
       );
-      notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
+      //notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
     } 
     catch(e) 
     {
-      console.log("Reminder is already gone", e);
+      //console.log("Reminder is already gone", e);
     }
   }
 
-  async function onCreateStackTriggerNotification() {
+  async function onCreateStackTriggerNotification(a = 0, b = 4, autoCancel = true, ongong = false) {
     const enddate = Date.now() + calcTime(reminder.scheduledDatetime);
     const lateNotif = enddate + 3600000;
     const thirdNotif = enddate - 900000;
@@ -537,7 +572,7 @@ function ReminderItem({
     const triggerlist = [ trigger1, trigger2, trigger3, trigger4, trigger5 ];
     const importanceList = [AndroidImportance.MIN, AndroidImportance.LOW, AndroidImportance.DEFAULT];
     
-    for (let i = 0; i <= 4; i++) {
+    for (let i = a; i <= b; i++) {
       try 
       {
         // Create a trigger notification
@@ -546,10 +581,10 @@ function ReminderItem({
           await notifee.createTriggerNotification(
           {
             id: reminder._id.toHexString() + i.toString(),
-            title: reminder.title,
+            title: '<p style="color: #4caf50;"><b>'+reminder.title+'</span></p></b></p> &#128576;',
             body: reminder.scheduledDatetime.toLocaleString(),
             android: {
-              autoCancel: false,
+              autoCancel: true,
               channelId,
               category: AndroidCategory.REMINDER,
               importance: importanceList[i],
@@ -577,37 +612,37 @@ function ReminderItem({
           },
           (triggerlist[i]),
           );
-          notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
+          //notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
         }
         else
         {
           await notifee.createTriggerNotification(
           {
             id: (i == 4 ? reminder._id.toHexString() : reminder._id.toHexString() + i.toString()),
-            title: '<p style="color: #4caf50;"><b>reminder.title</span></p></b></p> &#128576;',
-            subtitle: '&#129395;',
+            title: '<p style="color: #4caf50;"><b>'+reminder.title+'</span></p></b></p> &#128576;',
+            subtitle: '<p style="color: #c9a0dc;"><b>'+reminder.isExpired ? 'Expired' : 'Upcoming' +'</span></p></b></p>&#129395;',
             body: reminder.scheduledDatetime.toLocaleString() + '&#129395;',
             android: {
-              autoCancel: false,
+              autoCancel,
               channelId: 'Channel-1',
               category: AndroidCategory.ALARM,
               importance: AndroidImportance.HIGH,
               largeIcon: require('../../images/clock.png'),
               circularLargeIcon: true,
-              ongoing: i == 4,
+              ongoing: i == 4 || ongong,
               tag: reminder._id.toHexString(),
               showTimestamp: true,
               timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
               actions: [
                 {
-                  title: 'Options',
+                  title: ongong? 'Swipe' : 'Options',
                   icon: 'ic_small_icon',
                   pressAction: {
                     id: 'reminder',
                   },
                   input: {
                     allowFreeFormInput: false, // set to false
-                    choices: ['Snooze', 'Renew', 'Delete'],
+                    choices: ongong? ['Swipe away to remove'] : ['Snooze', 'Renew', 'Delete'],
                     placeholder: 'placeholder',
                   },
                 },
@@ -619,12 +654,16 @@ function ReminderItem({
           },
           (triggerlist[i]),
           );
-          notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
+          //notifee.getTriggerNotificationIds().then(ids => console.log('All trigger notifications: ', ids));
         }
       }
       catch(e) 
       {
-        console.log("Reminder is already gone", e);
+        //console.log("Reminder is already gone", e);
+      }
+      finally
+      {
+        
       }
     };
   }
@@ -731,7 +770,13 @@ function ReminderItem({
       <View style={styles.task}>
         <View style={styles.content}>
           <View style={styles.titleInputContainer}>
-            <View style={{width: 30}}/>
+            <MaterialIcons
+              name='autorenew'
+              size={20}
+              style={{padding: 0}}
+              onPress={regenerateNotifications}
+            />
+            <View style={{width: 10}}/>
             <Text style={styles.textTitle}>{reminder.title}</Text>
             <BouncyCheckbox
               isChecked={isChecked}
