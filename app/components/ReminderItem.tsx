@@ -65,8 +65,8 @@ function ReminderItem({
     //{ label: "3m", value: "0.05" }, // TEST VALUE
    // { label: "30m", value: "0.5" },
     { label: "1h", value: "1" },
-    { label: "3h", value: "3" },
-    { label: "6h", value: "6" },
+    { label: "2h", value: "2" },
+    { label: "4h", value: "4" },
     { label: "12h", value: "12" },
     { label: "1d", value: "24" },
     { label: "2d", value: "48" },
@@ -85,7 +85,7 @@ function ReminderItem({
       _isExpired?: boolean,
     ): void => {
       realm.write(() => {
-        reminder.isExpired = ( calcTime (reminder.scheduledDatetime) < -999999 );
+        reminder.isExpired = ( calcTime (reminder.scheduledDatetime) < -99999 );
         reminder.isExpired ? setExpired(() => true) : setExpired(() => false);
       });
     },
@@ -124,7 +124,7 @@ function ReminderItem({
   let checkReminderRenewalTimer = setTimeout(function tick() {
     //console.log('scanning for autorenewals');
     try{
-      setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
+      setExpired(() => calcTime (reminder.scheduledDatetime) < -99999 );
       checkTimeforRenew();
     }
     catch (e)
@@ -141,7 +141,7 @@ function ReminderItem({
       clearTimeout(checkReminderRenewalTimer);
       return;
     }
-    if(!reminder.isAutoRenewOn || reminder.isExpired || Math.abs(calcTime(reminder.scheduledDatetime)) > delay )
+    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -99999 || Math.abs(calcTime(reminder.scheduledDatetime)) > delay * 1.5 )
     {
       return;
     }
@@ -149,9 +149,9 @@ function ReminderItem({
   }
 
   function checkExpiration() {
-    setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
+    setExpired(() => calcTime (reminder.scheduledDatetime) < -99999 );
     expiredCallback(reminder);
-    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -999999 );
+    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -99999 );
   }
   
   const updateIsCompleted = useCallback(
