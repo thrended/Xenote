@@ -124,7 +124,7 @@ function ReminderItem({
   let checkReminderRenewalTimer = setTimeout(function tick() {
     //console.log('scanning for autorenewals');
     try{
-      setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
+      setExpired(() => calcTime (reminder.scheduledDatetime) < -333333 );
       checkTimeforRenew();
     }
     catch (e)
@@ -141,7 +141,7 @@ function ReminderItem({
       clearTimeout(checkReminderRenewalTimer);
       return;
     }
-    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -999999 || Math.abs(calcTime(reminder.scheduledDatetime)) > delay * 1.5 )
+    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -333333 || Math.abs(calcTime(reminder.scheduledDatetime)) > delay * 1.5 )
     {
       return;
     }
@@ -149,9 +149,9 @@ function ReminderItem({
   }
 
   function checkExpiration() {
-    setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
+    setExpired(() => calcTime (reminder.scheduledDatetime) < -333333 );
     expiredCallback(reminder);
-    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -999999 );
+    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -333333 );
   }
   
   const updateIsCompleted = useCallback(
@@ -242,6 +242,10 @@ function ReminderItem({
   }  
 
   function clearNotifications() {
+    if(reminder == undefined)
+    {
+      return;
+    }
     let idStrings = [ reminder._id.toHexString(), reminder._id.toHexString() + '1', 
     reminder._id.toHexString() + '2', reminder._id.toHexString() + '3', reminder._id.toHexString() + '4' ];
 

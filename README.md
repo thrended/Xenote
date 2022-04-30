@@ -25,6 +25,10 @@ zipStorePath=wrapper/dists
 
 # Changelog
 
+## 04-30 Auto-renew beta
+- Auto-renew functionality added to reminders
+- Auto-renew window for expiration changed to _~55 minutes_ past due
+-
 ## Small UI tweaks
 - Priority selection now clearly visible
 - Can view limited body text, priority of note
