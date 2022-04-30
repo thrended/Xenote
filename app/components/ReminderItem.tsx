@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useDebugValue, useState} from 'react';
+import React, {memo, useCallback, useDebugValue, useEffect, useState} from 'react';
 import {
   Alert,
   Modal,
@@ -78,14 +78,25 @@ function ReminderItem({
     { label: "90d", value: "2160"},
     { label: "1yr", value: "8760"},
   ];
-
+  
+  // useEffect(() => {
+  //   return () => {
+  //     setTimeout(() => {
+  //       if(reminder == undefined)
+  //       {
+  //         clearTimeout(checkReminderRenewalTimer);
+  //       }
+  //     }, delay);
+  //   }
+  // }, []);
+  
   const expiredCallback = (useCallback(
     (
       reminder: Reminder,
       _isExpired?: boolean,
     ): void => {
       realm.write(() => {
-        reminder.isExpired = ( calcTime (reminder.scheduledDatetime) < -99999 );
+        reminder.isExpired = ( calcTime (reminder.scheduledDatetime) < -333333 );
         reminder.isExpired ? setExpired(() => true) : setExpired(() => false);
       });
     },
@@ -121,24 +132,32 @@ function ReminderItem({
     console.log("Autorenew has regenerated the reminder");
   }
   
-  let checkReminderRenewalTimer = setTimeout(function tick() {
-    //console.log('scanning for autorenewals');
-    try{
-      setExpired(() => calcTime (reminder.scheduledDatetime) < -333333 );
-      checkTimeforRenew();
-    }
-    catch (e)
-    {
-      console.log("Error while checking for autorenewals", e);
-    }
-    checkReminderRenewalTimer = setTimeout(tick, delay);
-  }, delay);
+  useEffect(() => {
+    // useRef value stored in .current property
+    let checkReminderRenewalTimer = setTimeout(function tick() {
+      //console.log('scanning for autorenewals');
+      try{
+        setExpired(() => calcTime (reminder.scheduledDatetime) < -333333 );
+        checkTimeforRenew();
+      }
+      catch (e)
+      {
+        console.log("Error while checking for autorenewals", e);
+      }
+      checkReminderRenewalTimer = setTimeout(tick, delay);
+    }, delay);
+
+    // clear on component unmount
+    return () => {
+      clearTimeout(checkReminderRenewalTimer);
+    };
+  }, []);
+  
 
   let checkTimeforRenew = () => {
     
     if (reminder == undefined)
     {
-      clearTimeout(checkReminderRenewalTimer);
       return;
     }
     if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -333333 || calcTime(reminder.scheduledDatetime) > delay * 1.5 )
@@ -270,13 +289,16 @@ function ReminderItem({
   }
 
   function onDeleteFunc() {
+    toggleSwitch(0);
+    //clearTimeout(checkReminderRenewalTimer);
     clearNotifications();
-    clearTimeout(checkReminderRenewalTimer);
     onDelete();
+    
   }
   function onSwipeLeftFunc() {
+    toggleSwitch(0);
+    //clearTimeout(checkReminderRenewalTimer);
     clearNotifications();
-    clearTimeout(checkReminderRenewalTimer);
     onSwipeLeft();
   }
 
