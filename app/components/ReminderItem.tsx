@@ -141,7 +141,7 @@ function ReminderItem({
       clearTimeout(checkReminderRenewalTimer);
       return;
     }
-    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -333333 || Math.abs(calcTime(reminder.scheduledDatetime)) > delay * 1.5 )
+    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -333333 || calcTime(reminder.scheduledDatetime) > delay * 1.5 )
     {
       return;
     }
