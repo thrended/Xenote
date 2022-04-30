@@ -6303,11 +6303,6 @@ react-native-notifications@^4.2.4:
   resolved "https://registry.npmjs.org/react-native-notifications/-/react-native-notifications-4.3.1.tgz"
   integrity sha512-A668d+Q0/VQRjmrh+LvDpc/REA8GXgwCijXDCIlDHGMK8enmrtdxY5OANQf1VM3hecf+fD0wYFw2uqL/ZR8jgg==
 
-react-native-push-notification@^8.1.1:
-  version "8.1.1"
-  resolved "https://registry.npmjs.org/react-native-push-notification/-/react-native-push-notification-8.1.1.tgz"
-  integrity sha512-XpBtG/w+a6WXTxu6l1dNYyTiHnbgnvjoc3KxPTxYkaIABRmvuJZkFxqruyGvfCw7ELAlZEAJO+dthdTabCe1XA==
-
 react-native-rounded-checkbox@^0.3.3:
   version "0.3.3"
   resolved "https://registry.npmjs.org/react-native-rounded-checkbox/-/react-native-rounded-checkbox-0.3.3.tgz"
@@ -6332,6 +6327,13 @@ react-native-screens@^3.13.1:
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
+
+react-native-switch-selector@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-switch-selector/-/react-native-switch-selector-2.2.1.tgz#551ff32c018281904b1d5df79f5192c788195d87"
+  integrity sha512-HeUGoPD+rDV9F0CWJnIjZaK1JJS95dnxxVzTzufeLYCtA/iFKxhy+PS8kAyXTwfrTSgFFAmURgcpkAcAMqDg8Q==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-native-vector-icons@^9.1.0:
   version "9.1.0"

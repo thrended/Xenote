@@ -9,10 +9,12 @@ import {
   Platform,
   Pressable,
   StyleSheet,
+  Switch,
   _Text,
 } from 'react-native';
 
 import { format, compareAsc } from 'date-fns'
+import addSeconds from 'date-fns/addSeconds';
 import { useSwipe } from '../hooks/useSwipe';
 import ReminderContext, {Reminder, Subtask} from '../models/Schemas';
 import colors from '../styles/colors';
@@ -22,8 +24,10 @@ import notifee,
   AuthorizationStatus, EventType, IntervalTrigger, RepeatFrequency, 
   TimestampTrigger, TimeUnit, TriggerNotification, TriggerType, 
 } from '@notifee/react-native';
+import {globalStyles } from '../styles/global';
+import SwitchSelector from "react-native-switch-selector";
 
- const {useRealm, useQuery, RealmProvider} = ReminderContext;
+const {useRealm, useQuery, RealmProvider} = ReminderContext;
 interface ReminderItemProps {
   reminder: Reminder;
   handleModifyReminder: (
@@ -45,6 +49,111 @@ function ReminderItem({
 }: ReminderItemProps) {
 
   const realm = useRealm();
+
+  const { onTouchStart, onTouchEnd } = 
+  useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
+  let delay = 60000;
+
+  const [isChecked, setIsChecked] = useState(reminder.isComplete);
+  const [isAutoRenewSwitchOn, setAutoRenewSwitchOn] = useState(reminder.isAutoRenewOn);
+  const [renewFreq, setRenewFreq] = useState(reminder.autoRenewFreq);
+  const [renewDate, setRenewDate] = useState(reminder.autoRenewDate);
+  const [isExpired, setExpired] = useState(reminder.isExpired);
+  const [DT, setDT] = useState(reminder.scheduledDatetime);
+  
+  const SSOptions = [
+    //{ label: "3m", value: "0.05" }, // TEST VALUE
+   // { label: "30m", value: "0.5" },
+    { label: "1h", value: "1" },
+    { label: "3h", value: "3" },
+    { label: "6h", value: "6" },
+    { label: "12h", value: "12" },
+    { label: "1d", value: "24" },
+    { label: "2d", value: "48" },
+    { label: "3d", value: "72" },
+    //{ label: "5d", value: "120" },
+    { label: "7d", value: "168" },
+    { label: "14d", value: "336" },
+    { label: "30d", value: "720" },
+    { label: "90d", value: "2160"},
+    { label: "1yr", value: "8760"},
+  ];
+
+  const expiredCallback = (useCallback(
+    (
+      reminder: Reminder,
+      _isExpired?: boolean,
+    ): void => {
+      realm.write(() => {
+        reminder.isExpired = ( calcTime (reminder.scheduledDatetime) < -999999 );
+        reminder.isExpired ? setExpired(() => true) : setExpired(() => false);
+      });
+    },
+    [realm],)
+
+  );
+
+  let process_AUTORENEW = useCallback(
+    (
+      reminder: Reminder,
+      _newDate: Date,
+      _newRenewDate: Date,
+      _isComplete?: boolean,
+    ): void => {
+      realm.write(() => {
+        reminder.scheduledDatetime = _newDate;
+        setDT(() => _newDate);
+        reminder.autoRenewDate = _newRenewDate;
+        setRenewDate(() => _newRenewDate);
+        _isComplete ? reminder.isComplete = false : {};
+        _isComplete ? setIsChecked(() => false) : {};
+      });
+    },
+    [realm],
+  );
+
+  let doAutoRenew = () => {
+    let oldSchedDate = reminder.scheduledDatetime;
+    let oldRenewDate = reminder.autoRenewDate;
+    let interval = reminder.autoRenewFreq;
+    process_AUTORENEW(reminder, new Date(addSeconds(oldSchedDate, interval)), new Date(addSeconds(oldRenewDate, interval)));
+    Alert.alert(("Autorenew! " + reminder.scheduledDatetime));
+    console.log("Autorenew has regenerated the reminder");
+  }
+  
+  let checkReminderRenewalTimer = setTimeout(function tick() {
+    //console.log('scanning for autorenewals');
+    try{
+      setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
+      checkTimeforRenew();
+    }
+    catch (e)
+    {
+      console.log("Error while checking for autorenewals", e);
+    }
+    checkReminderRenewalTimer = setTimeout(tick, delay);
+  }, delay);
+
+  let checkTimeforRenew = () => {
+    
+    if (reminder == undefined)
+    {
+      clearTimeout(checkReminderRenewalTimer);
+      return;
+    }
+    if(!reminder.isAutoRenewOn || reminder.isExpired || Math.abs(calcTime(reminder.scheduledDatetime)) > delay )
+    {
+      return;
+    }
+    doAutoRenew();
+  }
+
+  function checkExpiration() {
+    setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
+    expiredCallback(reminder);
+    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -999999 );
+  }
+  
   const updateIsCompleted = useCallback(
     (
       reminder: Reminder,
@@ -52,17 +161,85 @@ function ReminderItem({
     ): void => {
       realm.write(() => {
         reminder.isComplete = _isComplete;
+        _isComplete ? reminder.isAutoRenewOn = false : {};
+        _isComplete ? setAutoRenewSwitchOn(() => false) : {};
       });
     },
     [realm],
   );
 
-  const { onTouchStart, onTouchEnd } = 
-  useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
-  const [notifsList, setNotifsList] = useState(['']);
-  const notifs = new Set();
+  const toggleAutoRenew = useCallback(
+    (
+      _off,
+      reminder: Reminder,
+      _renewFreq,
+      _renewDate,
+    ): void => {
+      realm.write(() => {
+        reminder.isAutoRenewOn = !reminder.isAutoRenewOn;
+        setAutoRenewSwitchOn(isAutoRenewSwitchOn => !isAutoRenewSwitchOn);
+        reminder.autoRenewFreq = _renewFreq;
+        setRenewFreq(_renewFreq);
+        reminder.autoRenewDate = _renewDate;
+        setRenewDate(new Date(addSeconds(reminder.scheduledDatetime, _renewFreq)));
+      });
+      console.log(reminder.isAutoRenewOn)
+      console.log(reminder.autoRenewFreq)
+      console.log(reminder.autoRenewDate)
+    },
+    [realm],
+  );
 
-  const [isChecked, setIsChecked] = useState(reminder.isComplete);
+  const updateAutoRenew = useCallback(
+    (
+      reminder: Reminder,
+      _renewFreq,
+      _renewDate,
+    ): void => {
+      realm.write(() => {
+        reminder.autoRenewFreq = _renewFreq;
+        setRenewFreq(_renewFreq);
+        reminder.autoRenewDate = _renewDate;
+        setRenewDate(() => _renewDate);
+      });
+      console.log(reminder.autoRenewFreq);
+      console.log(reminder.autoRenewDate)
+    },
+    [realm],
+  );
+
+  const toggleSwitch = (amt = parseSeconds(SSOptions[0].value)) => {
+    checkExpiration()
+    if(isExpired) { return; }
+    toggleAutoRenew(!isAutoRenewSwitchOn, reminder, amt, new Date(addSeconds(reminder.scheduledDatetime, amt)));
+    if(isExpired) { return; }
+    console.log("Toggled auto-renew date " + (reminder.isAutoRenewOn ? "set for " + reminder.autoRenewDate.toLocaleString() : "off"));
+  }
+
+  const parseSeconds = (val: string) => {
+    let value = Number(val);
+    return value * 3600;
+  }
+
+  const reverseParse = (val: number) => {
+    let x = val / 3600;
+    //x > 1 ? x = Math.trunc(x): {}; 
+    for(var k = 0; k < SSOptions.length; k++){
+      if (Number(SSOptions[k].value) == x)
+      {
+        return k;
+      }
+    }
+    return 0;
+  }
+  
+  const onPressSelSwitch = (value: string) => {
+    let s = parseSeconds(value);
+    updateAutoRenew(reminder, s, new Date(addSeconds(reminder.scheduledDatetime, s)));
+    console.log("New auto-renew date set for ", reminder.autoRenewDate.toLocaleString());
+    console.log("s =", s,"seconds");
+    console.log("Renewfreq =", reminder.autoRenewFreq,"seconds");
+  }
   
 
   function clearNotifications() {
@@ -80,42 +257,23 @@ function ReminderItem({
     finally
     {
       console.log("All notifications for this reminder have been deleted.");
-      Alert.alert("Cancelled all notifications for this reminder");
+      //Alert.alert("Cancelled all notifications for this reminder");
     }
   }
 
-  // function setNotificationImportance() {
-  //   let idStrings = [ reminder._id.toHexString(), reminder._id.toHexString() + '1', 
-  //   reminder._id.toHexString() + '2', reminder._id.toHexString() + '3', reminder._id.toHexString() + '4' ];
-    
-  //   for (const id in idStrings) {
-  //     try
-  //     {
-  //       notifee.cancelTriggerNotifications(idStrings);
-  //     }
-  //     catch(e)
-  //     {
-  //       console.log("Reminder id does not exist, skipping deletion", e);
-  //     }
-  //     finally
-  //     {
-  //       console.log("All notifications for this reminder have been deleted.");
-  //       (x ? Alert.alert("Cancelled all notifications for this reminder") : {});
-  //     }
-  //   }
-  // }
-
-  function onClearButton() {
+  function onClearNotifyButton() {
     clearNotifications();
       Alert.alert("Cancelled all notifications for this reminder");
   }
 
   function onDeleteFunc() {
     clearNotifications();
+    clearTimeout(checkReminderRenewalTimer);
     onDelete();
   }
   function onSwipeLeftFunc() {
     clearNotifications();
+    clearTimeout(checkReminderRenewalTimer);
     onSwipeLeft();
   }
 
@@ -561,10 +719,37 @@ function ReminderItem({
           </View>
           <View style={styles.subtaskListContainer}>
             {reminder.subtasks.map((subtask) => 
-              <Text style={styles.textStyle}>{subtask.title} {subtask.isComplete? "✓" : {}}</Text>
+              <Text style={styles.textStyle}>{subtask.title} {subtask.isComplete? "✓" : ""}</Text>
             )}
           </View>
         </View>
+        <View style={globalStyles.switchContainer}>
+            <Text style={{color: (isExpired ? 'brown' : !isExpired && isAutoRenewSwitchOn ? 'green' : 'teal')}}>
+              {isExpired ? "Can't Auto-Renew" : isAutoRenewSwitchOn ? "Auto-Renew Interval" : "Auto-Renew OFF"}
+            </Text>
+            <Switch
+              disabled = {isExpired}
+              trackColor={{ false: "#767577", true: colors.mint }}
+              thumbColor={!isExpired && isAutoRenewSwitchOn ? colors.brightteal : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={() => (isAutoRenewSwitchOn ? toggleSwitch(0) : toggleSwitch()) }
+              value={!isExpired && isAutoRenewSwitchOn}
+            />
+            
+        </View>      
+        {!isExpired && isAutoRenewSwitchOn && (   // ignore the red lines lol...typescript things
+          <SwitchSelector
+            options={SSOptions}
+            initial={reverseParse(reminder.autoRenewFreq)}
+            textColor={colors.amethyst}
+            selectedColor={colors.lightyellow}
+            buttonColor={colors.heliotrope}
+            borderColor={colors.mint}
+            onPress={value => 
+              onPressSelSwitch(value)
+            }
+          />
+        )}    
         {/* <Pressable
          onPress={onDelete} 
          style={styles.deleteButton}

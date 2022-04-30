@@ -8,6 +8,7 @@ export class Subtask extends Realm.Object {
   value!: string;
   isComplete!: boolean;
   scheduledDatetime!: Date;
+  isAutoRenewOn!: boolean;
 
   static generate(
     title: string,
@@ -22,6 +23,7 @@ export class Subtask extends Realm.Object {
       value: value,
       isComplete: false,
       scheduledDatetime: _scheduledDatetime,
+      isAutoRenewOn: false,
     };
   }
 
@@ -36,6 +38,7 @@ export class Subtask extends Realm.Object {
       value: 'string',
       isComplete: {type: 'bool', default: false},
       scheduledDatetime: 'date',
+      isAutoRenewOn: {type: 'bool', default: false},
     },
   };
 }
@@ -46,6 +49,10 @@ export class Reminder extends Realm.Object {
   subtasks!: Subtask[];
   isComplete!: boolean;
   scheduledDatetime!: Date;
+  isAutoRenewOn!: boolean;
+  autoRenewFreq!: number;
+  autoRenewDate!: Date;
+  isExpired!: boolean;
 
   static generate(
     title: string,
@@ -58,6 +65,10 @@ export class Reminder extends Realm.Object {
       subtasks: subtasks? subtasks: new Array<Subtask>(),
       isComplete: false,
       scheduledDatetime: _scheduledDatetime,
+      isAutoRenewOn: false,
+      autoRenewFreq: 0,
+      autoRenewDate: new Date(),
+      isExpired: false,
     };
   }
 
@@ -71,6 +82,10 @@ export class Reminder extends Realm.Object {
       subtasks: {type: 'list', objectType: 'Subtask'},
       isComplete: {type: 'bool', default: false},
       scheduledDatetime: 'date',
+      isAutoRenewOn: {type: 'bool', default: false},
+      autoRenewFreq: {type: 'float', default: 0},
+      autoRenewDate: {type: 'date', default: new Date()},
+      isExpired: {type: 'bool', default: false},
     },
   };
 }
@@ -81,11 +96,13 @@ export class Note extends Realm.Object {
   body!: string;
   priority!: number;
   isFlagged!: boolean;
+  isPinned!: boolean;
   // metadata
   author!: string;
   category!: string;
   dateCreated!: Date;
   dateModified!: Date;
+  dateAccessed!: Date;
   size!: number;
 
   static generate(title: string, author: string, body: string, date: Date, prio: number) {
@@ -95,10 +112,12 @@ export class Note extends Realm.Object {
       body: body,
       priority: prio,
       isFlagged: false,
+      isPinned: false,
       author: author,
       category: "",
       dateCreated: new Date(),
       dateModified: new Date(),
+      dateAccessed: new Date(),
       size: 0,
     };
   }
@@ -113,8 +132,10 @@ export class Note extends Realm.Object {
       body: "string",
       priority: { type: "int", default: 5 },
       isFlagged: { type: "bool", default: false },
+      isPinned: { type: "bool", default: false },
       dateCreated: { type: "date", default: new Date() },
       dateModified: "date",
+      dateAccessed: "date",
       size: "int",
     },
   };
