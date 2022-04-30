@@ -124,7 +124,7 @@ function ReminderItem({
   let checkReminderRenewalTimer = setTimeout(function tick() {
     //console.log('scanning for autorenewals');
     try{
-      setExpired(() => calcTime (reminder.scheduledDatetime) < -99999 );
+      setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
       checkTimeforRenew();
     }
     catch (e)
@@ -141,7 +141,7 @@ function ReminderItem({
       clearTimeout(checkReminderRenewalTimer);
       return;
     }
-    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -99999 || Math.abs(calcTime(reminder.scheduledDatetime)) > delay * 1.5 )
+    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < -999999 || Math.abs(calcTime(reminder.scheduledDatetime)) > delay * 1.5 )
     {
       return;
     }
@@ -149,9 +149,9 @@ function ReminderItem({
   }
 
   function checkExpiration() {
-    setExpired(() => calcTime (reminder.scheduledDatetime) < -99999 );
+    setExpired(() => calcTime (reminder.scheduledDatetime) < -999999 );
     expiredCallback(reminder);
-    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -99999 );
+    return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < -999999 );
   }
   
   const updateIsCompleted = useCallback(
@@ -239,8 +239,7 @@ function ReminderItem({
     console.log("New auto-renew date set for ", reminder.autoRenewDate.toLocaleString());
     console.log("s =", s,"seconds");
     console.log("Renewfreq =", reminder.autoRenewFreq,"seconds");
-  }
-  
+  }  
 
   function clearNotifications() {
     let idStrings = [ reminder._id.toHexString(), reminder._id.toHexString() + '1', 
