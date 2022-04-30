@@ -303,6 +303,12 @@ function ReminderItem({
   }
 
   function onSwipeRight() {
+    /* don't notify on expired reminders */
+    if (calcTime(reminder.scheduledDatetime) < 1000)
+    {
+      Alert.alert("Cannot set notifications for an expired reminder.");
+      return;
+    }
     /* notify function goes here */
     onDisplayNotification();
     onCreateStackTriggerNotification();

@@ -122,6 +122,11 @@ function SubtaskItem({
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
 
   function onSwipeRight() {
+    if (calcTime(subtask.scheduledDatetime) < 1000)
+    {
+      Alert.alert("Cannot set notifications for a expired subtask.");
+      return;
+    }
     /* flag or complete function goes here */
     onDisplayNotification();
     onCreateSubtaskTriggerNotification();
