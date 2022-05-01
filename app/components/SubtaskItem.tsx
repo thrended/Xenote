@@ -26,6 +26,8 @@ import notifee,
   AuthorizationStatus, EventType, IntervalTrigger, RepeatFrequency, 
   TimestampTrigger, TimeUnit, TriggerNotification, TriggerType, 
 } from '@notifee/react-native';
+import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import Animated, {useAnimatedGestureHandler, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 
 const {useRealm, useQuery, RealmProvider} = SubtaskContext;
 
@@ -287,54 +289,73 @@ function SubtaskItem({
     [realm],
   );
 
+  const translateX = useSharedValue(0);
+
+  const panGesture = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
+    onActive: (event) => {
+      translateX.value = event.translationX
+    },
+    onEnd: () => {},
+  })
+
+  const rStyle = useAnimatedStyle(() => ({
+    transform: [{
+      translateX: translateX.value
+    }]
+  }))
+
   return (
-    <View>
-      <Pressable
-        onLongPress={openModal}
-        onTouchStart={onTouchStart} 
-        onTouchEnd={onTouchEnd}
-        hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
-        android_ripple={{color: colors.subtle}}
-      >
-        <View style={styles.dateTimeContainer}>
-          <View>
-            <Text>{format(subtask.scheduledDatetime, "h:mm b")}</Text>
-          </View>
-          <View>
-            <Text>{format(subtask.scheduledDatetime, "E MMMM d, yyyy")}</Text>
-          </View>        
-        </View>
-        <View style={styles.task}>
-          <View style={styles.content}>
-            <View style={styles.titleInputContainer}>
-              <View style={{width: 30}}/>
-              <Text style={styles.textTitle}>{subtask.title}</Text>
-              <BouncyCheckbox
-                isChecked={isChecked}
-                size={25}
-                fillColor="#3CB043"
-                unfillColor="#FFFFFF"
-                iconStyle={{ borderColor: "#3CB043" }}
-                textStyle={{ fontFamily: "JosefinSans-Regular" }}
-                disableText={true}
-                onPress={(isChecked: boolean) => {
-                  setIsChecked(isChecked => !isChecked);
-                  updateIsCompleted(subtask, isChecked);
-                  isChecked ? clearNotifications() : {};
-                }}
-              />
+    <View style={{width: "100%"}}>
+      <PanGestureHandler onGestureEvent={panGesture}>
+        <Animated.View style={[rStyle]}>
+          <Pressable
+            onLongPress={openModal}
+            // onTouchStart={onTouchStart} 
+            // onTouchEnd={onTouchEnd}
+            // hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
+            android_ripple={{color: colors.subtle}}
+          >
+            <View style={styles.dateTimeContainer}>
+              <View>
+                <Text>{format(subtask.scheduledDatetime, "h:mm b")}</Text>
+              </View>
+              <View>
+                <Text>{format(subtask.scheduledDatetime, "E MMMM d, yyyy")}</Text>
+              </View>        
             </View>
-            {subtask.feature === "" && subtask.value === ""? <View/> :             
-            <View style={styles.featureInputContainer}>
-              <Text style={styles.textFeature}>{subtask.feature}</Text>
-              <Text style={styles.textValue}>{subtask.value}</Text>
-            </View>}
-          </View>
-          {/* <Pressable onPress={onDeleteFunc} style={styles.deleteButton}>
-            <Text style={styles.deleteText}>Delete</Text>
-          </Pressable> */}
-        </View>
-      </Pressable>
+            <View style={styles.task}>
+              <View style={styles.content}>
+                <View style={styles.titleInputContainer}>
+                  <View style={{width: 30}}/>
+                  <Text style={styles.textTitle}>{subtask.title}</Text>
+                  <BouncyCheckbox
+                    isChecked={isChecked}
+                    size={25}
+                    fillColor="#3CB043"
+                    unfillColor="#FFFFFF"
+                    iconStyle={{ borderColor: "#3CB043" }}
+                    textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                    disableText={true}
+                    onPress={(isChecked: boolean) => {
+                      setIsChecked(isChecked => !isChecked);
+                      updateIsCompleted(subtask, isChecked);
+                      isChecked ? clearNotifications() : {};
+                    }}
+                  />
+                </View>
+                {subtask.feature === "" && subtask.value === ""? <View/> :             
+                <View style={styles.featureInputContainer}>
+                  <Text style={styles.textFeature}>{subtask.feature}</Text>
+                  <Text style={styles.textValue}>{subtask.value}</Text>
+                </View>}
+              </View>
+              {/* <Pressable onPress={onDeleteFunc} style={styles.deleteButton}>
+                <Text style={styles.deleteText}>Delete</Text>
+              </Pressable> */}
+            </View>
+          </Pressable>
+        </Animated.View>
+      </PanGestureHandler>
       <Modal
         animationType="slide"
         transparent={true}

@@ -7,6 +7,7 @@ import RealmContext from './app/models/Schemas';
 import { LogBox } from 'react-native';
 import notifee, {AuthorizationStatus} from '@notifee/react-native';
 import SimpleNote from './app/components/EditNote';
+import { GestureHandlerRootView} from 'react-native-gesture-handler';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -51,30 +52,32 @@ const App = () => {
   }
   return (
     <RealmProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Group>
-            <Stack.Screen
-              name="RemindersListScreen"
-              component={RemindersListScreen}
-              options={{title: 'Reminders'}}
-            />
-            <Stack.Screen 
-              name="ReminderSubtasksScreen" 
-              component={ReminderSubtasksScreen} 
-              options={{title: 'Reminder'}}
-            />
-          </Stack.Group>
-          <Stack.Group screenOptions={{ presentation: 'modal' }}>
-            <Stack.Screen 
-              name="EditNoteScreen" 
-              component={SimpleNote} 
-              options={{title: 'Note'}}  
-            />
-          </Stack.Group>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        {<NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Group>
+              <Stack.Screen
+                name="RemindersListScreen"
+                component={RemindersListScreen}
+                options={{title: 'Reminders'}}
+              />
+              <Stack.Screen 
+                name="ReminderSubtasksScreen" 
+                component={ReminderSubtasksScreen} 
+                options={{title: 'Reminder'}}
+              />
+            </Stack.Group>
+            <Stack.Group screenOptions={{ presentation: 'modal' }}>
+              <Stack.Screen 
+                name="EditNoteScreen" 
+                component={SimpleNote} 
+                options={{title: 'Note'}}  
+              />
+            </Stack.Group>
 
-        </Stack.Navigator>
-      </NavigationContainer>
+          </Stack.Navigator>
+        </NavigationContainer>}
+      </GestureHandlerRootView>
     </RealmProvider>
   );
 };
