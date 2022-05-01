@@ -67,7 +67,7 @@ function SubtaskItem({
     finally
     {
       (b ? console.log("Subtask notification has been deleted") : {});
-      (b ? Alert.alert("Subtask notification cancelled") : {});
+     // (b ? Alert.alert("Subtask notification cancelled") : {});
     }
   }
 
@@ -122,6 +122,12 @@ function SubtaskItem({
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
 
   function onSwipeRight() {
+    /* 59 minute grace period to turn on notification anyway */
+    if (calcTime(subtask.scheduledDatetime) < -3550000)
+    {
+      Alert.alert("Cannot set notifications for a expired subtask past 1 hour.");
+      return;
+    }
     /* flag or complete function goes here */
     onDisplayNotification();
     onCreateSubtaskTriggerNotification();
@@ -158,7 +164,7 @@ function SubtaskItem({
       title: subtask.title, // required
       body: 'Subtask notification set for ' + subtask.scheduledDatetime.toLocaleString(),
       android: {
-        autoCancel: false,
+        autoCancel: true,
         channelId,
         importance: AndroidImportance.LOW,
         smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
