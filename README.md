@@ -1,7 +1,29 @@
 
 # Xenote Changelog
 
-## ***04-30 Auto-renew beta final**
+
+## ***05-01 Auto-refresh improvements**
+
+Statuses for reminders that expired while the app was closed should now be properly synced upon restarting the app
+
+Feature improvement to notification auto-refresh by making it automated and accurately enable/disable.
+
+Auto-refresh Button
+Press = clear notifications for reminder
+Long press = turn on auto-refresh
+
+Improved performance on android AVDs, more testing needed here
+
+Fixed a typo where a reminder became expired after ~5.5 min instead of ~55.5 min of lateness
+
+Probably final update for the weekend barring hotfixes
+
+**_TODO:_**
+**iron out bugs and stuff**
+**Test for wonkiness and stability**
+**Integrate with new UI features**
+
+## **04-30 Auto-renew beta final**
 
 Crashes and memory leaks due to deleted objects should be fixed now.
 
@@ -29,6 +51,7 @@ Probably final update for the weekend barring hotfixes
 **iron out bugs and stuff**
 **Test for wonkiness and stability**
 **Integrate with new UI features**
+
 
 ## 04-30 Auto-renew beta
 
@@ -69,6 +92,8 @@ Probably final update for the weekend barring hotfixes
 #### Other
 
 ## Gradle troubleshooting
+
+Inside android/gradle/wrapper/gradle-wrapper.properties
 
 ## Local version
 
