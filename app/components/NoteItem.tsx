@@ -107,8 +107,12 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
                     />
                   )}
               </View>
-              <Text style={globalStyles.authorText}>{note.author}</Text>
-              <Text>{note.body.slice(0, Math.min(50, note.body.length))}</Text>
+              {note.author === ""? <View/> : 
+                <Text style={globalStyles.authorText}>{note.author}</Text>
+              }
+              {note.body === ""? <View/> : 
+                <Text>{note.body.slice(0, Math.min(50, note.body.length))}</Text>
+              }
               <View style={{alignItems: "flex-end",justifyContent: "flex-end"}}>
                 <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
               </View>
