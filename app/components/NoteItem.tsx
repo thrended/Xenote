@@ -20,6 +20,8 @@ import SimpleNote from './EditNote';
 import { globalStyles } from '../styles/global'
 import { useSwipe } from '../hooks/useSwipe';
 import NoteContext, {Note} from '../models/Schemas';
+import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const {useRealm, useQuery, RealmProvider} = NoteContext;
@@ -32,10 +34,11 @@ interface NoteItemProps {
 function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteItemProps) {
 
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, 8);
+  const [showPrio, setShowPrio] = useState(note.priority > 5);
   const [flagged, setFlagged] = useState(note.isFlagged);
+  const [pinned, setPinned] = useState(note.isPinned);
   const [prio, setPrio] = useState(note.priority);
   const realm = useRealm();
-  const [showPrio, setShowPrio] = useState(note.priority > 5);
 
   const toggleFlag = useCallback(
     (
@@ -44,18 +47,20 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
       realm.write(() => {
         note.isFlagged = !note.isFlagged;
         setFlagged(previousState => !previousState)
+        note.dateAccessed = new Date(Date.now());
       });
     },
     [realm],
   );
 
-  const changeNoteProps = useCallback(
+  const togglePin = useCallback(
     (
       note: Note,
-      _isFlagged: boolean,
     ): void => {
       realm.write(() => {
-        note.isFlagged = _isFlagged;
+        note.isPinned = !note.isPinned;
+        setPinned(previousState => !previousState)
+        note.dateAccessed = new Date(Date.now());
       });
     },
     [realm],
@@ -70,6 +75,7 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
   function onSwipeRight(){
       toggleFlag(note);
       console.log('right Swipe performed on note (toggle flag)');
+      
   }
 
   function onSwipeUp() {
@@ -94,6 +100,38 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
             <View style={globalStyles.noteFields}>
               <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                   <Text style={globalStyles.titleText}>{note.title}</Text>
+                  { pinned && ( 
+                    <Entypo
+                      name='pin'
+                      size={20}
+                        style={{
+                          ...globalStyles.modalToggle,
+                          ...globalStyles.modalClose,
+                          padding: 5
+                        }}
+                      onPress={() => togglePin(note)}
+                    />
+                  )}
+                  { !pinned && ( 
+                    <AntDesign
+                      name='pushpino'
+                      size={20}
+                        style={{
+                          ...globalStyles.modalToggle,
+                          ...globalStyles.modalClose,
+                          padding: 5
+                        }}
+                      onPress={() => togglePin(note)}
+                    />
+                  )}
+              </View>
+              {note.author === ""? <View/> : 
+                <Text style={globalStyles.authorText}>{note.author}</Text>
+              }
+              {note.body === ""? <View/> : 
+                <Text>{note.body.slice(0, Math.min(50, note.body.length))}</Text>
+              }
+              <View style={{flexDirection: 'row', flex: 1, alignItems: "flex-end",justifyContent: "flex-end"}}>
                   { flagged && ( 
                     <FontAwesome5
                       name='flag-checkered'
@@ -107,12 +145,7 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
                     />
                   )}
               </View>
-              {note.author === ""? <View/> : 
-                <Text style={globalStyles.authorText}>{note.author}</Text>
-              }
-              {note.body === ""? <View/> : 
-                <Text>{note.body.slice(0, Math.min(50, note.body.length))}</Text>
-              }
+
               <View style={{alignItems: "flex-end",justifyContent: "flex-end"}}>
                 <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
               </View>

@@ -20,6 +20,7 @@ import RemindersListContent from '../app/components/RemindersListContent';
 import AddReminderButton from '../app/components/AddReminderButton';
 import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import SelectDropdown from "react-native-select-dropdown";
 import SimpleNote from '../app/components/EditNote';
 import NoteItem from '../app/components/NoteItem';
 import Feather from 'react-native-vector-icons/Feather';
@@ -46,6 +47,38 @@ const RemindersListScreen = ({route, navigation} : any) => {
 
   const [notesResult, setNotesResult] = useState(useQuery(Note));
   const notes = useMemo(() => notesResult, [notesResult]);
+  const [field1, setField1] = useState("priority");
+  const [field2, setField2] = useState("isPinned");
+  const [field3, setField3] = useState("");
+  const [order1, setOrder1] = useState(true);
+  const [order2, setOrder2] = useState(true);
+  const [order3, setOrder3] = useState(true);
+  const [sortOption, setSortOption] = useState("priority");
+  const [sortOrder, setSortOrder] = useState(true);
+
+  const dropdownOptions = [ 
+    "Priority (Default)", "Title", "Subject", "Contents", "Size", "Flag on/off",
+    "Date Created", "Date Modified", "Date Accessed", "Category", "Tags", 
+  ];
+
+  const dropdownEffects = [
+    "default", "title", "author", "body", "size", "isFlagged", 
+    "dateCreated", "dateModified", "dateAccessed", "category", "tags", 
+  ];
+
+  [
+    { label: "Default (Priority)", value: "priority" }, // default sort
+    { label: "Title", value: "title" },
+    { label: "Subject", value: "author" },
+    { label: "Contents", value: "body"},
+    { label: "Size", value: "size" },
+    { label: "Flag", value: "isFlagged" },
+    { label: "Date Created", value: "dateCreated" },
+    { label: "Date Modified", value: "dateModified" },
+    { label: "Date Accessed", value: "dateAccessed" },
+    { label: "Category", value: "category" },
+    { label: "Tags", value: "tags"},
+  ];
 
   const handleSimpSwipe = (key: string) => {
     // setNotesResult((prevNotes) => {
@@ -203,6 +236,36 @@ const RemindersListScreen = ({route, navigation} : any) => {
     [realm],
   );
 
+  let handleNoteSortAlg = (sortOption = "priority", sortOrder = true, field2 = "isPinned", order2 = true) => {
+    
+    // if(field2 == undefined || field2 == "")
+    // {
+    //   return realm.objects(Note).sorted(field1, order1);
+    // }
+    return realm.objects(Note).sorted(sortOption, sortOrder).sorted(field2, order2);
+  }
+
+  let processNoteSortSelection = (choice = "default") => {
+    switch (choice)
+    {
+      case "tags":
+        Alert.alert("Coming soon");
+        break;
+      case "category":
+        Alert.alert("Coming soon");
+        break;
+      case "default":
+        setSortOption(() => "priority");
+        setSortOrder(() => true);
+        break;
+      default:
+        setSortOption(() => choice);
+        //setSortOrder(() => true);
+        break;
+    }
+    
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
       <View
@@ -303,6 +366,62 @@ const RemindersListScreen = ({route, navigation} : any) => {
       </View>
       )}
       { !window && (
+        <View style={[styles.content]}>          
+          <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          <SelectDropdown
+            data={dropdownOptions}
+            defaultButtonText="Sort by:"
+            onSelect={(selectedItem, index) => {
+              console.log(selectedItem, index);
+              console.log(dropdownEffects[index]);
+              let choice = dropdownEffects[index];
+              processNoteSortSelection(choice);
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => {
+              // text represented after item is selected
+              // if data array is an array of objects then return selectedItem.property to render after item is selected
+              return "Sort by: " + selectedItem;
+            }}
+            rowTextForSelection={(item, index) => {
+              // text represented for each item in dropdown
+              // if data array is an array of objects then return item.property to represent item in dropdown
+              return item
+            }}
+          />
+          {/* <SelectDropdown
+            data={['increasing', 'decreasing']}
+            defaultButtonText="Order"
+            onSelect={(selectedItem, index) => {
+              console.log(selectedItem, index);
+              console.log(dropdownEffects[index]);
+              let choice = (selectedItem == 'decreasing');
+              choice != sortOrder ? setSortOrder(prev => !prev) : {};
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => {
+              // text represented after item is selected
+              // if data array is an array of objects then return selectedItem.property to render after item is selected
+              return "Sort by: " + selectedItem;
+            }}
+            rowTextForSelection={(item, index) => {
+              // text represented for each item in dropdown
+              // if data array is an array of objects then return item.property to represent item in dropdown
+              return item
+            }}
+          /> */}
+          <View style={styles.switchContainer}>
+            <Text>{!sortOrder ? "Increasing" : "Decreasing"}</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: colors.medium }}
+              thumbColor={!sortOrder ? colors.strong : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={(selectedItem) => {
+                console.log(selectedItem);
+                selectedItem == sortOrder ? setSortOrder(prev => !prev) : {};
+              }}
+              value={!sortOrder}
+            />
+          </View>
+          </View>
         <View style={[styles.content, {marginBottom: 50}]}>
           {/* <Text>Notes Tab</Text> */}
           <View style={[styles.centeredView, {marginTop: 0}]}>
@@ -310,7 +429,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
           </View>
           <View style={globalStyles.list}>
             <FlatList
-              data={realm.objects(Note).sorted('priority', true)}
+              data={handleNoteSortAlg(sortOption, sortOrder, "isPinned", true)}
               renderItem={({ item }) => ( 
                 <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
               )}
@@ -329,6 +448,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
               navigateToNoteEditPage(newObjectId.toHexString(), true);
             }}
           />
+      </View>
       </View>
       )}
     </SafeAreaView>    

@@ -53,7 +53,8 @@ function SimpleNote({route, navigation} : any) {
           body?   note.body     = body : {};
           prio?   note.priority = prio : {};
           body?   note.size     = body.length : {};
-          note.dateModified = new Date(Date.now())
+          note.dateModified = new Date(Date.now());
+          note.dateAccessed = new Date(Date.now());
           //realm.objects(Note).sorted('priority', true);
           //console.log(realm.objects(Note));
         });
@@ -127,6 +128,7 @@ function SimpleNote({route, navigation} : any) {
                 numberOfLines={8}
                 // mode="outlined"
                 placeholder='Body'
+                maxLength={10000}
                 onChangeText={setInputBody}
                 value={inputBody}
               />
