@@ -1,6 +1,23 @@
 
 # Xenote Changelog
 
+## ***05-01 Auto-refresh update 2**
+
+Streamlined auto-refresh functions:
+
+Press
+Refresh notifications
+Disabled alert if auto-renew is not on 
+
+Long press
+delete all non-recurring notifications for this reminder (autorenew on)
+delete all notifications for this reminder (autorenew off)
+
+Added a custom logo to notifications
+
+Performance should be better now
+
+May push one more update if I get around to note pinning
 
 ## ***05-01 Auto-refresh improvements**
 
@@ -15,8 +32,6 @@ Long press = turn on auto-refresh
 Improved performance on android AVDs, more testing needed here
 
 Fixed a typo where a reminder became expired after ~5.5 min instead of ~55.5 min of lateness
-
-Probably final update for the weekend barring hotfixes
 
 **_TODO:_**
 **iron out bugs and stuff**

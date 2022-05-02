@@ -169,8 +169,7 @@ function ReminderItem({
     let checkReminderRenewalTimer = setTimeout(function tick() {
       //console.log('scanning for autorenewals');
       try{
-        setExpired(() => calcTime (reminder.scheduledDatetime) < lockout );
-        checkTimeforRenew();
+        !isAutoRenewSwitchOn ? setExpired(() => calcTime (reminder.scheduledDatetime) < lockout ) : checkTimeforRenew();
       }
       catch (e)
       {
@@ -188,11 +187,11 @@ function ReminderItem({
 
   let checkTimeforRenew = () => {
     
-    if (reminder == undefined)
+    if ( reminder == undefined || !reminder.isAutoRenewOn && calcTime(reminder.scheduledDatetime) < lockout )
     {
       return;
     }
-    if(!reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) < lockout || calcTime(reminder.scheduledDatetime) > delay * 0.5 )
+    if( !reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) > delay * 0.5 )
     {
       return;
     }
@@ -320,8 +319,8 @@ function ReminderItem({
   }
 
   function clearNonLateNotifications() {
-    console.log("clearing non-late notifications");
     clearNotifications(1, 4);
+    Alert.alert("Cancelled all non-recurring notifications for this reminder");
   }
 
   function clearNotifications(y = 0, z = 5) {
@@ -342,8 +341,7 @@ function ReminderItem({
     }
     finally
     {
-      console.log("All notifications for this reminder have been deleted.");
-      //Alert.alert("Cancelled all notifications for this reminder");
+      y ? console.log("clearing non-late notifications") : console.log("All notifications for this reminder have been deleted.");
     }
   }
 
@@ -410,7 +408,7 @@ function ReminderItem({
         autoCancel: true,
         channelId,
         importance: AndroidImportance.DEFAULT,
-        smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+        largeIcon: require('../../images/logo.png'),
         tag: "M gud",
         //chronometerDirection: 'down',
         showTimestamp: true,
@@ -465,7 +463,7 @@ function ReminderItem({
           showTimestamp: true,
           //showChronometer: true,
           timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
-          largeIcon: require('../../images/clock.png'),
+          largeIcon: require('../../images/logo.png'),
           circularLargeIcon: true,
           ongoing: true,
           // actions: [
@@ -636,7 +634,7 @@ function ReminderItem({
               channelId: 'Channel-1',
               category: AndroidCategory.ALARM,
               importance: AndroidImportance.HIGH,
-              largeIcon: require('../../images/clock.png'),
+              largeIcon: require('../../images/logo.png'),
               circularLargeIcon: true,
               ongoing: i == 4 && ongong,
               tag: reminder._id.toHexString(),
@@ -784,9 +782,11 @@ function ReminderItem({
               size={20}
               style={{padding: 0}}
               onPress={() => {
-                reminder.isAutoRenewOn ? clearNonLateNotifications() : Alert.alert("This feature requires auto-renew to be on")
+                reminder.isAutoRenewOn ? clearNonLateNotifications() : onClearNotifyButton();
               }}
-              onLongPress={refreshNotifications}
+              onLongPress={() => {
+                reminder.isAutoRenewOn ? refreshNotifications() : Alert.alert("This feature requires auto-renew to be on")
+              }}
             />
             <View style={{width: 10}}/>
             <Text style={styles.textTitle}>{reminder.title}</Text>
