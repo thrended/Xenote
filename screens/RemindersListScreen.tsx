@@ -310,7 +310,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
           </View>
           <View style={globalStyles.list}>
             <FlatList
-              data={realm.objects(Note).sorted('priority', true)}
+              data={realm.objects(Note).sorted('priority', true).sorted('isPinned', true)}
               renderItem={({ item }) => ( 
                 <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
               )}
