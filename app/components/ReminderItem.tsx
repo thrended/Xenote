@@ -805,15 +805,17 @@ function ReminderItem({
               }}
             />
           </View>
-          <View style={styles.subtaskListContainer}>
-            {reminder.subtasks.map((subtask) => 
-              <Text style={styles.textStyle}>{subtask.title} {subtask.isComplete? "✓" : ""}</Text>
-            )}
-          </View>
+          {reminder.subtasks.length === 0 ? <View/> :
+            <View style={styles.subtaskListContainer}>
+              {reminder.subtasks.map((subtask) => 
+                <Text style={styles.textStyle}>{subtask.title} {subtask.isComplete? "✓" : ""}</Text>
+              )}
+            </View>
+          }
         </View>
         <View style={globalStyles.switchContainer}>
             <Text style={{color: (isExpired ? 'brown' : !isExpired && isAutoRenewSwitchOn ? 'green' : 'teal')}}>
-              {isExpired ? "Can't Auto-Renew" : isAutoRenewSwitchOn ? "Auto-Renew Interval" : "Auto-Renew OFF"}
+              {isExpired ? "Reschedule to enable Auto-Renew" : isAutoRenewSwitchOn ? "Auto-Renew Interval" : "Auto-Renew OFF"}
             </Text>
             <Switch
               disabled = {isExpired}

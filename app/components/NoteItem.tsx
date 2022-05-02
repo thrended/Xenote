@@ -145,7 +145,7 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
                     />
                   )}
               </View>
-              
+
               <View style={{alignItems: "flex-end",justifyContent: "flex-end"}}>
                 <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
               </View>

@@ -288,13 +288,53 @@ function SubtaskItem({
   );
 
   return (
-    <Pressable
-      onLongPress={openModal}
-      onTouchStart={onTouchStart} 
-      onTouchEnd={onTouchEnd}
-      hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
-      android_ripple={{color: colors.subtle}}
-    >
+    <View>
+      <Pressable
+        onLongPress={openModal}
+        onTouchStart={onTouchStart} 
+        onTouchEnd={onTouchEnd}
+        hitSlop={{ top: 0, bottom: 0, right: 0, left: 0}}
+        android_ripple={{color: colors.subtle}}
+      >
+        <View style={styles.dateTimeContainer}>
+          <View>
+            <Text>{format(subtask.scheduledDatetime, "h:mm b")}</Text>
+          </View>
+          <View>
+            <Text>{format(subtask.scheduledDatetime, "E MMMM d, yyyy")}</Text>
+          </View>        
+        </View>
+        <View style={styles.task}>
+          <View style={styles.content}>
+            <View style={styles.titleInputContainer}>
+              <View style={{width: 30}}/>
+              <Text style={styles.textTitle}>{subtask.title}</Text>
+              <BouncyCheckbox
+                isChecked={isChecked}
+                size={25}
+                fillColor="#3CB043"
+                unfillColor="#FFFFFF"
+                iconStyle={{ borderColor: "#3CB043" }}
+                textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                disableText={true}
+                onPress={(isChecked: boolean) => {
+                  setIsChecked(isChecked => !isChecked);
+                  updateIsCompleted(subtask, isChecked);
+                  isChecked ? clearNotifications() : {};
+                }}
+              />
+            </View>
+            {subtask.feature === "" && subtask.value === ""? <View/> :             
+            <View style={styles.featureInputContainer}>
+              <Text style={styles.textFeature}>{subtask.feature}</Text>
+              <Text style={styles.textValue}>{subtask.value}</Text>
+            </View>}
+          </View>
+          {/* <Pressable onPress={onDeleteFunc} style={styles.deleteButton}>
+            <Text style={styles.deleteText}>Delete</Text>
+          </Pressable> */}
+        </View>
+      </Pressable>
       <Modal
         animationType="slide"
         transparent={true}
@@ -310,44 +350,7 @@ function SubtaskItem({
           subtask={subtask}
         />
       </Modal>
-      <View style={styles.dateTimeContainer}>
-        <View>
-          <Text>{format(subtask.scheduledDatetime, "h:mm b")}</Text>
-        </View>
-        <View>
-          <Text>{format(subtask.scheduledDatetime, "E MMMM d, yyyy")}</Text>
-        </View>        
-      </View>
-      <View style={styles.task}>
-        <View style={styles.content}>
-          <View style={styles.titleInputContainer}>
-            <View style={{width: 30}}/>
-            <Text style={styles.textTitle}>{subtask.title}</Text>
-            <BouncyCheckbox
-              isChecked={isChecked}
-              size={25}
-              fillColor="#3CB043"
-              unfillColor="#FFFFFF"
-              iconStyle={{ borderColor: "#3CB043" }}
-              textStyle={{ fontFamily: "JosefinSans-Regular" }}
-              disableText={true}
-              onPress={(isChecked: boolean) => {
-                setIsChecked(isChecked => !isChecked);
-                updateIsCompleted(subtask, isChecked);
-                isChecked ? clearNotifications() : {};
-              }}
-            />
-          </View>
-          <View style={styles.featureInputContainer}>
-            <Text style={styles.textFeature}>{subtask.feature}</Text>
-            <Text style={styles.textValue}>{subtask.value}</Text>
-          </View>
-        </View>
-        {/* <Pressable onPress={onDeleteFunc} style={styles.deleteButton}>
-          <Text style={styles.deleteText}>Delete</Text>
-        </Pressable> */}
-      </View>
-    </Pressable>
+    </View>
   );
 }
 
