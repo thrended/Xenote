@@ -6328,6 +6328,11 @@ react-native-screens@^3.13.1:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-select-dropdown@^1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/react-native-select-dropdown/-/react-native-select-dropdown-1.13.0.tgz#599566f8b44d979a13528319f340beb6117bbff6"
+  integrity sha512-UGXWbuEqsG6B6O+tle77yJH3+DXfmh4cpit0v8az824y0rZLUWuRzlfeLYlaeZ80mqIF6Xtvx/pBtIsG1OdaLg==
+
 react-native-switch-selector@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-native-switch-selector/-/react-native-switch-selector-2.2.1.tgz#551ff32c018281904b1d5df79f5192c788195d87"

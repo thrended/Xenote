@@ -1,6 +1,22 @@
 
 # Xenote Changelog
 
+## ***05-01 Update 3 (Final)
+
+Showcase ready
+
+Note item pins added
+
+Notes page sorting options
+
+Pinned always takes precedence
+
+(Almost) feels like file explorer haha
+
+Let me know if there are any issues.
+
+Need to do a yarn install or yarn add react-native-select-dropdown
+
 ## ***05-01 Auto-refresh update 2**
 
 Streamlined auto-refresh functions:
@@ -17,7 +33,7 @@ Added a custom logo to notifications
 
 Performance should be better now
 
-May push one more update if I get around to note pinning
+May push one more update if I get around to note pinning - done
 
 ## ***05-01 Auto-refresh improvements**
 

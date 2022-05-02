@@ -34,11 +34,11 @@ interface NoteItemProps {
 function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteItemProps) {
 
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, 8);
+  const [showPrio, setShowPrio] = useState(note.priority > 5);
   const [flagged, setFlagged] = useState(note.isFlagged);
   const [pinned, setPinned] = useState(note.isPinned);
   const [prio, setPrio] = useState(note.priority);
   const realm = useRealm();
-  const [showPrio, setShowPrio] = useState(note.priority > 5);
 
   const toggleFlag = useCallback(
     (
@@ -47,6 +47,7 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
       realm.write(() => {
         note.isFlagged = !note.isFlagged;
         setFlagged(previousState => !previousState)
+        note.dateAccessed = new Date(Date.now());
       });
     },
     [realm],
@@ -59,6 +60,7 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
       realm.write(() => {
         note.isPinned = !note.isPinned;
         setPinned(previousState => !previousState)
+        note.dateAccessed = new Date(Date.now());
       });
     },
     [realm],
@@ -73,6 +75,7 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
   function onSwipeRight(){
       toggleFlag(note);
       console.log('right Swipe performed on note (toggle flag)');
+      
   }
 
   function onSwipeUp() {
