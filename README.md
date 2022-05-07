@@ -1,7 +1,23 @@
 
 # Xenote Changelog
 
-## 05-06 New Branch (May feature updates)
+## ***05-06 Update 2
+
+Added search function to notes
+
+Cancel icon resets the query
+
+Clicking the magnifying glass or anywhere else on the screen will dismiss the keyboard
+
+If the search term is a number, will try to filter by priority (equal) and note size (>= search term)
+
+If this search has no results, app will try to do a normal search as below
+
+Case insensitive search for all textual note categories (title, subject, body, etc)
+
+Added skeleton code to schema for handling Note categories and tags in future
+
+## **05-06 New Branch (start of May feature updates)**
 
 5/6 Update
 

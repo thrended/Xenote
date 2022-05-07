@@ -31,6 +31,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import {globalStyles } from '../app/styles/global';
 import Entypo from 'react-native-vector-icons/Entypo';
 import notifee from '@notifee/react-native';
+import SearchBar from "../app/components/SearchBar";
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
@@ -55,6 +56,10 @@ const RemindersListScreen = ({route, navigation} : any) => {
   const [order3, setOrder3] = useState(true);
   const [sortOption, setSortOption] = useState("priority");
   const [sortOrder, setSortOrder] = useState(true);
+  const [searching, setSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchPhrase, setSearchPhrase] = useState("");
+  const [clicked, setClicked] = useState(false);
 
   const dropdownOptions = [ 
     "Priority (Default)", "Title", "Subject", "Contents", "Size", "Flag on/off",
@@ -236,12 +241,27 @@ const RemindersListScreen = ({route, navigation} : any) => {
     [realm],
   );
 
-  let handleNoteSortAlg = (sortOption = "priority", sortOrder = true, field2 = "isPinned", order2 = true) => {
-    
-    // if(field2 == undefined || field2 == "")
-    // {
-    //   return realm.objects(Note).sorted(field1, order1);
-    // }
+  let handleNoteSortAlg = (sortOption = "priority", sortOrder = true, field2 = "isPinned", order2 = true, search = false, query = "") => {
+
+    if (query !== "")
+    {
+      let sortedItems = realm.objects(Note).sorted(sortOption, sortOrder).sorted(field2, order2);
+      /* Scan if the search term is a number */
+      if (!isNaN(+query))
+      {
+        let searchResults = sortedItems.filter(note => note.priority == +query || note.size >= +query);
+        if (searchResults.length > 0)
+        {
+          return searchResults;
+        } 
+      }     
+      /* Make case insensitive */
+      let normalizeLC = query.toLowerCase();
+      let searchResults = sortedItems.filter(note => note.title.includes(normalizeLC) || note.author.includes(normalizeLC) || note.body.includes(normalizeLC)
+      || note.category.includes(normalizeLC) || note.tags.indexOf(normalizeLC) != -1);
+      //let test = sortedItems.filtered("title CONTAINS $0 OR author CONTAINS $1 OR body CONTAINS $2 OR category CONTAINS $3", query, query, query, query);
+      return searchResults;
+    }
     return realm.objects(Note).sorted(sortOption, sortOrder).sorted(field2, order2);
   }
 
@@ -264,6 +284,11 @@ const RemindersListScreen = ({route, navigation} : any) => {
         break;
     }
     
+  }
+
+  let processNoteSearchSelection = (query = "") => {
+    setSearching(query !== "" ? () => true : () => false);
+    setSearchTerm(() => query);
   }
 
   return (
@@ -371,6 +396,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
           <SelectDropdown
             data={dropdownOptions}
             defaultButtonText="Sort by:"
+            onFocus={() => setClicked(false)}
             onSelect={(selectedItem, index) => {
               console.log(selectedItem, index);
               console.log(dropdownEffects[index]);
@@ -422,20 +448,37 @@ const RemindersListScreen = ({route, navigation} : any) => {
             />
           </View>
           </View>
+          <SearchBar
+            searchPhrase={searchPhrase}
+            setSearchPhrase={(term: string) => {
+              setSearchPhrase(term);
+              processNoteSearchSelection(term);
+            }}
+            clicked={clicked}
+            setClicked={setClicked}
+        />
         <View style={[styles.content, {marginBottom: 50}]}>
           {/* <Text>Notes Tab</Text> */}
           <View style={[styles.centeredView, {marginTop: 0}]}>
             <Text style={{fontSize: 16, color: "green"}}>Use the "+" button to create a simple note.</Text>
           </View>
-          <View style={globalStyles.list}>
+          <View
+          style={globalStyles.list}
+          onStartShouldSetResponder={() => {
+            setClicked(false);
+            return true;
+          }}
+          >
             <FlatList
-              data={handleNoteSortAlg(sortOption, sortOrder, "isPinned", true)}
+              data={handleNoteSortAlg(sortOption, sortOrder, "isPinned", true, searching, searchTerm)}
               renderItem={({ item }) => ( 
                 <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
               )}
               // ItemSeparatorComponent={() => <View style={styles.separator} />}
               keyExtractor={({_id}) => _id.toHexString()}
               extraData={notes}
+              onTouchMove={() => setClicked(() => false)}
+              onTouchStart={() => setClicked(() => false)}
             /> 
           </View>
           <MaterialIcons

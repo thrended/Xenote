@@ -100,6 +100,7 @@ export class Note extends Realm.Object {
   // metadata
   author!: string;
   category!: string;
+  tags!: string[];
   dateCreated!: Date;
   dateModified!: Date;
   dateAccessed!: Date;
@@ -115,6 +116,7 @@ export class Note extends Realm.Object {
       isPinned: false,
       author: author,
       category: "",
+      tags: new Array<string>(),
       dateCreated: new Date(),
       dateModified: new Date(),
       dateAccessed: new Date(),
@@ -137,6 +139,8 @@ export class Note extends Realm.Object {
       dateModified: "date",
       dateAccessed: "date",
       size: "int",
+      category: "string",
+      tags: {type: 'list', objectType: 'string'},
     },
   };
 
