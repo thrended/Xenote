@@ -7,9 +7,12 @@ Added an icon button to turn off notifications for individual subtasks
 
 Found a bug in subtasks: it won't let you edit text fields for subtasks below the second one (can still create them and can still change the date)
 
-TODO:
+### TODO
+
 Function to delete tags
+
 Prevent duplicate tags
+
 Sort by tag
 
 ## ***05-06 Update 3
