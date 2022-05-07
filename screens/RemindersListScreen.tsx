@@ -278,9 +278,6 @@ const RemindersListScreen = ({route, navigation} : any) => {
       case "tags":
         Alert.alert("Coming soon");
         break;
-      case "category":
-        Alert.alert("Coming soon");
-        break;
       case "default":
         setSortOption(() => "priority");
         setSortOrder(() => true);
