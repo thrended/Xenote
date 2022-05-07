@@ -55,8 +55,8 @@ function ReminderItem({
   useSwipe(onSwipeLeftFunc, onSwipeRight, onSwipeUp, onSwipeDown, 8);
   // can adjust the frequency of pinging notifications here
   // too low values will probably (definitely) impact performance
-  let delay = 30000;      // ms
-  let lockout = -3333333; // ms
+  let delay = 5000;      // ms
+  let lockout = -333333; // ms
   var [initialized, setInitialized] = useState(false);
 
   const [isChecked, setIsChecked] = useState(reminder.isComplete);
@@ -191,7 +191,7 @@ function ReminderItem({
     {
       return;
     }
-    if( !reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) > delay * 0.5 )
+    if( !reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) > delay * 1.5 )
     {
       return;
     }
