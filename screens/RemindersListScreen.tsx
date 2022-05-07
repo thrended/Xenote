@@ -246,6 +246,13 @@ const RemindersListScreen = ({route, navigation} : any) => {
     if (query !== "")
     {
       let sortedItems = realm.objects(Note).sorted(sortOption, sortOrder).sorted(field2, order2);
+      /* Hashtag specific search */
+      if (query[0] === "#" && query.length > 1)
+      {
+        let normalizeLC = query.slice(1).toLowerCase();
+        let searchResults = sortedItems.filter(note => note.tags.find(item => item.toLowerCase() === normalizeLC) != undefined);
+        return searchResults;
+      }
       /* Scan if the search term is a number */
       if (!isNaN(+query))
       {
@@ -258,7 +265,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
       /* Make case insensitive */
       let normalizeLC = query.toLowerCase();
       let searchResults = sortedItems.filter(note => note.title.includes(normalizeLC) || note.author.includes(normalizeLC) || note.body.includes(normalizeLC)
-      || note.category.includes(normalizeLC) || note.tags.indexOf(normalizeLC) != -1);
+      || note.category.includes(normalizeLC) || note.tags.find(item => item.toLowerCase() === normalizeLC) != undefined);
       //let test = sortedItems.filtered("title CONTAINS $0 OR author CONTAINS $1 OR body CONTAINS $2 OR category CONTAINS $3", query, query, query, query);
       return searchResults;
     }

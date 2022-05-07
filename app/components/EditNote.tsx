@@ -45,7 +45,9 @@ function SimpleNote({route, navigation} : any) {
       title?: string,
       author?: string,
       body?: string,
-      prio?: number
+      prio?: number,
+      category?: string,
+      _addTag?: string,
       ): void => {
         realm.write(() => {
           title?  note.title    = title : {};
@@ -53,6 +55,8 @@ function SimpleNote({route, navigation} : any) {
           body?   note.body     = body : {};
           prio?   note.priority = prio : {};
           body?   note.size     = body.length : {};
+          category? note.category = category : {};
+          _addTag? note.tags.push(_addTag) : {};
           note.dateModified = new Date(Date.now());
           note.dateAccessed = new Date(Date.now());
           //realm.objects(Note).sorted('priority', true);
@@ -65,7 +69,9 @@ function SimpleNote({route, navigation} : any) {
   const [inputTitle, setInputTitle] = useState(note.title);
   const [inputAuthor, setInputAuthor] = useState(note.author);
   const [inputBody, setInputBody] = useState(note.body);
-  const [inputPrio, setInputPrio] = useState(note.priority)
+  const [inputPrio, setInputPrio] = useState(note.priority);
+  const [inputCategory, setInputCategory] = useState(note.category);
+  const [newTag, setNewTag] = useState("");
   const prioButtonColors = ['#84FFEB', 'cyan', '#3666E9', '#0400FF', '#22E734', '#FBFF00', '#FFBB00', 'coral', '#E9443E', '#C5184C', '#992323'];
 
   const renderButtons = () => {
@@ -102,7 +108,7 @@ function SimpleNote({route, navigation} : any) {
                     color: colors.dark
                   }}
                 onPress={() => {
-                  modifyNote(note, inputTitle, inputAuthor, inputBody, inputPrio);
+                  modifyNote(note, inputTitle, inputAuthor, inputBody, inputPrio, inputCategory, newTag);
                   navigation.goBack();
                 }}
               />
@@ -125,7 +131,7 @@ function SimpleNote({route, navigation} : any) {
               <TextInput
                 style={styles.item}
                 multiline
-                numberOfLines={8}
+                numberOfLines={5}
                 // mode="outlined"
                 placeholder='Body'
                 maxLength={10000}
@@ -133,6 +139,23 @@ function SimpleNote({route, navigation} : any) {
                 value={inputBody}
               />
               <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
+
+              <View>
+              <TextInput
+                    style={styles.item}
+                    placeholder='Category'
+                    onChangeText={setInputCategory}
+                    value={inputCategory}
+                  />
+                  <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
+                  <TextInput
+                    style={styles.item}
+                    placeholder='Add Tag'
+                    onChangeText={setNewTag}
+                    onEndEditing={() => setNewTag}
+                    value={newTag}
+                  />
+              </View>
               
               <View style={globalStyles.multibutton}>
                 <Text style={{paddingRight: 20}}>Priority</Text>
@@ -148,8 +171,8 @@ function SimpleNote({route, navigation} : any) {
                 <Pressable onPress ={() => setInputPrio(10)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 10 ? 1.5 : 0), opacity: (inputPrio == 10 ? 1 : 0.35),backgroundColor: '#992323'}]} />
               </View>
 
-              <View style={[globalStyles.separatorV, {marginVertical: 20}]}/>
             </View>
+            
           </View>
         </TouchableWithoutFeedback>
       </View>
