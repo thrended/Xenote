@@ -1,7 +1,21 @@
 
 # Xenote Changelog
 
-## ***05-01 Update 3 (Final)
+## 05-06 New Branch (May feature updates)
+
+5/6 Update
+
+Small tweaks to button functionality (long press does not work as intended on android devices)
+
+Auto-refresh button => press to turn on / automatically sync notifications with auto-renew
+
+Disable notification button => each reminder now has a dedicated button to disable notifications
+
+Fixed autorenew's interaction with the checkbox. Marking the checkbox no longer cancels auto-renew. Performing an auto-renew still resets the checkbox as intended
+
+Early push incase something breaks later
+
+## **05-01 Update 3 (Final)**
 
 Showcase ready
 

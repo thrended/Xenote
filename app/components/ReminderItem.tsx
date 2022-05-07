@@ -121,7 +121,7 @@ function ReminderItem({
         reminder.isExpired = _isExpired;
         reminder.isExpired ? setExpired(() => true) : setExpired(() => false);
         reminder.isExpired ? reminder.isAutoRenewOn = false : {};
-        reminder.isAutoRenewOn ? reminder.isAutoRenewOn = !_isExpired && !_isComplete : {};
+        reminder.isAutoRenewOn ? reminder.isAutoRenewOn = !_isExpired : {};
         reminder.isAutoRenewOn ? setAutoRenewSwitchOn(() => true) : setAutoRenewSwitchOn(() => false);
       });
     },
@@ -212,8 +212,8 @@ function ReminderItem({
     ): void => {
       realm.write(() => {
         reminder.isComplete = _isComplete;
-        _isComplete ? reminder.isAutoRenewOn = false : {};
-        _isComplete ? setAutoRenewSwitchOn(() => false) : {};
+        //_isComplete ? reminder.isAutoRenewOn = false : {};
+        //_isComplete ? setAutoRenewSwitchOn(() => false) : {};
       });
     },
     [realm],
@@ -782,10 +782,15 @@ function ReminderItem({
               size={20}
               style={{padding: 0}}
               onPress={() => {
-                reminder.isAutoRenewOn ? clearNonLateNotifications() : onClearNotifyButton();
-              }}
-              onLongPress={() => {
                 reminder.isAutoRenewOn ? refreshNotifications() : Alert.alert("This feature requires auto-renew to be on")
+              }}
+            />
+            <MaterialIcons
+              name='notifications-off'
+              size={20}
+              style={{padding: 0}}
+              onPress={() => {
+                reminder.isAutoRenewOn ? clearNonLateNotifications() : onClearNotifyButton();
               }}
             />
             <View style={{width: 10}}/>
