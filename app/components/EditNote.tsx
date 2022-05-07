@@ -150,7 +150,7 @@ function SimpleNote({route, navigation} : any) {
                   <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
                   <TextInput
                     style={styles.item}
-                    placeholder='Add Tag'
+                    placeholder='Add Tag (dont include "#")'
                     onChangeText={setNewTag}
                     onEndEditing={() => setNewTag}
                     value={newTag}
