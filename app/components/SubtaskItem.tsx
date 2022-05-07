@@ -17,6 +17,7 @@ import { format, compareAsc } from 'date-fns'
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SubtaskContext, {Subtask} from '../models/Schemas';
 import SubtaskModal from '../components/SubtaskModal';
 import colors from '../styles/colors';
@@ -146,6 +147,11 @@ function SubtaskItem({
     let end = date;
     let diff = (end - now);
     return diff;
+  }
+
+  function onClearNotifySubtask() {
+    clearNotifications();
+      Alert.alert("Cancelled all notifications for this subtask");
   }
 
   async function onDisplayNotification() {
@@ -307,7 +313,15 @@ function SubtaskItem({
         <View style={styles.task}>
           <View style={styles.content}>
             <View style={styles.titleInputContainer}>
-              <View style={{width: 30}}/>
+            <MaterialIcons
+              name='notifications-off'
+              size={20}
+              style={{padding: 0}}
+              onPress={() => {
+                 onClearNotifySubtask();
+              }}
+            />
+              <View style={{width: 2.5}}/>
               <Text style={styles.textTitle}>{subtask.title}</Text>
               <BouncyCheckbox
                 isChecked={isChecked}

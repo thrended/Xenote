@@ -1,6 +1,12 @@
 
 # Xenote Changelog
 
+## *** [Mini Update 3.5]
+
+Added an icon button to turn off notifications for individual subtasks
+
+Found a bug in subtasks: it won't let you edit text fields for subtasks below the second one (can still create them and can still change the date)
+
 ## ***05-06 Update 3
 
 Caveat: the database will reset because the schema has changed
