@@ -264,8 +264,8 @@ const RemindersListScreen = ({route, navigation} : any) => {
       }     
       /* Make case insensitive */
       let normalizeLC = query.toLowerCase();
-      let searchResults = sortedItems.filter(note => note.title.includes(normalizeLC) || note.author.includes(normalizeLC) || note.body.includes(normalizeLC)
-      || note.category.includes(normalizeLC) || note.tags.find(item => item.toLowerCase() === normalizeLC) != undefined);
+      let searchResults = sortedItems.filter(note => note.title.toLowerCase().includes(normalizeLC) || note.author.toLowerCase().includes(normalizeLC)
+      || note.body.toLowerCase().includes(normalizeLC) || note.category.toLowerCase().includes(normalizeLC) || note.tags.find(item => item.toLowerCase() === normalizeLC) != undefined);
       //let test = sortedItems.filtered("title CONTAINS $0 OR author CONTAINS $1 OR body CONTAINS $2 OR category CONTAINS $3", query, query, query, query);
       return searchResults;
     }
