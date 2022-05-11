@@ -1,132 +1,78 @@
+![](images/xenote.png)
+##### Smart Reminder mobile application built on the React Native framework, which allows for cross-platform mobile development using Javascript.
 
-# Xenote Changelog
-
-## ***05-01 Update 3 (Final)
-
-Showcase ready
-
-Note item pins added
-
-Notes page sorting options
-
-Pinned always takes precedence
-
-(Almost) feels like file explorer haha
-
-Let me know if there are any issues.
-
-Need to do a yarn install or yarn add react-native-select-dropdown
-
-## ***05-01 Auto-refresh update 2**
-
-Streamlined auto-refresh functions:
-
-Press
-Refresh notifications
-Disabled alert if auto-renew is not on 
-
-Long press
-delete all non-recurring notifications for this reminder (autorenew on)
-delete all notifications for this reminder (autorenew off)
-
-Added a custom logo to notifications
-
-Performance should be better now
-
-May push one more update if I get around to note pinning - done
-
-## ***05-01 Auto-refresh improvements**
-
-Statuses for reminders that expired while the app was closed should now be properly synced upon restarting the app
-
-Feature improvement to notification auto-refresh by making it automated and accurately enable/disable.
-
-Auto-refresh Button
-Press = clear notifications for reminder
-Long press = turn on auto-refresh
-
-Improved performance on android AVDs, more testing needed here
-
-Fixed a typo where a reminder became expired after ~5.5 min instead of ~55.5 min of lateness
-
-**_TODO:_**
-**iron out bugs and stuff**
-**Test for wonkiness and stability**
-**Integrate with new UI features**
-
-## **04-30 Auto-renew beta final**
-
-Crashes and memory leaks due to deleted objects should be fixed now.
-
-The app now polls renewal statuses every **~~60~~ ==> _30_** seconds for closer to live updates.
-
-Properly set the grace period for expired stuff. Beyond these time windows, objects are past-expired.
-Auto-renew: **55.55 minutes**
-Notify: **59 minutes**
-
-You can only turn on auto-renew if the reminder isn't past-expired.
-
-You can only turn on notifications if the reminder / subtask isn't past-expired.
-
-Fixed a notification display bug where _reminder.title_ was literally showing that
-
-Made it so most notifications cancel as soon as you click on them to reduce annoyance.
-
-Removed most popup alerts except those concerning renewal or disabled functionality
-
-Renew button updates the notification timestamps if the reminder has been auto-renewed (only has an effect if auto-renew is on)
-
-Probably final update for the weekend barring hotfixes
-
-**_TODO:_**
-**iron out bugs and stuff**
-**Test for wonkiness and stability**
-**Integrate with new UI features**
+## Table of contents
+* [General info](#general-info)
+* [GUI Preview](#gui-preview)
+* [Technologies](#technologies)
+* [Setup](#setup)
 
 
-## 04-30 Auto-renew beta
+## General info
+Xenote allows the user to create reminders that have subtasks. Each subtask can be set to notify the user when its deadline is reached via push notifications. This helps the user to not rely only on the final deadline, but to complete the tasks in small stages and gradually. This arrangement also provides a simple logical grouping that allows the user to easily list items that need to be remembered, such as project tasks, workouts, birthdays, shopping lists, etc. There is also a “simple notes” page that is easily toggled that creates notes with a title, subject, body, and priority. These notes can be “flagged” as well.
+Navigation is simple and intuitive. All items are edited using long presses. On the top-level screen, the user can select between Notes & Reminders. A long-press on a reminder card brings the user into the settings for the reminder and creation of subtasks. Long-pressing a subtask allows editing in a pop-up window. Reminders and subtasks both can be scheduled with push notifications. Notes are also edited with a long press. All items can be deleted with a left swipe, and notifications are set with a right swipe. Notes can be flagged to indicate urgency, pinned to the top of the list, sorted by priority or other features..
 
-- Auto-renew functionality added to reminders
-- Auto-renew window for expiration changed to _~55 minutes_ _past due
-- New Memory leak issue (resolved)
 
-### Previous changes
+## GUI Preview
+This app allows you to create reminders that have subtasks. Each subtask notifies the user when its deadline is reached. When the Add button on the main screen is pressed the reminder is created and the user is automatically brought to the second screen, where they can edit the subtasks. The screen toggle lets the users easily access reminders and notes from the same screen for ease of use. On the new subtask screen users can make multiple tasks with their own time and date for completion and then click on date and time icons to set the final reminder for all the tasks. After Reminder is created, notifications will be automatically triggered once the due date is reached, but users have an option to cancel those using the cancel push notification button on the left side of the main screen. It is easy to switch to the notes screens where users can add new notes and set priority for each of them. Notes are sorted by priority but pinned notes will always be shown on the top regardless of their priority. Long press on list will bring users to the edit screen to update their notes or reminder tasks. Left swipe on the list acts as a delete method for both notes and reminders while right swipe only works on reminder subtasks to turn their notifications on.
+### Reminders List Mian Screen
+![](images/main.PNG)
 
-### Small UI tweaks
 
-- Priority selection now clearly visible
-- Can view limited body text, priority of note
-- Notes can be toggle flagged with right swipe
-- Added bouncy-checkbox as a UI competitor to rounded-checkbox - see subtasks
+### Add New Reminder Screen
+![](images/reminder.PNG)
 
-### Swiping
 
-- Added functionality for up swipe and down swipe if needed
-- Right swipe working with subtasks
+### Add New Subtask Screen
+![](images/new.PNG)
 
-### Notifications
 
-- Placed reminder and subtask notifications in separate channels
+### Notes Main Screen
+![](images/note.PNG)
 
-### Bug Fixes
 
-- Fixed a bug where opening the subtask modal also triggers a 'right swipe'
-- Now it triggers a down swipe (unbound function)
+### New Note Screen
+![](images/addnote.PNG)
 
-### TODO
 
-- Checkbox marking should cancel the associated notification(s)
-- Intro Page
-- UI fixes
-- Settings
+## Technologies
+Project is created with:
+* React Native
+* React.js
+* Typescrpit
+* npm/yarn
+	
+## Setup
+```
+System
+    Linux/Windows Environment (Windows / Windows Linux Subsystem or Any Another Linux Distro)
 
-#### Other
+Andriod Studio
+    Android Emulator should be instaled to view the app on virtual device
 
-## Gradle troubleshooting
+React Native
+    React native should be installed on the user device to run the project natively 
 
-Inside android/gradle/wrapper/gradle-wrapper.properties
 
-## Local version
+npm/yarn packages (to install the required packages run the command in terminal before running the project)
+  npm / yarn install 
+```
+
+ 
+#### Run Project: (\Subscrap)
+```
+$ npx react-native start
+and then
+$ npx react-native run-android
+
+```
+
+#### Gradle troubleshooting (only if getting gradle related error)
+
+```
+Inside "android/gradle/wrapper/gradle-wrapper.properties"
+
+** Local version **
 
 distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
@@ -134,10 +80,11 @@ distributionUrl=file\:///S:\Installers/gradle-7.4-all.zip
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 
-## Replace with
+** Replace with **
 
 distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 [(distributionUrl=https\://services.gradle.org/distributions/gradle-7.4-all.zip)]
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
+```
