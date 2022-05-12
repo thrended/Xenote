@@ -10,19 +10,19 @@ import {
   Text,
   View,
 } from 'react-native';
-import colors from '../app/styles/colors';
-import ReminderListDefaultText from '../app/components/ReminderListDefaultText';
-import RemindersListContent from '../app/components/RemindersListContent';
-import AddReminderButton from '../app/components/AddReminderButton';
-import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
+import colors from '../styles/colors';
+import ReminderListDefaultText from '../components/ReminderListDefaultText';
+import RemindersListContent from '../components/RemindersListContent';
+import AddReminderButton from '../components/AddReminderButton';
+import RealmContext, {Note, Reminder, Subtask} from '../models/Schemas';
 import SelectDropdown from "react-native-select-dropdown";
-import NoteItem from '../app/components/NoteItem';
+import NoteItem from '../components/NoteItem';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {globalStyles } from '../app/styles/global';
+import {globalStyles } from '../styles/global';
 import Entypo from 'react-native-vector-icons/Entypo';
 import notifee from '@notifee/react-native';
-import SearchBar from "../app/components/SearchBar";
+import SearchBar from "../components/SearchBar";
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 

@@ -11,14 +11,14 @@ import {
   Switch,
 } from 'react-native';
 
-import colors from '../app/styles/colors';
+import colors from '../styles/colors';
 
-import AddReminderButton from '../app/components/AddReminderButton';
-import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
-import ReminderContent from '../app/components/ReminderContent';
-import SubtaskContext, {Reminder, Subtask} from '../app/models/Schemas';
-import SubtaskListDefaultText from '../app/components/SubtaskListDefaultText';
-import SubtaskModal from '../app/components/SubtaskModal';
+import AddReminderButton from '../components/AddReminderButton';
+import NewReminderTitleAndDateTimeBar from '../components/NewReminderTitleAndDateTimeBar';
+import ReminderContent from '../components/ReminderContent';
+import SubtaskContext, {Reminder, Subtask} from '../models/Schemas';
+import SubtaskListDefaultText from '../components/SubtaskListDefaultText';
+import SubtaskModal from '../components/SubtaskModal';
 
 const {useRealm} = SubtaskContext;
 
