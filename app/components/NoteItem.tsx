@@ -2,21 +2,11 @@ import * as React from 'react';
 import {useCallback, useState} from 'react';
 
 import {   
-    Keyboard,
-    Modal,
     Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
     Text,
-    TextInput,
-    TouchableOpacity,
-    useColorScheme,
     View,
-    TouchableWithoutFeedback,
 } from 'react-native';
 
-import SimpleNote from './EditNote';
 import { globalStyles } from '../styles/global'
 import { useSwipe } from '../hooks/useSwipe';
 import NoteContext, {Note} from '../models/Schemas';
@@ -34,10 +24,8 @@ interface NoteItemProps {
 function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteItemProps) {
 
   const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, 8);
-  const [showPrio, setShowPrio] = useState(note.priority > 5);
   const [flagged, setFlagged] = useState(note.isFlagged);
   const [pinned, setPinned] = useState(note.isPinned);
-  const [prio, setPrio] = useState(note.priority);
   const realm = useRealm();
 
   const toggleFlag = useCallback(
@@ -75,12 +63,10 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
   function onSwipeRight(){
       toggleFlag(note);
       console.log('right Swipe performed on note (toggle flag)');
-      
   }
 
   function onSwipeUp() {
       /* */
-
   }
 
   function onSwipeDown() {
@@ -145,7 +131,6 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
                 <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
               </View>
               <View style={{flexDirection: 'row', alignItems: "stretch" ,justifyContent: "space-between"}}>
-              
               <Text style={{fontWeight: "bold"}}>Tags: #{[...note.tags].join(", #")}</Text>
               </View>
             </View>
@@ -153,7 +138,6 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
         </Pressable>
       </View>
       <View style = {{flex: 1, alignContent: "center"}}>
-
       </View>
       {/* <View style = {{flex: 1}}>
       { showPrio && (

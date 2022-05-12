@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Pressable, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import colors from '../styles/colors';
 
 function ReminderListDefaultText() {
@@ -24,10 +24,6 @@ const styles = StyleSheet.create({
     color: 'green',
     fontSize: 24,
 
-  },
-  link: {
-    color: colors.purple,
-    fontWeight: 'bold',
   },
 });
 

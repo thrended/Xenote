@@ -10,20 +10,14 @@ import {
 import colors from '../styles/colors';
 
 interface AddReminderButtonProps {
-  onSubmit: (description: string) => void;
+  onSubmit: () => void;
 }
 
 function AddReminderButton({onSubmit}: AddReminderButtonProps) {
-  const [description, setDescription] = useState('');
-
-  const handleSubmit = () => {
-    onSubmit(description);
-    setDescription('');
-  };
 
   return (
     <View style={styles.floatingButtonContainer}>
-      <Pressable onPress={handleSubmit} style={styles.floatingButton}>
+      <Pressable onPress={onSubmit} style={styles.floatingButton}>
         <Text style={styles.icon}>＋</Text>
       </Pressable>
     </View>

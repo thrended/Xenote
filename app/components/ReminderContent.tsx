@@ -1,16 +1,11 @@
 import React, {useState} from 'react';
 import {
-  View,
   FlatList,
-  Modal,
-  Pressable,
   StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  View,
 } from 'react-native';
-import {Realm} from '@realm/react';
 
+import {Realm} from '@realm/react';
 import {Subtask} from '../models/Schemas';
 import SubtaskItem from './SubtaskItem';
 
@@ -45,7 +40,6 @@ function ReminderContent({
             handleModifySubtask={handleModifySubtask}
             onDelete={() => onDeleteSubtask(item)}
             onSwipeLeft={() => onSwipeLeft(item)}
-            // Don't spread the Realm item as such: {...item}
           />
         )}
         extraData={subtasks}
@@ -59,7 +53,6 @@ const styles = StyleSheet.create({
   subtaskListContainer: {
     marginTop: 0,
     flex: 1,
-    // justifyContent: 'center',
   },
   buttonStyle: {
     justifyContent: 'center',

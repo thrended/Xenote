@@ -1,15 +1,14 @@
 import React, {useState} from 'react';
 import {
-  KeyboardAvoidingView,
   Image,
-  Modal,
-  View,
-  Text,
-  TextInput,
+  KeyboardAvoidingView,
   Pressable,
   Platform,
   StyleSheet,
-  TouchableOpacity
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import colors from '../styles/colors';
@@ -17,7 +16,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {Subtask} from '../models/Schemas';
 
 interface SubtaskModalProps {
-  onSubmit: () => void;
   handleAddSubtask: (
     _title: string, 
     _feature: string, 
@@ -38,7 +36,6 @@ interface SubtaskModalProps {
 }
 
 function SubtaskModal({
-  onSubmit,
   handleAddSubtask,
   handleModifySubtask,
   isNew: isNew,
@@ -52,14 +49,6 @@ function SubtaskModal({
   const [date, setDate] = useState(subtask && !isNew? subtask.scheduledDatetime : new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-  // if (isNew === false) {
-  //   if (subtask) {
-  //     setInputTitle(subtask.title);
-  //     setInputFeature(subtask.feature);
-  //     setInputValue(subtask.value);
-  //     setDate(subtask.scheduledDatetime);
-  //   }
-  // }
 
   const onChange = (event, selectedDate) => {
     const newDate : Date = selectedDate;
@@ -222,56 +211,9 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    // textAlign: "center"
-  },
-  floatingButtonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 50,
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.black,
-        shadowOffset: {
-          width: 0,
-          height: 4,
-        },
-        shadowOpacity: 0.7,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  // textInput: {
-  //   flex: 1,
-  //   paddingHorizontal: 15,
-  //   paddingVertical: Platform.OS === 'ios' ? 15 : 0,
-  //   borderRadius: 5,
-  //   backgroundColor: colors.white,
-  //   fontSize: 24,
-  // },
-  floatingButton: {
-    // height: '100%',
-    width: 60,
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 30,
-    backgroundColor: '#ee6e73',
-  },
-  icon: {
-    color: colors.white,
-    textAlign: 'center',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
   textInput: {
     flex: 1,
-    // textAlign: "center",
     paddingHorizontal: 8,
     paddingVertical: Platform.OS === 'ios' ? 8 : 0,
     backgroundColor: colors.white,

@@ -1,19 +1,16 @@
 import React, {memo, useCallback, useDebugValue, useEffect, useState} from 'react';
 import {
   Alert,
-  Modal,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
   Platform,
   Pressable,
   StyleSheet,
   Switch,
+  Text,
   _Text,
+  View,
 } from 'react-native';
 
-import { format, compareAsc } from 'date-fns'
+import { format } from 'date-fns'
 import addSeconds from 'date-fns/addSeconds';
 import { useSwipe } from '../hooks/useSwipe';
 import ReminderContext, {Reminder, Subtask} from '../models/Schemas';
@@ -215,12 +212,10 @@ function ReminderItem({
 
   let checkTimeforRenew = () => {
     
-    if ( !reminder || !reminder.isAutoRenewOn && calcTime(reminder.scheduledDatetime) < lockout )
-    {
+    if ( !reminder || !reminder.isAutoRenewOn && calcTime(reminder.scheduledDatetime) < lockout ) {
       return;
     }
-    if( !reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) > delay * 1.5 )
-    {
+    if ( !reminder.isAutoRenewOn || reminder.isExpired || calcTime(reminder.scheduledDatetime) > delay * 1.5 ) {
       return;
     }
     doAutoRenew();
@@ -237,8 +232,7 @@ function ReminderItem({
     let m = reminder.subtasks.length;
     let c = 0;
     reminder.subtasks.map((subtask) => {
-      if (subtask.isComplete)
-      {
+      if (subtask.isComplete) {
         c++;
       }
     });
