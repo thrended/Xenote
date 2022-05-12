@@ -41,13 +41,14 @@ function SimpleNote({route, navigation} : any) {
 
   const modifyNote = useCallback(
     (
-      note: Note,
+      note: Note & Realm.Object,
       title?: string,
       author?: string,
       body?: string,
       prio?: number,
       category?: string,
       _addTag?: string,
+      _removeTag?: string,
       ): void => {
         realm.write(() => {
           title?  note.title    = title : {};
@@ -56,7 +57,8 @@ function SimpleNote({route, navigation} : any) {
           prio?   note.priority = prio : {};
           body?   note.size     = body.length : {};
           category? note.category = category : {};
-          _addTag? note.tags.push(_addTag) : {};
+          _addTag? note.tags.add(_addTag) : {};
+          _removeTag? (note.tags.has(_removeTag) ? deleteTag(_removeTag) : Alert.alert("Error removing tag: #"+_removeTag+" does not exist!")) : {};
           note.dateModified = new Date(Date.now());
           note.dateAccessed = new Date(Date.now());
           //realm.objects(Note).sorted('priority', true);
@@ -72,6 +74,7 @@ function SimpleNote({route, navigation} : any) {
   const [inputPrio, setInputPrio] = useState(note.priority);
   const [inputCategory, setInputCategory] = useState(note.category);
   const [newTag, setNewTag] = useState("");
+  const [remTag, setRemTag] = useState("");
   const prioButtonColors = ['#84FFEB', 'cyan', '#3666E9', '#0400FF', '#22E734', '#FBFF00', '#FFBB00', 'coral', '#E9443E', '#C5184C', '#992323'];
 
   const renderButtons = () => {
@@ -85,8 +88,17 @@ function SimpleNote({route, navigation} : any) {
     }
   }
 
+  const deleteTag = (tag = remTag) => {
+    note.tags.delete(tag);
+    Alert.alert("Successfully removed tag: #"+tag);
+  }
+
   return(
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={globalStyles.modalContent}>
             <View style={globalStyles.modalIcon}>
@@ -108,7 +120,20 @@ function SimpleNote({route, navigation} : any) {
                     color: colors.dark
                   }}
                 onPress={() => {
-                  modifyNote(note, inputTitle, inputAuthor, inputBody, inputPrio, inputCategory, newTag);
+                  
+                  let b = true;
+                  do {
+                    note.tags.forEach((tag) => {
+                    if(tag === newTag)
+                    {
+                      Alert.alert("Error adding #"+newTag+": Duplicate tags are not allowed.");
+                      setNewTag("");
+                      b = false;
+                    }
+                    });
+                    b ? b = !b : {};
+                  } while (b);
+                  modifyNote(note, inputTitle, inputAuthor, inputBody, inputPrio, inputCategory, newTag, remTag);
                   navigation.goBack();
                 }}
               />
@@ -127,7 +152,7 @@ function SimpleNote({route, navigation} : any) {
                 onChangeText={setInputAuthor}
                 value={inputAuthor}
               />
-              <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
+              <View style={[globalStyles.separatorV, {marginVertical: 7.5}]}/>
               <TextInput
                 style={styles.item}
                 multiline
@@ -138,25 +163,25 @@ function SimpleNote({route, navigation} : any) {
                 onChangeText={setInputBody}
                 value={inputBody}
               />
-              <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
+              <View style={[globalStyles.separatorV, {marginVertical: 7.5}]}/>
 
               <View>
-              <TextInput
-                    style={styles.item}
-                    placeholder='Category'
-                    onChangeText={setInputCategory}
-                    value={inputCategory}
-                  />
-                  <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
-                  <TextInput
-                    style={styles.item}
-                    placeholder='Add Tag (dont include "#")'
-                    onChangeText={setNewTag}
-                    onEndEditing={() => setNewTag}
-                    value={newTag}
-                  />
+                <TextInput
+                  style={styles.item}
+                  placeholder='Category'
+                  onChangeText={setInputCategory}
+                  value={inputCategory}
+                />
+                <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
+                <TextInput
+                  style={styles.item}
+                  placeholder='Add Tag (dont include "#")'
+                  onChangeText={setNewTag}
+                  onEndEditing={() => setNewTag}
+                  value={newTag}
+                />
               </View>
-              
+              <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
               <View style={globalStyles.multibutton}>
                 <Text style={{paddingRight: 20}}>Priority</Text>
                 <Pressable onPress ={() => setInputPrio(1)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 1 ? 1.5 : 0), opacity: (inputPrio == 1 ? 1 : 0.3),backgroundColor: 'cyan'}]} />
@@ -171,13 +196,23 @@ function SimpleNote({route, navigation} : any) {
                 <Pressable onPress ={() => setInputPrio(10)} style={[globalStyles.buttonprio, {borderWidth: (inputPrio == 10 ? 1.5 : 0), opacity: (inputPrio == 10 ? 1 : 0.35),backgroundColor: '#992323'}]} />
               </View>
 
+              <View style={[globalStyles.separatorV, {marginVertical: 5}]}/>
+                <TextInput
+                  style={styles.item}
+                  placeholder='Delete Tag (dont include "#")'
+                  onChangeText={setRemTag}
+                  onEndEditing={() => setRemTag}
+                  value={remTag}
+                />
+
             </View>
             
           </View>
-        </TouchableWithoutFeedback>
-      </View>
-    )
-  }
+        </TouchableWithoutFeedback>       
+      </KeyboardAvoidingView>
+    </View>
+  )
+}
 
   const styles = StyleSheet.create({
     container: {

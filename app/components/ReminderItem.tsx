@@ -27,6 +27,7 @@ import notifee,
 import {globalStyles } from '../styles/global';
 import SwitchSelector from "react-native-switch-selector";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import ProgressBar from 'react-native-progress/Bar';  // screw this red line error
 
 const {useRealm, useQuery, RealmProvider} = ReminderContext;
 interface ReminderItemProps {
@@ -56,7 +57,7 @@ function ReminderItem({
   // can adjust the frequency of pinging notifications here
   // too low values will probably (definitely) impact performance
   let delay = 5000;      // ms
-  let lockout = -333333; // ms
+  let lockout = -3333333; // ms
   var [initialized, setInitialized] = useState(false);
 
   const [isChecked, setIsChecked] = useState(reminder.isComplete);
@@ -65,13 +66,14 @@ function ReminderItem({
   const [renewDate, setRenewDate] = useState(reminder.autoRenewDate);
   const [isExpired, setExpired] = useState(reminder.isExpired);
   const [DT, setDT] = useState(reminder.scheduledDatetime);
+  const [completion, setCompletion] = useState(reminder.percentComplete);
   
   const SSOptions = [
     //{ label: "3m", value: "0.05" }, // TEST VALUE
    // { label: "30m", value: "0.5" },
     { label: "1h", value: "1" },
-    { label: "2h", value: "2" },
-    { label: "4h", value: "4" },
+    { label: "3h", value: "3" },
+    { label: "6h", value: "6" },
     { label: "12h", value: "12" },
     { label: "1d", value: "24" },
     { label: "2d", value: "48" },
@@ -80,7 +82,8 @@ function ReminderItem({
     { label: "7d", value: "168" },
     { label: "14d", value: "336" },
     { label: "30d", value: "720" },
-    { label: "90d", value: "2160"},
+    { label: "90d", value: "2160"}, 
+    //{ label: "180d", value: "4320"},
     { label: "1yr", value: "8760"},
   ];
   
@@ -152,6 +155,15 @@ function ReminderItem({
     let oldSchedDate = reminder.scheduledDatetime;
     let oldRenewDate = reminder.autoRenewDate;
     let interval = reminder.autoRenewFreq;
+    /*
+    * Adjust old auto-renewed reminders to current time if the device has been turned off for long bouts of time
+    */
+    if (calcTime(oldSchedDate) < 0)
+    {
+      let offset = -calcTime(oldSchedDate) / 1000;
+      let multiplier = Math.ceil(offset / interval);
+      interval *= multiplier;
+    }
     process_AUTORENEW(reminder, new Date(addSeconds(oldSchedDate, interval)), new Date(addSeconds(oldRenewDate, interval)));
     Alert.alert(("Autorenew! New scheduled date: " + reminder.scheduledDatetime));
     console.log("Autorenew has regenerated the reminder");
@@ -175,8 +187,24 @@ function ReminderItem({
       {
         console.log("Error while checking for autorenewals", e);
       }
+      finally
+      {
+        setCompletion(() => updateCompletionPercent());
+      }
       checkReminderRenewalTimer = setTimeout(tick, delay);
     }, delay);
+    
+    try{
+      setCompletion(() => updateCompletionPercent());
+    }
+    catch (e)
+    {
+      console.log("Error while checking for crap", e);
+    }
+    finally
+    {
+      updateIsCompleted(reminder, isChecked, completion);
+    }
 
     // clear on component unmount
     return () => {
@@ -187,7 +215,7 @@ function ReminderItem({
 
   let checkTimeforRenew = () => {
     
-    if ( reminder == undefined || !reminder.isAutoRenewOn && calcTime(reminder.scheduledDatetime) < lockout )
+    if ( !reminder || !reminder.isAutoRenewOn && calcTime(reminder.scheduledDatetime) < lockout )
     {
       return;
     }
@@ -204,14 +232,28 @@ function ReminderItem({
     isExpired ? clearNonLateNotifications() : {};
     return reminder.isExpired === ( calcTime (reminder.scheduledDatetime) < lockout );
   }
+
+  function updateCompletionPercent() {
+    let m = reminder.subtasks.length;
+    let c = 0;
+    reminder.subtasks.map((subtask) => {
+      if (subtask.isComplete)
+      {
+        c++;
+      }
+    });
+    return Math.round(100 * c / (Math.max(1,m)));
+  }
   
   const updateIsCompleted = useCallback(
     (
       reminder: Reminder,
       _isComplete: boolean,
+      _pct: number,
     ): void => {
       realm.write(() => {
         reminder.isComplete = _isComplete;
+        reminder.percentComplete = _pct;
         //_isComplete ? reminder.isAutoRenewOn = false : {};
         //_isComplete ? setAutoRenewSwitchOn(() => false) : {};
       });
@@ -324,7 +366,7 @@ function ReminderItem({
   }
 
   function clearNotifications(y = 0, z = 5) {
-    if(reminder == undefined)
+    if(!!!reminder)
     {
       return;
     }
@@ -414,6 +456,20 @@ function ReminderItem({
         showTimestamp: true,
         //showChronometer: true,
         timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
+        actions: [
+          {
+            title: 'Options',
+            icon: 'ic_small_icon',
+            pressAction: {
+              id: 'reminder',
+            },
+            input: {
+              allowFreeFormInput: false, // set to false
+              choices: ['Dismiss'],
+              placeholder: 'placeholder',
+            },
+          },
+        ],
       },
     });
     } catch(e)
@@ -466,15 +522,20 @@ function ReminderItem({
           largeIcon: require('../../images/logo.png'),
           circularLargeIcon: true,
           ongoing: true,
-          // actions: [
-          //   {
-          //     title: 'Swipe',
-          //     icon: 'ic_small_icon',
-          //     pressAction: {
-          //       id: 'reminder',
-          //     },
-          //   },
-          // ],
+          actions: [
+            {
+              title: 'Options',
+              icon: 'ic_small_icon',
+              pressAction: {
+                id: ('reminder (renewed)'),
+              },
+              input: {
+                allowFreeFormInput: false, // set to false
+                choices: calcTime(reminder.scheduledDatetime) < 1500000 ? ['Snooze 10', 'Snooze 30', 'Snooze 60'] : ['Dismiss'],
+                placeholder: 'placeholder',
+              },
+            },
+          ],
           fullScreenAction: {
             id: 'default',
           }
@@ -572,6 +633,8 @@ function ReminderItem({
     const channelId = await notifee.createChannel({
       id: 'Channel-1',
       name: 'Reminders',
+      lights: true,
+      lightColor: AndroidColor.RED,
       visibility: AndroidVisibility.PUBLIC,
       importance: AndroidImportance.HIGH,
     });
@@ -585,6 +648,7 @@ function ReminderItem({
         // Create a trigger notification
         if (i < 3)
         {
+          let option = (!i ? 'Snooze 60' : (i==1? 'Snooze 30' : 'Snooze 15'));
           await notifee.createTriggerNotification(
           {
             id: reminder._id.toHexString() + i.toString(),
@@ -610,7 +674,7 @@ function ReminderItem({
                   },
                   input: {
                     allowFreeFormInput: false, // set to false
-                    choices: ['Snooze', 'Renew', 'Delete'],
+                    choices: [option, 'Dismiss', 'Delete'],
                     placeholder: 'placeholder',
                   },
                 },
@@ -642,14 +706,14 @@ function ReminderItem({
               timestamp: Date.now() + calcTime(reminder.scheduledDatetime),
               actions: [
                 {
-                  title: ongong? 'Swipe' : 'Options',
+                  title: ongong? 'Swipe away to delete' : 'Options',
                   icon: 'ic_small_icon',
                   pressAction: {
-                    id: 'reminder',
+                    id: (i == 4 ? 'reminder (late)' : 'reminder'),
                   },
                   input: {
                     allowFreeFormInput: false, // set to false
-                    choices: ongong? ['Swipe away to remove'] : ['Snooze', 'Renew', 'Delete'],
+                    choices: ongong? ['Snooze 15', 'Snooze 30', 'Snooze 60'] : ['Snooze 10', 'Snooze 15', 'Dismiss'],
                     placeholder: 'placeholder',
                   },
                 },
@@ -674,13 +738,6 @@ function ReminderItem({
       }
     };
   }
-  
-  // notifee.onBackgroundEvent(async ({ type, detail }) => {
-  //   if (type === EventType.ACTION_PRESS && detail.action.id === 'reply') {
-  //    //await updateChat(detail.notification.data.chatId, detail.action.input);
-  //     await notifee.cancelNotification(detail.notification.id);
-  //   }
-  // });
 
   async function cancel(notifId : string, tag?: any) {
     await notifee.cancelNotification(notifId, tag);
@@ -761,6 +818,7 @@ function ReminderItem({
     <Pressable
       //onPress={() => onDisplayNotification() }   // Testing purposes
       onLongPress={() => handleNavigation(reminder)}
+      onFocus={() => updateIsCompleted(reminder, isChecked, completion)}
       onTouchStart={onTouchStart} 
       onTouchEnd={onTouchEnd}
       hitSlop={{ top: 10, bottom: 10, right: 100, left: 100}}
@@ -769,6 +827,11 @@ function ReminderItem({
       <View style={styles.dateTimeContainer}>
         <View>
           <Text>{format(reminder.scheduledDatetime, "h:mm b")}</Text>
+        </View>
+        <View style={{width: 5}}/>
+        <View>
+          <Text>{completion}% Complete</Text>
+          <ProgressBar width={null} borderRadius={10} progress={completion/100} color='green' height={6} />
         </View>
         <View>
           <Text>{format(reminder.scheduledDatetime, "E MMMM d, yyyy")}</Text>
@@ -805,7 +868,8 @@ function ReminderItem({
               disableText={true}
               onPress={(isChecked: boolean) => {
                 setIsChecked(isChecked => !isChecked);
-                updateIsCompleted(reminder, isChecked);
+                setCompletion(() => updateCompletionPercent());
+                updateIsCompleted(reminder, isChecked, completion);
                 isChecked ? clearNotifications() : {};
               }}
             />
@@ -840,7 +904,7 @@ function ReminderItem({
             selectedColor={colors.lightyellow}
             buttonColor={colors.heliotrope}
             borderColor={colors.mint}
-            onPress={value => 
+            onPress={(value: any) => 
               onPressSelSwitch(value)
             }
           />

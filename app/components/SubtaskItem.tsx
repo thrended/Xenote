@@ -177,6 +177,7 @@ function SubtaskItem({
         tag: "M gud",
         //chronometerDirection: 'down',
         showTimestamp: true,
+        timeoutAfter: 15000,
         //showChronometer: true,
         timestamp: Date.now() + calcTime(subtask.scheduledDatetime),
       },
@@ -220,7 +221,7 @@ function SubtaskItem({
       },
     };
     
-    // Create an interval trigger if time is short
+    // Create an interval trigger (future development for auto-renew)
     const trigger2: IntervalTrigger = {
       type: TriggerType.INTERVAL,
       interval: 15,     // MIN = 15
@@ -230,6 +231,8 @@ function SubtaskItem({
     const channelId = await notifee.createChannel({
       id: 'Channel-3',
       name: 'Subtasks',
+      lights: true,
+      lightColor: AndroidColor.RED,
       visibility: AndroidVisibility.PRIVATE,
       importance: AndroidImportance.DEFAULT,
     });
@@ -244,7 +247,7 @@ function SubtaskItem({
         body: subtask.scheduledDatetime.toLocaleString(),
         android: {
           autoCancel: false,
-          channelId: 'Channel-3',
+          channelId,
           category: AndroidCategory.EVENT,
           importance: AndroidImportance.DEFAULT,
           largeIcon: require('../../images/clock.png'),
@@ -254,6 +257,7 @@ function SubtaskItem({
           chronometerDirection: 'down',
           showTimestamp: true,
           showChronometer: false,
+          timeoutAfter: 30000,
           timestamp: Date.now() + calcTime(subtask.scheduledDatetime),
           actions: [
             {
@@ -264,7 +268,7 @@ function SubtaskItem({
                 },
                 input: {
                   allowFreeFormInput: false, // set to false
-                  choices: ['Snooze', 'Renew', 'Delete'],
+                  choices: ['Snooze 60', 'Remind Daily', 'Weekly', 'Dismiss'],
                   placeholder: 'placeholder',
                 },
             },

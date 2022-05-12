@@ -146,7 +146,7 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
               </View>
               <View style={{flexDirection: 'row', alignItems: "stretch" ,justifyContent: "space-between"}}>
               
-              <Text style={{fontWeight: "bold"}}>Tags: #{note.tags.join(", #")}</Text>
+              <Text style={{fontWeight: "bold"}}>Tags: #{[...note.tags].join(", #")}</Text>
               </View>
             </View>
           </View>

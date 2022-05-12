@@ -1,21 +1,105 @@
 
 # Xenote Changelog
 
-## *** [Mini Update 3.5]
+**Eventually -->** the older parts of  _**changelog.md**_ will be archived in a separate file.
 
-Added an icon button to turn off notifications for individual subtasks
+[Click here to go back to the README](README.md)
 
-Found a bug in subtasks: it won't let you edit text fields for subtasks below the second one (can still create them and can still change the date)
+## *** General Update 5-11 (_Hello Xenote_ Beta v1.11)
 
-### TODO
+Properly renamed the application to Xenote. Now formally recognized as "Xenote" by the device, and uses a custom icon.
 
-Function to delete tags
+### Bug Fixes
 
-Prevent duplicate tags
+#### **FIXED THE SUBTASK MODAL BUG**
 
-Sort by tag
+**Improved syncing of autorenew after the device has been turned off a long time (such as an emulator). Delete / turn off the currently autorenewed reminders and remake them if the app crashes (new reminders won't crash)**.
 
-## ***05-06 Update 3
+Duplicate tags are now properly prevented from being added.
+
+**Attached the notifee event handlers so that warning shouldn't pop up anymore**.
+
+Resolved some typescript errors where I could.
+
+**Fixed a bug where tag search stopped working**.
+
+### Feature Enhancements
+
+This part is a side effect of fixing notifee warnings. Notification actions now work: snoozing, dismissing (deleting), and daily + weekly reminders for subtasks
+
+Progress bar thingy added to reminders
+
+Reminders now display a completion metric based on the % of completed subtasks
+
+Vastly expanded search options and improved accuracy. Full details below
+
+Added a Delete All function to notes and reminders (press the trash can icon and confirm your choice, or let Xenote flip a coin). WARNING: this action cannot be undone.
+
+#### Made search engine more extensible
+
+Can now look up priority and size attributes separately, or both at the same time
+
+Begin query with:
+
+P: priority search (==)
+
+S: size (length) of body content (>= threshold)
+
+N: search both attributes
+
+Returns no results now if matches are not found/thresholds are not met, instead of defaulting to normal search.
+
+Now you can search for numerical phrases within the note's contents without interference.
+
+New search functions:
+
+Added a way to search for any terms in the phrase. Begin the query with "ANY:" followed by whitespace-delimited search terms.
+
+Added a case-sensitive search which behaves the same as general search, but with added case enforcement.
+
+Added an exact match search feature which searches for an exactly matching keyword. Also has a case-sensitive sub-option.
+
+Added a search header to display the number of results found. It shows when the user dismisses the keyboard or presses away from the search bar.
+
+### Other Odds and Ends
+
+Improved presentation and spacing of the Edit Note UI.
+
+You can now delete tags from notes.
+
+Cleaned up some loose code.
+
+Custom icons added (may need another size for play store).
+
+### New packages
+
+Progress Bar
+
+npm i react-native-progress --save     or      yarn add react-native-progress
+
+[https://github.com/oblador/react-native-progress]
+
+I didn't install the SVG package which adds pie and circle bars. Try at your own risk
+
+## TODO
+
+### Focus on testing and debugging
+
+#### Fix that subtask click/edit bug - FIXED
+
+Improve the app stability and make it crash less
+
+Design a better app icon
+
+Settings / Help screens
+
+(Maybe) eventually add smart features
+
+Archive past parts of the changelog
+
+#### Previous Changes
+
+##### ***05-06 Update 3**
 
 Caveat: the database will reset because the schema has changed
 
@@ -29,7 +113,11 @@ Added category, tags to search filter
 
 Category and tags now display on the note
 
-## **05-06 Update 2**
+Added an icon button to turn off notifications for individual subtasks
+
+Found a bug in subtasks: it won't let you edit text fields for subtasks below the second one (can still create them and can still change the date)
+
+##### **05-06 Update 2**
 
 Added search function to notes
 
@@ -59,7 +147,7 @@ Case insensitive search for all textual note categories (title, subject, body, e
 
 Added skeleton code to schema for handling Note categories and tags in future
 
-## **05-06 New Branch (start of May feature updates)**
+##### **05-06 New Branch (start of May feature updates)**
 
 5/6 Update
 
@@ -73,7 +161,7 @@ Fixed autorenew's interaction with the checkbox. Marking the checkbox no longer 
 
 Early push incase something breaks later
 
-## **05-01 Update 3 (Final)**
+###### **05-01 Update 3 (Final)**
 
 Showcase ready
 
@@ -89,13 +177,13 @@ Let me know if there are any issues.
 
 Need to do a yarn install or yarn add react-native-select-dropdown
 
-## ***05-01 Auto-refresh update 2**
+###### **05-01 Auto-refresh update 2**
 
 Streamlined auto-refresh functions:
 
 Press
 Refresh notifications
-Disabled alert if auto-renew is not on 
+Disabled alert if auto-renew is not on
 
 Long press
 delete all non-recurring notifications for this reminder (autorenew on)
@@ -107,7 +195,7 @@ Performance should be better now
 
 May push one more update if I get around to note pinning - done
 
-## ***05-01 Auto-refresh improvements**
+###### **05-01 Auto-refresh improvements**
 
 Statuses for reminders that expired while the app was closed should now be properly synced upon restarting the app
 
@@ -126,7 +214,7 @@ Fixed a typo where a reminder became expired after ~5.5 min instead of ~55.5 min
 **Test for wonkiness and stability**
 **Integrate with new UI features**
 
-## **04-30 Auto-renew beta final**
+###### **04-30 Auto-renew beta final**
 
 Crashes and memory leaks due to deleted objects should be fixed now.
 
@@ -155,37 +243,36 @@ Probably final update for the weekend barring hotfixes
 **Test for wonkiness and stability**
 **Integrate with new UI features**
 
-
-## 04-30 Auto-renew beta
+###### 04-30 Auto-renew beta
 
 - Auto-renew functionality added to reminders
 - Auto-renew window for expiration changed to _~55 minutes_ _past due
 - New Memory leak issue (resolved)
 
-### Previous changes
+###### Previous changes
 
-### Small UI tweaks
+###### Small UI tweaks
 
 - Priority selection now clearly visible
 - Can view limited body text, priority of note
 - Notes can be toggle flagged with right swipe
 - Added bouncy-checkbox as a UI competitor to rounded-checkbox - see subtasks
 
-### Swiping
+###### Swiping
 
 - Added functionality for up swipe and down swipe if needed
 - Right swipe working with subtasks
 
-### Notifications
+###### Notifications
 
 - Placed reminder and subtask notifications in separate channels
 
-### Bug Fixes
+###### Bug Fix
 
 - Fixed a bug where opening the subtask modal also triggers a 'right swipe'
 - Now it triggers a down swipe (unbound function)
 
-### TODO
+_TODO:_
 
 - Checkbox marking should cancel the associated notification(s)
 - Intro Page
@@ -194,22 +281,12 @@ Probably final update for the weekend barring hotfixes
 
 #### Other
 
-## Gradle troubleshooting
+### Gradle troubleshooting
 
-Inside android/gradle/wrapper/gradle-wrapper.properties
+#### If you get an outofmemoryerror, try the following fix
 
-## Local version
+Inside **_android/gradle.properties_**
 
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-distributionUrl=file\:///S:\Installers/gradle-7.4-all.zip
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
+Uncomment this line
 
-## Replace with
-
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-[(distributionUrl=https\://services.gradle.org/distributions/gradle-7.4-all.zip)]
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
+**#** **org.gradle.jvmargs=-Xmx12048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8**

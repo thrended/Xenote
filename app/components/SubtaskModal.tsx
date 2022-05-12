@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  KeyboardAvoidingView,
   Image,
   Modal,
   View,
@@ -87,7 +88,10 @@ function SubtaskModal({
   };
 
   return (
-    <View style={styles.centeredView}>
+    <View style={styles.centeredView}>      
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
       <View style={styles.modalView}>
         <View style={styles.modalRow}>
           <Text style={styles.modalText}>Title: </Text>
@@ -170,6 +174,8 @@ function SubtaskModal({
           <Text style={styles.textStyle}>Done ✓</Text>
         </Pressable>
       </View>
+      
+    </KeyboardAvoidingView>
     </View>
   );
 }
