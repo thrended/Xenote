@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
   Platform,
+  Pressable,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import colors from '../styles/colors';

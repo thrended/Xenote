@@ -1,13 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
   Platform,
   StyleSheet,
-  Dimensions,
+  TextInput,
+  View,
 } from 'react-native';
 import {TouchableOpacity, Image} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';

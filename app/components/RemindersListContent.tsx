@@ -1,13 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   FlatList,
-  Modal,
-  Pressable,
   StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
 } from 'react-native';
 import {Realm} from '@realm/react';
 
@@ -45,7 +40,6 @@ function RemindersListContent({
             handleNavigation={handleNavigation}
             onDelete={() => onDeleteReminder(item)}
             onSwipeLeft={() => onSwipeLeft(item)}
-            // Don't spread the Realm item as such: {...item}
           />
         )}
         extraData={reminders}
@@ -60,9 +54,6 @@ const styles = StyleSheet.create({
     marginTop: 0,
     flex: 1,
     marginBottom: 40
-  },
-  buttonStyle: {
-    justifyContent: 'center',
   },
 });
 

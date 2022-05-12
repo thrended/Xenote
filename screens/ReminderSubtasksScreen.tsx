@@ -1,52 +1,60 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
   Modal,
   Platform,
-  Pressable,
   SafeAreaView,
   Text,
   View,
   StyleSheet,
   Switch,
-  TextInput,
 } from 'react-native';
 
-import {Button, TouchableOpacity, Image} from 'react-native';
+import colors from '../app/styles/colors';
 
+import AddReminderButton from '../app/components/AddReminderButton';
+import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
+import ReminderContent from '../app/components/ReminderContent';
 import SubtaskContext, {Reminder, Subtask} from '../app/models/Schemas';
 import SubtaskListDefaultText from '../app/components/SubtaskListDefaultText';
-import AddReminderButton from '../app/components/AddReminderButton';
-import NewReminderHeaderBar from '../app/components/NewReminderHeaderBar';
-import ReminderContent from '../app/components/ReminderContent';
 import SubtaskModal from '../app/components/SubtaskModal';
-import colors from '../app/styles/colors';
-import {Results} from 'realm';
-import NewReminderTitleAndDateTimeBar from '../app/components/NewReminderTitleAndDateTimeBar';
-import DateTimePicker from '@react-native-community/datetimepicker';
 
-const {useRealm, useQuery, RealmProvider} = SubtaskContext;
+const {useRealm} = SubtaskContext;
 
 function ReminderSubtasksScreen({route, navigation}: any) {
-  const {reminderId} = route.params;
   
+  // Realm data
+  const {reminderId} = route.params;
   const realm = useRealm();
   const reminder : (Reminder & Realm.Object) | undefined = realm?.objectForPrimaryKey("Reminder", new Realm.BSON.ObjectId(reminderId))!;
   const [result, setResult] = useState(reminder.subtasks);
-
   const subtasks = useMemo(() => result, [result]);
 
+  // UI State variables
   const [modalVisible, setModalVisible] = useState(false);
   const [hideSwitchIsEnabled, setHideSwitchIsEnabled] = useState(false);
   const toggleSwitch = () => setHideSwitchIsEnabled(previousState => !previousState);
 
+  // DB Transaction callbacks
   const handleAddSubtask = useCallback(
     (_title: string, _feature: string, _value: string, _scheduledDatetime: Date): void => {
       realm.write(() => {
         // const newSubtask = realm.create('Subtask', Subtask.generate(_title, _feature, _value, _scheduledDatetime));
         // reminder.subtasks.push(newSubtask);
         reminder.subtasks.push(Subtask.generate(_title, _feature, _value, _scheduledDatetime));
+      });
+    },
+    [realm],
+  );
+
+  const handleDeleteSubtask = useCallback(
+    (task: Subtask): void => {
+      realm.write(() => {
+        realm.delete(task);
+        setResult(reminder.subtasks);
+        // Alternatively if passing the ID as the argument to handleDeleteTask:
+        // realm?.delete(realm?.objectForPrimaryKey('Task', id));
       });
     },
     [realm],
@@ -73,18 +81,6 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     [realm],
   );
 
-  const handleDeleteSubtask = useCallback(
-    (task: Subtask): void => {
-      realm.write(() => {
-        realm.delete(task);
-        setResult(reminder.subtasks);
-        // Alternatively if passing the ID as the argument to handleDeleteTask:
-        // realm?.delete(realm?.objectForPrimaryKey('Task', id));
-      });
-    },
-    [realm],
-  );
-
   const handleModifyReminderTitle = useCallback(
     (reminder: Reminder, _title?: string, _scheduledDatetime?, _isExpired?: boolean): void => {
       realm.write(() => {
@@ -96,6 +92,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
     [realm],
   );
 
+  // JSX UI Code
   return (
     <SafeAreaView style={styles.screen}>
       <Modal
@@ -150,82 +147,20 @@ function ReminderSubtasksScreen({route, navigation}: any) {
 }
 
 const styles = StyleSheet.create({
-  switchContainer: {
-    flexDirection: "row", 
-    alignItems: "center",
-    alignContent: "center",
-    justifyContent: "center"
-  },
-  timeanddatestyle:{
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  container: {
-    resizeMode: 'center',
-    height: 30,
-    width: 50,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  modalRow: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  screen: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonClose: {
-    backgroundColor: '#ee6e73',
-  },
   content: {
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 20,
   },
-  modalText: {
-    marginBottom: 15,
-    // textAlign: "center"
-  },
-  textInput: {
+  screen: {
     flex: 1,
-    // textAlign: "center",
-    paddingHorizontal: 8,
-    paddingVertical: Platform.OS === 'ios' ? 8 : 0,
     backgroundColor: colors.white,
-    fontSize: 24,
   },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+  switchContainer: {
+    flexDirection: "row", 
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center"
   },
 });
 

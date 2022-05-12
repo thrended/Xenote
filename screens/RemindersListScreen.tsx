@@ -2,32 +2,23 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Alert,
   FlatList,
-  Keyboard,
-  Modal,
   Platform,
   Pressable,
   SafeAreaView,
-  Text,
-  View,
   StyleSheet,
   Switch,
-  TextInput,
-  TouchableWithoutFeedback,
+  Text,
+  View,
 } from 'react-native';
 import colors from '../app/styles/colors';
 import ReminderListDefaultText from '../app/components/ReminderListDefaultText';
 import RemindersListContent from '../app/components/RemindersListContent';
 import AddReminderButton from '../app/components/AddReminderButton';
 import RealmContext, {Note, Reminder, Subtask} from '../app/models/Schemas';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import SelectDropdown from "react-native-select-dropdown";
-import SimpleNote from '../app/components/EditNote';
 import NoteItem from '../app/components/NoteItem';
-import Feather from 'react-native-vector-icons/Feather';
-import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Octicons from 'react-native-vector-icons/Octicons';
 import {globalStyles } from '../app/styles/global';
 import Entypo from 'react-native-vector-icons/Entypo';
 import notifee from '@notifee/react-native';
@@ -38,11 +29,7 @@ const {useRealm, useQuery, RealmProvider} = RealmContext;
 const RemindersListScreen = ({route, navigation} : any) => {
 
   const realm = useRealm();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [inputComplete, setInputComplete] = useState(false);
-  const [inputDate, setInputDate] = useState(new Date());
   const [window, setWindow] = useState(true);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [hideSwitchIsEnabled, setHideSwitchIsEnabled] = useState(false);
   const toggleSwitch = () => setHideSwitchIsEnabled(previousState => !previousState);
 
@@ -53,7 +40,6 @@ const RemindersListScreen = ({route, navigation} : any) => {
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchPhrase, setSearchPhrase] = useState("");
-  const [searchResult, setSearchResult] = useState(new Array<Note>());
   const [clicked, setClicked] = useState(false);
   var y = 0, z = "s";    // number of search results (don't re-render as state)
 
@@ -729,33 +715,6 @@ const RemindersListScreen = ({route, navigation} : any) => {
 };
 
 const styles = StyleSheet.create({
-  switchContainer: {
-    flexDirection: "row", 
-    alignItems: "center",
-    alignContent: "center",
-    justifyContent: "center"
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  content: {
-    flex: 1,
-    paddingTop: 0,
-    paddingHorizontal: 20,
-  },
-  screen: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  textStyle: {
-    color: 'black',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 16
-  },
   button: {
     paddingHorizontal: 8,
     paddingVertical: 10,
@@ -783,6 +742,33 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: '#ee6e73',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  content: {
+    flex: 1,
+    paddingTop: 0,
+    paddingHorizontal: 20,
+  },
+  screen: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  switchContainer: {
+    flexDirection: "row", 
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center"
+  },
+  textStyle: {
+    color: 'black',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16
   },
 });
 

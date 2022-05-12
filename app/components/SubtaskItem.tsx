@@ -1,12 +1,9 @@
 import React, {memo, useDebugValue, useCallback, useState} from 'react';
 import {
   Alert,
-  Image,
   Modal,
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   Platform,
   Pressable,
   StyleSheet,
@@ -15,20 +12,18 @@ import {
 
 import { format, compareAsc } from 'date-fns'
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import RoundCheckbox from 'rn-round-checkbox';
 import { useSwipe } from '../hooks/useSwipe';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SubtaskContext, {Subtask} from '../models/Schemas';
 import SubtaskModal from '../components/SubtaskModal';
 import colors from '../styles/colors';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import notifee, 
 { AndroidCategory, AndroidColor, AndroidImportance, AndroidVisibility, 
   AuthorizationStatus, EventType, IntervalTrigger, RepeatFrequency, 
   TimestampTrigger, TimeUnit, TriggerNotification, TriggerType, 
 } from '@notifee/react-native';
 
-const {useRealm, useQuery, RealmProvider} = SubtaskContext;
+const {useRealm} = SubtaskContext;
 
 interface SubtaskItemProps {
   subtask: Subtask;
@@ -373,31 +368,6 @@ function SubtaskItem({
 }
 
 const styles = StyleSheet.create({
-  timeanddatestyle:{
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonClose: {
-    backgroundColor: '#ee6e73',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  container: {
-    resizeMode: 'center',
-    height: 30,
-    width: 50,
-  },
   dateTimeContainer: {
     marginTop: 8,
     flexDirection : "row",
@@ -442,11 +412,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.subtle,
     fontSize: 24,
   },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   featureInputContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -480,55 +445,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 8,
     marginVertical: 8,
-  },
-  // status: {
-  //   width: 50,
-  //   height: '100%',
-  //   justifyContent: 'center',
-  //   borderTopLeftRadius: 5,
-  //   borderBottomLeftRadius: 5,
-  //   backgroundColor: colors.gray,
-  // },
-  // completed: {
-  //   backgroundColor: colors.purple,
-  // },
-  deleteButton: {
-    justifyContent: 'center',
-  },
-  deleteText: {
-    marginVertical: 10,
-    color: colors.gray,
-    fontSize: 16,
-  },
-  // icon: {
-  //   color: colors.white,
-  //   textAlign: 'center',
-  //   fontSize: 17,
-  //   fontWeight: 'bold',
-  // },
-  modalRow: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  modalText: {
-    marginBottom: 15,
-    // textAlign: "center"
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
 });
 

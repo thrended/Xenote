@@ -2,36 +2,23 @@
 import React, {useCallback, useState, useEffect} from 'react';
 import {
   Alert,
-  Button,
-  FlatList,
   Keyboard,
   KeyboardAvoidingView,
-  Image,
-  Modal,
-  Pressable,
   Platform,
-  SafeAreaView,
-  ScrollView,
-  SectionList,
-  StatusBar,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
-  useColorScheme,
   View,
 } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import { globalStyles } from "../styles/global";
 import RealmContext, {Note} from '../models/Schemas';
-import { NavigationEvents } from "react-navigation";
 import colors from '../styles/colors';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
-const {useRealm, useQuery, RealmProvider} = RealmContext;
+const {useRealm} = RealmContext;
 
 function SimpleNote({route, navigation} : any) {
 
@@ -230,50 +217,6 @@ function SimpleNote({route, navigation} : any) {
       borderRadius: 10,
       borderWidth: 1
     },
-    header: {
-      fontSize: 32,
-      backgroundColor: '#fff',
-    },
-    title: {
-      fontSize: 24,
-    },
-    title2: {
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    separator: {
-        marginVertical: 15,
-        height: 1,
-        width: '80%',
-    },
-    button:  {
-      width: 150,
-      height: 50,
-      fontSize: 30,
-      backgroundColor: '#25f2f5',
-      alignItems: 'center',
-      alignSelf: 'center',
-    },
-    image :  {
-      width: 200,
-      height: 200,
-      margin: 10,
-    },
-    modalToggle: {
-      marginBottom: 10,
-      borderWidth: 1,
-      borderColor: '#f2f2f2',
-      padding: 10,
-      borderRadius: 10,
-      alignSelf: 'center',
-    },
-    modalClose: {
-      marginTop: 20,
-      marginBottom: 0,
-    },
-    modalContent: {
-      flex: 1,
-    }
   });
   
   export default SimpleNote;
