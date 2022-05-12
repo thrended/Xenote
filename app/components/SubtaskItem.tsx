@@ -245,7 +245,7 @@ function SubtaskItem({
           channelId,
           category: AndroidCategory.EVENT,
           importance: AndroidImportance.DEFAULT,
-          largeIcon: require('../../images/clock.png'),
+          largeIcon: require('../images/clock.png'),
           circularLargeIcon: true,
           ongoing: true,
           tag: subtask._id.toHexString(),
