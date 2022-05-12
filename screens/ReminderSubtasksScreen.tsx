@@ -141,6 +141,7 @@ function ReminderSubtasksScreen({route, navigation}: any) {
             onSwipeLeft={handleDeleteSubtask}
           />
         )}
+        <View style={{ marginVertical: 30}}/>
         <AddReminderButton onSubmit={() => {
           setModalVisible(true);}} />
       </View>

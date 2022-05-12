@@ -48,6 +48,7 @@ export class Reminder extends Realm.Object {
   title!: string;
   subtasks!: Subtask[];
   isComplete!: boolean;
+  percentComplete!: number;
   scheduledDatetime!: Date;
   isAutoRenewOn!: boolean;
   autoRenewFreq!: number;
@@ -64,6 +65,7 @@ export class Reminder extends Realm.Object {
       title: title,
       subtasks: subtasks? subtasks: new Array<Subtask>(),
       isComplete: false,
+      percentComplete: 0,
       scheduledDatetime: _scheduledDatetime,
       isAutoRenewOn: false,
       autoRenewFreq: 0,
@@ -81,6 +83,7 @@ export class Reminder extends Realm.Object {
       title: 'string',
       subtasks: {type: 'list', objectType: 'Subtask'},
       isComplete: {type: 'bool', default: false},
+      percentComplete: {type: 'int', default: 0},
       scheduledDatetime: 'date',
       isAutoRenewOn: {type: 'bool', default: false},
       autoRenewFreq: {type: 'float', default: 0},
@@ -100,12 +103,13 @@ export class Note extends Realm.Object {
   // metadata
   author!: string;
   category!: string;
+  tags!: Realm.Set<string>;
   dateCreated!: Date;
   dateModified!: Date;
   dateAccessed!: Date;
   size!: number;
 
-  static generate(title: string, author: string, body: string, date: Date, prio: number) {
+  static generate(title: string, author: string, body: string, date: Date, prio: number, tag?: Realm.Set<string>) {
     return {
       _id: new Realm.BSON.ObjectId(),
       title: title,
@@ -115,6 +119,7 @@ export class Note extends Realm.Object {
       isPinned: false,
       author: author,
       category: "",
+      tags: [],
       dateCreated: new Date(),
       dateModified: new Date(),
       dateAccessed: new Date(),
@@ -137,6 +142,8 @@ export class Note extends Realm.Object {
       dateModified: "date",
       dateAccessed: "date",
       size: "int",
+      category: "string",
+      tags: {type: 'set', objectType: 'string'},
     },
   };
 

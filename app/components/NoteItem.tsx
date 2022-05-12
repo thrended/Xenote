@@ -87,11 +87,6 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
       /* */
   }
 
-  function viewDetails(){
-
-  }
-  const [modalOpen, setModalOpen] = useState(false);
-
   return (
     <View style={[globalStyles.content]}>
       <View style={{flex: 5}}>
@@ -145,9 +140,13 @@ function NoteItem({ note: note, handleSimpSwipe, handleNavigateToEdit }: NoteIte
                     />
                   )}
               </View>
-
-              <View style={{alignItems: "flex-end",justifyContent: "flex-end"}}>
+              <View style={{flexDirection: 'row', alignItems: "stretch" ,justifyContent: "space-between"}}>
+                <Text style={{fontWeight: "bold"}}>Category: {note.category}</Text>
                 <Text style={{fontWeight: "bold"}}>Priority: {note.priority}</Text>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: "stretch" ,justifyContent: "space-between"}}>
+              
+              <Text style={{fontWeight: "bold"}}>Tags: #{[...note.tags].join(", #")}</Text>
               </View>
             </View>
           </View>

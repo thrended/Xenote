@@ -31,6 +31,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import {globalStyles } from '../app/styles/global';
 import Entypo from 'react-native-vector-icons/Entypo';
 import notifee from '@notifee/react-native';
+import SearchBar from "../app/components/SearchBar";
 
 const {useRealm, useQuery, RealmProvider} = RealmContext;
 
@@ -47,15 +48,16 @@ const RemindersListScreen = ({route, navigation} : any) => {
 
   const [notesResult, setNotesResult] = useState(useQuery(Note));
   const notes = useMemo(() => notesResult, [notesResult]);
-  const [field1, setField1] = useState("priority");
-  const [field2, setField2] = useState("isPinned");
-  const [field3, setField3] = useState("");
-  const [order1, setOrder1] = useState(true);
-  const [order2, setOrder2] = useState(true);
-  const [order3, setOrder3] = useState(true);
   const [sortOption, setSortOption] = useState("priority");
   const [sortOrder, setSortOrder] = useState(true);
+  const [searching, setSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchPhrase, setSearchPhrase] = useState("");
+  const [searchResult, setSearchResult] = useState(new Array<Note>());
+  const [clicked, setClicked] = useState(false);
+  var y = 0, z = "s";    // number of search results (don't re-render as state)
 
+  // Sorting dropdown stuff
   const dropdownOptions = [ 
     "Priority (Default)", "Title", "Subject", "Contents", "Size", "Flag on/off",
     "Date Created", "Date Modified", "Date Accessed", "Category", "Tags", 
@@ -80,25 +82,6 @@ const RemindersListScreen = ({route, navigation} : any) => {
     { label: "Tags", value: "tags"},
   ];
 
-  const handleSimpSwipe = (key: string) => {
-    // setNotesResult((prevNotes) => {
-    //   return prevNotes.filter(note => note.key != key);
-    // })
-  }
-  const showDatePickerModal = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePickerModal = () => {
-    setDatePickerVisibility(false);
-  }
-
-  const handleConfirm = (date: Date) => {
-    Alert.alert( "A date has been picked: " + date.toLocaleString() );
-    setInputDate(date);
-    hideDatePickerModal();
-  }
-
   // const [newNote, setNewNote] = useState();
   // const addNote = useCallback(
   //   (note: any): void => {
@@ -119,6 +102,26 @@ const RemindersListScreen = ({route, navigation} : any) => {
   //   },
   //   [realm],
   // );
+  
+  const Search_Header = () => {
+    if (!searching || !searchTerm || clicked)
+    {
+      return null;
+    }
+    z = (y==1 ? '' : 's');
+    return (
+      <View style={{
+        height: 45,
+        width: "100%",
+        backgroundColor: "#00B8D4",
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <Text style={{ fontSize: 24, color: 'white' }}> Search found {y} result{z}. </Text>
+      </View>
+    );
+  }
+
   const addNote = () : Realm.BSON.ObjectId => {
     let newNoteId = new Realm.BSON.ObjectId();
     realm.write(() => {
@@ -146,14 +149,101 @@ const RemindersListScreen = ({route, navigation} : any) => {
     },
     [realm],
   );
+
+  const deleteAllNotes = useCallback(
+    (): void => {
+      realm.write(() => {
+        realm.delete(realm.objects(Note));
+      });
+    },
+    [realm],
+  );
+  
+  const deleteAllReminders = useCallback(
+    (): void => {
+      realm.write(() => {
+        realm.delete(realm.objects(Reminder));
+        notifee.cancelAllNotifications();
+      });
+    },
+    [realm],
+  );
+  
+  const alertDeleteNotes = () =>
+  Alert.alert(
+    "Confirm Deletion of All Notes",
+    "Delete all Notes?\n\nWARNING: This action cannot be undone!\n\nSelect the middle option to flip a coin.",
+    [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancelled delete all notes"),
+      },
+      {
+        text: "Coinflip",
+        onPress: () => {
+          let w = Math.random();
+          console.log("Rolled", w);
+          let x = Math.round(w);
+          Alert.alert("Coin flipped "+(x? '"heads"' : '"tails"'), (x? "Permanently wiped all existing notes." : "Preserving notes"));
+          x ? deleteAllNotes() : {};
+        },
+      },
+      {
+        text: "Confirm",
+        onPress: () => {
+          deleteAllNotes();
+          Alert.alert("Deleted all existing notes permanently.");
+        },
+      },
+    ],
+    {
+      cancelable: true,
+      onDismiss: () =>
+        console.log(
+          "This alert was dismissed by tapping outside of the alert dialog."
+        ),
+    }
+  );
+
+  const alertDeleteReminders = () =>
+  Alert.alert(
+    "Confirm Delete of ALL Reminders",
+    "Delete all Reminders and Subtasks?\n\nWARNING: this action will wipe ALL existing reminders, subtasks and notifications and is irreversible!\n\nSelect the middle option to flip a coin.",
+    [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancelled delete all reminders"),
+      },
+      {
+        text: "Coinflip",
+        onPress: () => {
+          let m = Math.random();
+          console.log("Rolled", m);
+          let n = Math.round(m);
+          Alert.alert("Coin flipped "+(n? '"heads"' : '"tails"'), (n? "Permanently wiped all reminders, subtasks and notifications." : "Preserving all notifications"));
+          n ? deleteAllReminders() : {};
+        },
+      },
+      {
+        text: "Confirm",
+        onPress: () => {
+          deleteAllReminders();
+          Alert.alert("Deleted all existing reminders, subtasks and notifications permanently.",
+          "All existing reminders, subtasks and their notifications have been erased.");
+        },
+      },
+    ],
+    {
+      cancelable: true,
+      onDismiss: () =>
+        console.log(
+          "This alert was dismissed by tapping outside of the alert dialog."
+        ),
+    }
+  );
   
   const [result, setResult] = useState(useQuery(Reminder));
   const reminders = useMemo(() => result, [result]);
-
-  const sortNotes = () => {
-   console.log ( realm.objects(Note).sorted('priority', true) );
-   return ( realm.objects(Note).sorted('priority', true) );
-  }
 
   useEffect(() => {
     try {
@@ -170,6 +260,8 @@ const RemindersListScreen = ({route, navigation} : any) => {
         `Unable to update the result state, an exception was thrown within the change listener: ${error}`
       );
     }
+    finally
+    {}
   });
 
   // const handleAddReminder = useCallback(
@@ -236,12 +328,131 @@ const RemindersListScreen = ({route, navigation} : any) => {
     [realm],
   );
 
-  let handleNoteSortAlg = (sortOption = "priority", sortOrder = true, field2 = "isPinned", order2 = true) => {
-    
-    // if(field2 == undefined || field2 == "")
-    // {
-    //   return realm.objects(Note).sorted(field1, order1);
-    // }
+  let handleNoteSortAlg = (sortOption = "priority", sortOrder = true, field2 = "isPinned", order2 = true, search = false, query = "") => {
+
+    if (query !== "")
+    {
+      let sortedItems = realm.objects(Note).sorted(sortOption, sortOrder).sorted(field2, order2);
+      /* Hashtag-Specific Search
+      *  begin query with '#'
+      *  exact matches only
+      *  not case-sensitive
+      */
+      if (query[0] === "#" && query.trim().length > 1)
+      {
+        let normalizeLC = query.slice(1).toLowerCase();
+        let searchResults = sortedItems.filter(note => [...note.tags].find(item => item.toLowerCase() === normalizeLC));
+        y = searchResults.length;
+        return searchResults;
+      }
+      /* Scan if the search is for a numeric attribute 
+      *  P = priority, S = size, N = both
+      *  second char must be colon ':'
+      *  must have at least 1 character after the ':'
+      *  equal value search for priority
+      *  >= search for size (character length of text body)
+      */
+      if (query.trim().length > 2 && (query[0] === 'N' || query[0] === 'P' || query[0] === 'S') && query[1] === ':')
+      {
+        let newQuery = query.slice(2).trim();
+        //console.log(newQuery);
+        if (!isNaN(+newQuery)) {
+          let searchResults = sortedItems.filter(note => note.priority === +newQuery || note.size >= +newQuery);
+          switch(query[0])
+          {
+            case 'P': // priority search
+              searchResults = searchResults.filter(note => note.priority === +newQuery);
+            case 'S':
+              searchResults = searchResults.filter(note => note.size >= +newQuery);
+            default:
+              y = searchResults.length;
+              return searchResults;
+          }
+        }
+      }
+      /*
+      * Search For ANY Terms in a Phrase
+      * Begin query with 'any:' (or "ANY:") followed by at least 2 terms separated by spaces
+      * Non-case-sensitive
+      * Finds partial and exact matches for any string terms (exact only for tags)
+      * Whitespace delimited
+      */
+      if (query.trim().length >=7 && query.slice(0, 4).toUpperCase().trim() == "ANY:") {
+        let terms = new Set(query.slice(4).toLowerCase().trim().split(' '));
+        //console.log([terms]);
+        let searchResults = new Set<Note>();
+        let dynamicList = sortedItems;
+        terms.forEach((term) => {
+          //dynamicList.forEach((M) => {console.log(M._id)});
+          let iterFind = dynamicList.filter(note => note.title.toLowerCase().includes(term) 
+          || note.author.toLowerCase().includes(term) || note.body.toLowerCase().includes(term) 
+          || note.category.toLowerCase().includes(term) || [...note.tags].find(item => item.toLowerCase() === term));
+          if(iterFind)
+          {
+            iterFind.forEach((M) => {
+              !searchResults.has(M) ? safeAdd(searchResults, M) : {};
+            });
+            dynamicList = setReduce(dynamicList, iterFind);
+          }
+        })
+        //searchResults.forEach((M) => {console.log(M._id)});
+        y = searchResults.size;
+        return [...searchResults];
+      }
+      /*
+      *  Case-Sensitive Search
+      *  Begin query with 'case:' (or "CASE:") followed by at least 1 character to search
+      *  Locates string matches among note properties:
+      *  Title, Subject, Body, Category, Tag
+      *  Tag searching also becomes case-sensitive
+      */
+      if (query.trim().length > 5 && query.slice(0, 5).toUpperCase().trim() == "CASE:") {
+        let terms = query.slice(5).trim();
+        let searchResults = sortedItems.filter(note => note.title.includes(terms) 
+        || note.author.includes(terms) || note.body.includes(terms) 
+        || note.category.includes(terms) || [...note.tags].find(item => item === terms));
+        y = searchResults.length;
+        return searchResults;
+      }
+      /*
+      *  Exact match search
+      *  Begin query with all caps "EXACT:" followed by the search term to enforce case-sensitive strictness
+      *  Otherwise, begin query with "exact:" (or any non-all-caps combination) followed by the search term
+      *  Searches all string properties for the exact term only
+      *  Only use one term and no space, otherwise it makes no sense
+      */
+      if (query.trim().length > 6 && query.slice(0, 6).toUpperCase().trim() == "EXACT:") {
+        let term = query.slice(6).trim();
+        // If query began with "EXACT:", make case-sensitive too
+        if (query.slice(0, 6).trim() === "EXACT:") {
+          let searchResults = sortedItems.filter(note => note.title.split(' ').includes(term) 
+          || note.author.split(' ').includes(term) || note.body.split(' ').includes(term) 
+          || note.category.split(' ').includes(term) || [...note.tags].find(item => item === term));
+          y = searchResults.length;
+          return searchResults;
+        }
+        // Else do normal exact match search
+        term = term.toLowerCase().trim();
+        let searchResults = sortedItems.filter(note => note.title.toLowerCase().split(' ').includes(term) 
+        || note.author.toLowerCase().split(' ').includes(term) || note.body.toLowerCase().split(' ').includes(term) 
+        || note.category.toLowerCase().split(' ').includes(term) || [...note.tags].find(item => item.toLowerCase() === term));
+        y = searchResults.length;
+        return searchResults;
+      } 
+      /* General Search
+      *  Locates string matches among note properties:
+      *  Title, Subject, Body, Category, Tag
+      *  Tag uses the same algorithm as the hashtag search (exact matches only) 
+      *  Case-insensitive
+      *  Whitespace-sensitive */
+      let normalizeLC = query.toLowerCase().trim();
+      let searchResults = sortedItems.filter(note => note.title.toLowerCase().includes(normalizeLC) 
+      || note.author.toLowerCase().includes(normalizeLC) || note.body.toLowerCase().includes(normalizeLC) 
+      || note.category.toLowerCase().includes(normalizeLC) || [...note.tags].find(item => item.toLowerCase() === normalizeLC));
+      //let test = sortedItems.filtered("title CONTAINS $0 OR author CONTAINS $1 OR body CONTAINS $2 OR category CONTAINS $3", query, query, query, query);
+      y = searchResults.length;
+      return searchResults;
+    }
     return realm.objects(Note).sorted(sortOption, sortOrder).sorted(field2, order2);
   }
 
@@ -249,14 +460,12 @@ const RemindersListScreen = ({route, navigation} : any) => {
     switch (choice)
     {
       case "tags":
-        Alert.alert("Coming soon");
-        break;
-      case "category":
+        // need a new prop to keep track of tag array size or something
         Alert.alert("Coming soon");
         break;
       case "default":
         setSortOption(() => "priority");
-        setSortOrder(() => true);
+        !sortOrder? setSortOrder(() => true) : {};
         break;
       default:
         setSortOption(() => choice);
@@ -264,6 +473,27 @@ const RemindersListScreen = ({route, navigation} : any) => {
         break;
     }
     
+  }
+
+  let processNoteSearchSelection = (query = "") => {
+    setSearching(query !== "" ? () => true : () => false);
+    setSearchTerm(() => query);
+  }
+
+  let setReduce = (list1: any, list2: any) => {
+    return list1.filter((item: any) => list2.indexOf(item) == -1);
+  }
+
+  let safeAdd = (list: any, note: Note) => {
+    let safe = true;
+    if(list.size > 0)
+    {
+      list.forEach((n: Note) => {
+        n.title == note.title ? safe = false : {};
+      });
+    }
+    safe ? list.add(note) : {};
+    return list;
   }
 
   return (
@@ -333,6 +563,16 @@ const RemindersListScreen = ({route, navigation} : any) => {
               notifee.cancelAllNotifications();
             }}
           />
+          <MaterialIcons
+            name='delete-forever'
+            size={20}
+            style={[globalStyles.modalToggle, {marginBottom: 0}]}
+            onPress={() => {
+              alertDeleteReminders();
+            }}
+            onLongPress={() => {
+            }}
+          />
           <View style={styles.switchContainer}>
             <Text>{hideSwitchIsEnabled ? "Show Completed" : "Hide Completed"}</Text>
             <Switch
@@ -357,6 +597,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
             handleNavigation={handeNavigateToReminderEditPage}
           />
         )}
+        <View style={{ marginVertical: 10}}/>
           <AddReminderButton
             onSubmit={() => {
               const newReminderId = addReminder();
@@ -371,6 +612,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
           <SelectDropdown
             data={dropdownOptions}
             defaultButtonText="Sort by:"
+            onFocus={() => setClicked(false)}
             onSelect={(selectedItem, index) => {
               console.log(selectedItem, index);
               console.log(dropdownEffects[index]);
@@ -409,7 +651,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
             }}
           /> */}
           <View style={styles.switchContainer}>
-            <Text>{!sortOrder ? "Increasing" : "Decreasing"}</Text>
+            <Text>{!sortOrder ? "Ascending" : "Descending"}</Text>
             <Switch
               trackColor={{ false: "#767577", true: colors.medium }}
               thumbColor={!sortOrder ? colors.strong : "#f4f3f4"}
@@ -422,22 +664,52 @@ const RemindersListScreen = ({route, navigation} : any) => {
             />
           </View>
           </View>
+          <SearchBar
+            searchPhrase={searchPhrase}
+            setSearchPhrase={(term: string) => {
+              setSearchPhrase(term);
+              processNoteSearchSelection(term);
+            }}
+            clicked={clicked}
+            setClicked={setClicked}
+        />
         <View style={[styles.content, {marginBottom: 50}]}>
           {/* <Text>Notes Tab</Text> */}
           <View style={[styles.centeredView, {marginTop: 0}]}>
             <Text style={{fontSize: 16, color: "green"}}>Use the "+" button to create a simple note.</Text>
           </View>
-          <View style={globalStyles.list}>
+          <View
+            style={globalStyles.list}
+            onStartShouldSetResponder={() => {
+              setClicked(false);
+              return true;
+            }}
+          >
             <FlatList
-              data={handleNoteSortAlg(sortOption, sortOrder, "isPinned", true)}
+              data={handleNoteSortAlg(sortOption, sortOrder, "isPinned", true, searching, searchTerm)}
               renderItem={({ item }) => ( 
                 <NoteItem note={item} handleSimpSwipe={deleteNote} handleNavigateToEdit={handleNavigateToNoteEditPage}/>
               )}
               // ItemSeparatorComponent={() => <View style={styles.separator} />}
               keyExtractor={({_id}) => _id.toHexString()}
               extraData={notes}
+              onTouchMove={() => setClicked(() => false)}
+              onTouchStart={() => setClicked(() => false)}
+              ListHeaderComponent={Search_Header}
+              stickyHeaderIndices={[0]}
             /> 
           </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          <Entypo
+            name='trash'
+            size={24}
+            style={[globalStyles.modalToggle, {marginBottom: 0}]}
+            onPress={() => {
+              alertDeleteNotes();
+            }}
+            onLongPress={() => {
+            }}
+          />
           <MaterialIcons
             name='add'
             size={24}
@@ -448,6 +720,7 @@ const RemindersListScreen = ({route, navigation} : any) => {
               navigateToNoteEditPage(newObjectId.toHexString(), true);
             }}
           />
+          </View>
       </View>
       </View>
       )}

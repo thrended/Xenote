@@ -9,8 +9,8 @@
       android:largeHeap="true"
       android:name=".MainApplication"
       android:label="@string/app_name"
-      android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
+      android:icon="@mipmap/xenote2"
+      android:roundIcon="@mipmap/xenote2_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity
@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
         android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustResize">
+        android:windowSoftInputMode="adjustPan"> <!-- default = adjustResize. Try adjustPan if subtask bugs -->
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
