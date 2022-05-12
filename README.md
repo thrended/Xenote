@@ -1,4 +1,4 @@
-![](images/xenote.png)
+![](app/images/xenote.png)
 ##### Smart Reminder mobile application built on the React Native framework, which allows for cross-platform mobile development using Javascript.
 
 ## Table of contents
@@ -16,23 +16,23 @@ Navigation is simple and intuitive. All items are edited using long presses. On 
 ## GUI Preview
 This app allows you to create reminders that have subtasks. Each subtask notifies the user when its deadline is reached. When the Add button on the main screen is pressed the reminder is created and the user is automatically brought to the second screen, where they can edit the subtasks. The screen toggle lets the users easily access reminders and notes from the same screen for ease of use. On the new subtask screen users can make multiple tasks with their own time and date for completion and then click on date and time icons to set the final reminder for all the tasks. After Reminder is created, notifications will be automatically triggered once the due date is reached, but users have an option to cancel those using the cancel push notification button on the left side of the main screen. It is easy to switch to the notes screens where users can add new notes and set priority for each of them. Notes are sorted by priority but pinned notes will always be shown on the top regardless of their priority. Long press on list will bring users to the edit screen to update their notes or reminder tasks. Left swipe on the list acts as a delete method for both notes and reminders while right swipe only works on reminder subtasks to turn their notifications on.
 ### Reminders List Mian Screen
-![](images/main.PNG)
+![](app/images/main.PNG)
 
 
 ### Add New Reminder Screen
-![](images/reminder.PNG)
+![](app/images/reminder.PNG)
 
 
 ### Add New Subtask Screen
-![](images/new.PNG)
+![](app/images/new.PNG)
 
 
 ### Notes Main Screen
-![](images/note.PNG)
+![](app/images/note.PNG)
 
 
 ### New Note Screen
-![](images/addnote.PNG)
+![](app/images/addnote.PNG)
 
 
 ## Technologies
