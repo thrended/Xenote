@@ -128,13 +128,13 @@ function SubtaskModal({
             <TouchableOpacity onPress={showDatepicker}>
               <Image
                 style={styles.container}
-                source={require('../../images/calendar.png')}
+                source={require('../images/calendar.png')}
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={showTimepicker}>
               <Image
                 style={styles.container}
-                source={require('../../images/clock.png')}
+                source={require('../images/clock.png')}
               />
             </TouchableOpacity>
           </View>

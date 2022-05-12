@@ -10,8 +10,8 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native';
-import colors from '../app/styles/colors';
-import { globalStyles } from '../app/styles/global';
+import colors from '../styles/colors';
+import { globalStyles } from '../styles/global';
 
 
 

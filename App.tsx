@@ -2,8 +2,8 @@ import * as React from 'react';
 import {Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import RemindersListScreen from './screens/RemindersListScreen';
-import ReminderSubtasksScreen from './screens/ReminderSubtasksScreen';
+import RemindersListScreen from './app/screens/RemindersListScreen';
+import ReminderSubtasksScreen from './app/screens/ReminderSubtasksScreen';
 import RealmContext from './app/models/Schemas';
 import { LogBox } from 'react-native';
 import notifee, {AuthorizationStatus, EventType, IntervalTrigger, RepeatFrequency, 
