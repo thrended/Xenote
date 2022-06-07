@@ -39,7 +39,7 @@ This app allows you to create reminders that have subtasks. Each subtask notifie
 Project is created with:
 * React Native
 * React.js
-* Typescrpit
+* TypeScript
 * npm/yarn
 	
 ## Setup
